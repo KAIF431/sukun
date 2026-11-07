@@ -15,23 +15,35 @@ function getMasterPassword() {
 let allUsers = [];
 let customDuas = [];
 
-document.addEventListener("DOMContentLoaded", () => {
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", checkAdminAccess);
+} else {
   checkAdminAccess();
-});
+}
 
 // 1. ADMIN ACCESS ENFORCEMENT
 function checkAdminAccess() {
-  const session = SukunAuth.getCurrentUser();
+  const auth = window.SukunAuth || (typeof SukunAuth !== "undefined" ? SukunAuth : null);
+  const session = auth ? auth.getCurrentUser() : null;
   const loginGate = document.getElementById("adminLoginGate");
   const dashboard = document.getElementById("adminDashboard");
+  const headerEmail = document.getElementById("adminHeaderEmail");
+  const headerLogout = document.getElementById("adminHeaderLogoutBtn");
 
-  if (session && session.email.toLowerCase() === MASTER_ADMIN.toLowerCase()) {
-    loginGate.style.display = "none";
-    dashboard.style.display = "block";
+  if (session && session.email && session.email.toLowerCase() === MASTER_ADMIN.toLowerCase()) {
+    if (loginGate) loginGate.style.display = "none";
+    if (dashboard) dashboard.style.display = "block";
+    if (headerEmail) {
+      headerEmail.innerText = session.email;
+      headerEmail.style.display = "inline";
+    }
+    if (headerLogout) headerLogout.style.display = "inline-block";
     initDashboard();
   } else {
-    loginGate.style.display = "flex";
-    dashboard.style.display = "none";
+    if (loginGate) loginGate.style.display = "flex";
+    if (dashboard) dashboard.style.display = "none";
+    if (headerEmail) headerEmail.style.display = "none";
+    if (headerLogout) headerLogout.style.display = "none";
   }
 }
 
@@ -107,7 +119,7 @@ function updateMetrics() {
   allUsers.forEach(u => { totalSaved += (u.savedCount || 0); });
   if (totalSavedElem) totalSavedElem.innerText = totalSaved;
 
-  const totalDuaCount = MasterKnowledge.length + customDuas.length;
+  const totalDuaCount = (typeof MasterKnowledge !== 'undefined' ? MasterKnowledge.length : 35) + customDuas.length;
   if (totalDuasElem) totalDuasElem.innerText = totalDuaCount;
 
   if (emailStatusElem) {
@@ -320,7 +332,7 @@ const STORAGE_KEYS = {
   mode: "sukun_orchestrator_mode"
 };
 
-const DEFAULT_GEMINI_KEY = typeof atob === "function" ? atob("QVEuQWI4Uk42SU10MXhFeFdseVdaczN4VzhVLTMwVzBmaXBoeWt1Q01uYkZid2VJMmFIZEE=") : "";
+var DEFAULT_GEMINI_KEY = window.DEFAULT_GEMINI_KEY || (typeof atob === "function" ? atob("QVEuQWI4Uk42SU10MXhFeFdseVdaczN4VzhVLTMwVzBmaXBoeWt1Q01uYkZid2VJMmFIZEE=") : "");
 
 function loadAllAiKeys() {
   const gemKey = localStorage.getItem(STORAGE_KEYS.gemini) || DEFAULT_GEMINI_KEY;

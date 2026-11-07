@@ -938,25 +938,34 @@ function findBestDuaMatch(queryText) {
 
 // 6.2 MASTER MULTI-AI PARALLEL ENSEMBLE & ISLAMIC ARBITER ENGINE
 let currentSearchToken = 0;
-const DEFAULT_GEMINI_KEY = typeof atob === "function" ? atob("QVEuQWI4Uk42SU10MXhFeFdseVdaczN4VzhVLTMwVzBmaXBoeWt1Q01uYkZid2VJMmFIZEE=") : "";
+var DEFAULT_GEMINI_KEY = window.DEFAULT_GEMINI_KEY || (typeof atob === "function" ? atob("QVEuQWI4Uk42SU10MXhFeFdseVdaczN4VzhVLTMwVzBmaXBoeWt1Q01uYkZid2VJMmFIZEE=") : "");
 
-const SYSTEM_INSTRUCTION_SCRIPTURE = `You are the authentic spiritual knowledge core and caring companion of 'SUKUN (سُكُون) — Sanctuary for the Soul'.
-A believer is opening their heart to you, seeking spiritual guidance, solace, or an authentic Islamic supplication (Dua/Quranic Ayat/Sahih Hadith) for their condition.
+const SYSTEM_INSTRUCTION_SCRIPTURE = `You are Sukun AI — an advanced, intelligent, scholarly, and dignified Islamic Spiritual AI Engine for 'SUKUN (سُكُون) — Sanctuary for the Soul'.
+A seeker is asking for authentic spiritual guidance or supplications (Dua/Quranic Ayat/Sahih Hadith) for their life situation or emotional condition.
 
-STRICT PROTOCOLS & MANDATORY CONSTRAINTS:
-1. STRICT ADAB & MODESTY: NEVER use intimate, informal, affectionate, romantic, or flirting words like "Meri jaan", "Meri pyari rooh", "Jaan", "Baby", "Sanam", "Darling", "Dear", "Sweetheart". Speak strictly with Islamic modesty (Haya), utmost respect (Adab), and dignity. Always use gender-neutral and respectful phrasing like "Mohtaram saathi", "Allah ke bande", or address them respectfully without romantic undertones. Do not specify or assume gender (neither male nor female).
-2. ABSOLUTE ZERO CHINESE & DEVANAGARI: NEVER output Chinese characters (like 所谓, 的, etc.) or Hindi / Devanagari characters (like री, क, etc.) anywhere in any field.
-3. PURE ARABIC: The 'arabic' field must contain ONLY pure Arabic characters with Tashkeel. NEVER include English letters (like 'uka') or Roman words inside the Arabic text.
-4. PURE URDU: The 'translationUrdu' field must contain ONLY pure Urdu text in Arabic script. NEVER mix English words (like 'bhalai', 'ai') or Chinese or Hindi into it.
-5. NO MENTION OF AI: NEVER mention Google, Gemini, OpenAI, Claude, LLM, artificial intelligence, or bot. Speak as 'Sukun Sanctuary Companion'.
-6. ALWAYS AUTHENTIC: Provide genuine, authentic Quranic verses or Sahih Hadith (Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawood, Jami' at-Tirmidhi, Sunan an-Nasa'i, Sunan Ibn Majah).
+MANDATORY PROTOCOLS & STRICT CONSTRAINTS:
+1. PROFESSIONAL, DIGNIFIED & SCHOLARLY AI TONE:
+   - Speak as an intelligent, articulate, objective, and respectful Islamic AI Companion.
+   - NEVER use informal pet names, romantic words, or familial terms.
+   - STRICTLY FORBIDDEN TERMS: "bhai", "behan", "bhaijaan", "mere bhai", "meri behan", "pyare bhai", "pyari behan", "dost", "yaar", "meri jaan", "meri pyari rooh", "baby", "darling", "dear", "sweetheart", "saathi".
+   - Address the situation with intellectual clarity, Islamic empathy, and dignified respect in Roman Urdu (or English if queried in English).
+2. ABSOLUTE ZERO CHINESE & DEVANAGARI:
+   - NEVER output Chinese characters (like 所谓, 的, etc.) or Hindi/Devanagari characters (like री, क, etc.) anywhere in any field.
+3. PURE ARABIC:
+   - The 'arabic' field must contain ONLY pure Arabic with complete Tashkeel (harakat). NEVER mix English letters (like 'uka') into Arabic.
+4. PURE URDU:
+   - The 'translationUrdu' field must contain ONLY pure Urdu text in Arabic script. NEVER mix English words or foreign characters.
+5. NO BRAND MENTION:
+   - NEVER mention Google, OpenAI, Claude, LLM, or bot. Speak as 'Sukun AI Companion'.
+6. ALWAYS AUTHENTIC:
+   - Provide genuine Quranic verses or Sahih Hadith (Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawood, Jami' at-Tirmidhi, Sunan an-Nasa'i, Sunan Ibn Majah).
 
 Strictly return a JSON object with this exact schema:
 {
   "id": "neural-${Date.now()}",
-  "counsel": "Warm, respectful, empathetic message spoken directly to the seeker in natural, comforting Roman Urdu (2-4 sentences). Address their specific pain respectfully without flirting or pet names, console their heart with Quran/Sunnah wisdom, and gently introduce the Dua.",
-  "title": "Descriptive Title in English (e.g. Divine Solace for Overcoming Deep Grief)",
-  "category": "Category Name (e.g. Solace & Grief / Healing & Well-Being)",
+  "counsel": "Professional, intelligent, and comforting response in clear Roman Urdu (2-3 sentences). Directly explain the situation through Quranic and Prophetic wisdom, and introduce the Dua as the authentic remedy without using familial words like bhai, behan, or dost.",
+  "title": "Descriptive Title in English (e.g. Divine Remedy for Severe Hardship & Anxiety)",
+  "category": "Category Name (e.g. Solace & Relief / Peace of Mind)",
   "arabic": "Full Arabic text with accurate Tashkeel (harakat)",
   "roman": "Clear Roman transliteration / pronunciation",
   "translationUrdu": "Eloquent, pure Urdu translation in Nastaliq style",
@@ -970,33 +979,38 @@ Strictly return a JSON object with this exact schema:
 function sanitizeScriptureOutput(obj) {
   if (!obj) return obj;
 
-  // 1. Sanitize Counsel: Purge any romantic, flirting, or overly intimate terms
+  // 1. Sanitize Counsel: Purge any romantic, flirting, or familial terms
   if (obj.counsel) {
     let c = obj.counsel;
-    const forbiddenWithComma = [
-      /\bmeri\s+jaan\s*,\s*/gi, /\bmeri\s+pyari\s+rooh\s*,\s*/gi, /\bpyari\s+rooh\s*,\s*/gi,
-      /\baye\s+meri\s+jaan\s*,\s*/gi, /\bo\s+meri\s+jaan\s*,\s*/gi, /\bmeri\s+jaaneman\s*,\s*/gi
-    ];
-    forbiddenWithComma.forEach(rgx => {
-      c = c.replace(rgx, "Mohtaram saathi, ");
-    });
-
     const forbiddenPhrases = [
+      /\bmeri\s+jaan\s*,\s*/gi, /\bmeri\s+pyari\s+rooh\s*,\s*/gi, /\bpyari\s+rooh\s*,\s*/gi,
+      /\baye\s+meri\s+jaan\s*,\s*/gi, /\bo\s+meri\s+jaan\s*,\s*/gi, /\bmeri\s+jaaneman\s*,\s*/gi,
+      /\bmere\s+mohtaram\s+bhai\s*\/?\s*behen\b\s*,\s*/gi, /\bmere\s+mohtaram\s+bhai\s*\/?\s*behan\b\s*,\s*/gi,
+      /\bmere\s+pyare\s+bhai\b\s*,\s*/gi, /\bmere\s+pyare\s+dost\b\s*,\s*/gi, /\bmeri\s+pyari\s+behan\b\s*,\s*/gi,
+      /\bmohtaram\s+bhai\b\s*,\s*/gi, /\bmohtaram\s+behan\b\s*,\s*/gi, /\bmohtaram\s+saathi\b\s*,\s*/gi,
+      /\bmere\s+aziz\s+saathi\b\s*,\s*/gi, /\bmere\s+bhai\b\s*,\s*/gi, /\bmeri\s+behan\b\s*,\s*/gi,
       /\bmeri\s+jaan\b/gi, /\bmeri\s+pyari\s+rooh\b/gi, /\bpyari\s+rooh\b/gi,
       /\bmeri\s+jaaneman\b/gi, /\baye\s+meri\s+jaan\b/gi, /\bmere\s+pyare\s+jaan\b/gi,
-      /\bmeri\s+mehboob\b/gi, /\bjaan-e-mann\b/gi, /\bo\s+meri\s+jaan\b/gi, /\bmeri\s+zindagi\b/gi
+      /\bmeri\s+mehboob\b/gi, /\bjaan-e-mann\b/gi, /\bo\s+meri\s+jaan\b/gi, /\bmeri\s+zindagi\b/gi,
+      /\bmere\s+mohtaram\s+bhai\s*\/?\s*behen\b/gi, /\bmere\s+mohtaram\s+bhai\s*\/?\s*behan\b/gi,
+      /\bmere\s+pyare\s+bhai\b/gi, /\bmere\s+pyare\s+dost\b/gi, /\bmeri\s+pyari\s+behan\b/gi,
+      /\bmohtaram\s+bhai\b/gi, /\bmohtaram\s+behan\b/gi, /\bmohtaram\s+saathi\b/gi,
+      /\bmere\s+bhai\b/gi, /\bmeri\s+behan\b/gi, /\bmeri\s+behen\b/gi, /\bbhaijaan\b/gi,
+      /\bpyare\s+bhai\b/gi, /\bpyari\s+behan\b/gi, /\bpyare\s+dost\b/gi, /\baziz\s+saathi\b/gi
     ];
     forbiddenPhrases.forEach(rgx => {
-      c = c.replace(rgx, "Mohtaram saathi");
+      c = c.replace(rgx, "");
     });
 
-    // Clean up any accidental double commas or spaces
+    // Clean up any accidental double commas, spaces or leading punctuation
     c = c.replace(/,\s*,/g, ",");
-    // Strip Chinese/CJK characters
-    c = c.replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/g, "");
-    // Strip Devanagari Hindi characters
-    c = c.replace(/[\u0900-\u097f]/g, "");
-    obj.counsel = c.trim();
+    c = c.replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/g, ""); // Strip Chinese
+    c = c.replace(/[\u0900-\u097f]/g, ""); // Strip Hindi
+    c = c.replace(/^[,\s\-:]+/, "").trim();
+    if (c.length > 0) {
+      c = c.charAt(0).toUpperCase() + c.slice(1);
+    }
+    obj.counsel = c;
   }
 
   // 2. Sanitize Arabic: Pure Arabic script only, no stray English letters or foreign scripts
@@ -1359,38 +1373,37 @@ function selectTopicPill(searchTerm) {
   executeSearch(searchTerm, true);
 }
 
-// Conversational Spiritual Companion Engine (Personalized Warm Dialogue)
+// Conversational Spiritual Companion Engine (Intelligent, Dignified & Professional Islamic Guidance)
 function generateConversationalCounsel(item, userQuery = "") {
   if (item.counsel && item.counsel.trim()) {
     return item.counsel;
   }
 
-  // Empathetic personal dialogue for specific conditions
+  // Objective, scholarly and dignified Islamic guidance
   if (item.id === "dua-bura-khwab") {
-    return "Mere aziz saathi, bura khwab dekh kar bilkul pareshan na hon. Rasoolullah (ﷺ) ne farmaya ke bura khwab shaitan ki taraf se hota hai aur iska koi bura asar nahi hoga agar aap Sunnah par amal karein. Foran bayein (left) taraf 3 martaba khushk thookein, karwat badlein aur yeh mubarak hifazat ki dua dil ke yaqeen ke sath padhein:";
+    return "Islam me bura ya pareshan-kun khwab dekhne par Sunnah ke mutabiq bayein (left) janib 3 martaba thookne aur karwat badalne ki hidayat hai. Is khwab ke bure asraat se bachne ke liye Rasoolullah ﷺ ki yeh authentic hifazati dua padhein:";
   }
   if (item.id === "dua-ishq-mohabbat") {
-    return "Dil me mohabbat aur chahat ka aana fitri hai, lekin momin apne har jazbe ko Allah ki raza aur Halal Nikah ke taabe' karta hai. Dil ko sukun dene, paak jazbaat aur barkat wale sathi ke husool ke liye yeh Sunnah dua padhein:";
+    return "Islam me jazbaat aur chahat ko Haya, Iffat aur Halal Nikah ke taabe' rakhne ki talqeen hai. Dil ko sukoon dene aur ba-barkat humsafar ke husool ke liye yeh Sunnah dua manqool hai:";
   }
   if (item.id === "dua-mushkil-aasan") {
-    return "Yaad rakhiye ke Allah Ta'ala ke siwa koi zat aisi nahi jo mushkil ko aasan bana sake. Jo bhi masla aapke samne hai, use Allah ke hawale karke sabr aur yaqeen ke sath yeh azeem Sunnah dua padhein:";
+    return "Aapke masle ke hal ke liye Quran-o-Sunnah me sabr aur pukhta tawakkul ikhtiyar karne ki hidayat hai. Har dushwari ko aasan banane ke liye Rasoolullah ﷺ ki yeh azeem Dua talqeen ki gayi hai:";
   }
   if (item.id === "dua-ghabrahat") {
-    return "Jab bhi dil me bechaini, andhera ya ghabrahat chha jaye, to Hazrat Yunus (A.S) ki tarah Allah ke samne apne ajz ka aiterf karein. Yeh Ayat-e-Kareema har band darwaze ko khol deti hai:";
+    return "Bechaini aur ghabrahat ke waqt Hazrat Yunus (A.S) ki yeh Ayat-e-Kareema dilon ko taskeen dene aur har mushkil se nijaat pane ka behtareen roohani zariya hai:";
   }
   if (item.id === "dua-family-peace") {
-    return "Ghar me sukoon aur apno me mohabbat Allah ki azeem nemat hai. Agar tanau ya narazgi hai to gussa chhor kar narmi apnayein aur rozana Surah Al-Furqan ki yeh pyari dua padhein:";
+    return "Khandani sukoon aur rishton me iftiraq ko door karne ke liye Surah Al-Furqan ki yeh mubarak ayat rozana padhna afzal aur mufeed hai:";
   }
   if (item.id === "dua-beemari") {
-    return "Bimari momin ke gunaho ka kaffara hoti hai aur darjaat buland karti hai. Shifa sirf Allah ke dast-e-qudrat me hai, dawa ke sath sath Rasoolullah (ﷺ) ka yeh roohani nuskha padhein:";
+    return "Har tarah ke dard ya jismani takleef ke waqt mualja (ilaj) ke sath sath Rasoolullah ﷺ ki is authentic shifa wali dua ka ahtimam karein:";
   }
   if (item.id === "dua-rizq") {
-    return "Rizq aur barkat Allah ke hath me hai. Tangdasti se ghabrayein nahi, istighfar ko apna mamool banayein aur rozana is Sunnah dua ka ahtimam karein:";
+    return "Tangdasti ya karz ke bojh se nijaat ke liye kasrat se Istighfar aur is authentic Prophetic dua ka parhna mustanad zariya hai:";
   }
 
-  // Dynamic warm spiritual counsel synthesized from item lesson
-  const lesson = item.lesson || "Allah par tawakkul rakhein aur is Sunnah dua ko padhein.";
-  return `Mere mohtaram bhai / behen, aapke dil ke haal aur is zaroorat ke liye Allah ke Rasool (ﷺ) ka yeh mubarak roohani hal aur Sunnah dua pesh hai. ${lesson} Pure yaqeen ke sath padhein:`;
+  const lesson = item.lesson || "Allah par tawakkul rakhein aur is Sunnah dua ka ahtimam karein.";
+  return `Aapki is soorat-e-haal ke liye Islamic taleemaat aur Sunnah-e-Nabawi ﷺ se yeh authentic roohani rehnumai aur Dua manqool hai. ${lesson}`;
 }
 
 function displaySearchResult(item, shouldScroll = true) {

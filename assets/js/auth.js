@@ -175,6 +175,9 @@ const SukunAuth = (function() {
   };
 })();
 
+// Explicit global window attachment for universal multi-script access
+window.SukunAuth = SukunAuth;
+
 // Helper to update navigation bar based on auth state
 function updateNavUI() {
   const user = SukunAuth.getCurrentUser();
