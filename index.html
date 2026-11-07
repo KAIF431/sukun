@@ -44,7 +44,55 @@
         <button id="navAuthBtn" onclick="openAuthModal()" class="nav-btn">
           <span id="navAuthText">Sign In</span>
         </button>
+
+        <!-- Mobile Menu Toggle Button (Hamburger) -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle Navigation Menu">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
       </div>
+    </div>
+
+    <!-- Mobile Slide-Down Navigation Drawer -->
+    <div id="mobileNavDrawer" class="mobile-nav-drawer">
+      <nav class="mobile-nav-list">
+        <a href="#daily-dua" class="mobile-nav-link" onclick="closeMobileMenu()">
+          <span class="nav-item-icon">✦</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Daily Masnoon Dua</span>
+            <span class="nav-item-sub">Prophetic Morning & Evening Remembrances</span>
+          </div>
+        </a>
+        <a href="#find-solution" class="mobile-nav-link" onclick="closeMobileMenu()">
+          <span class="nav-item-icon">🔍</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Find Solution With Duas</span>
+            <span class="nav-item-sub">AI Spiritual Search & Sacred Remedies</span>
+          </div>
+        </a>
+        <a href="#essentials" class="mobile-nav-link" onclick="closeMobileMenu()">
+          <span class="nav-item-icon">📖</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Daily Tilawat</span>
+            <span class="nav-item-sub">Surah Yaseen, Mulk, Kahf & Ayat-ul-Kursi</span>
+          </div>
+        </a>
+        <a href="#digital-tasbih" class="mobile-nav-link" onclick="closeMobileMenu()">
+          <span class="nav-item-icon">📿</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Digital Tasbih Counter</span>
+            <span class="nav-item-sub">Continuous Dhikr & Haptic Counter</span>
+          </div>
+        </a>
+        <a href="admin.html" class="mobile-nav-link mobile-nav-admin" onclick="closeMobileMenu()">
+          <span class="nav-item-icon">⚙️</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Master Admin Portal</span>
+            <span class="nav-item-sub">Latency Benchmark & Scripture Database</span>
+          </div>
+        </a>
+      </nav>
     </div>
   </header>
 

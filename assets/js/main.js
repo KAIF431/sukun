@@ -730,7 +730,34 @@ document.addEventListener("DOMContentLoaded", () => {
   initDailyDua();
   renderTasbih();
   initLiveSearchListeners();
+
+  // Close mobile drawer on outside click
+  document.addEventListener("click", (e) => {
+    const drawer = document.getElementById("mobileNavDrawer");
+    const btn = document.getElementById("mobileMenuBtn");
+    if (drawer && drawer.classList.contains("open")) {
+      if (!drawer.contains(e.target) && !btn.contains(e.target)) {
+        closeMobileMenu();
+      }
+    }
+  });
 });
+
+// Mobile Navigation Drawer Toggle Handlers
+function toggleMobileMenu() {
+  const drawer = document.getElementById("mobileNavDrawer");
+  const btn = document.getElementById("mobileMenuBtn");
+  if (!drawer || !btn) return;
+  const isOpen = drawer.classList.toggle("open");
+  btn.classList.toggle("active", isOpen);
+}
+
+function closeMobileMenu() {
+  const drawer = document.getElementById("mobileNavDrawer");
+  const btn = document.getElementById("mobileMenuBtn");
+  if (drawer) drawer.classList.remove("open");
+  if (btn) btn.classList.remove("active");
+}
 
 // 0. THEME MANAGEMENT (Royal Light Mode & Midnight Dark Mode)
 function initTheme() {
