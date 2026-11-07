@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sukun (سُكُون) — Sanctuary for the Soul</title>
+  <meta name="description" content="An authentic Islamic spiritual sanctuary offering comfort through Quranic Ayahs, authentic Masnoon Duas, Daily Tilawat, and Digital Tasbih.">
+  
+  <!-- Master Stylesheet (Royal Midnight & 24k Gold Palette) -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Ribbon -->
+  <div class="top-ribbon">
+    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ • IN THE REMEMBRANCE OF ALLAH DO HEARTS FIND REST
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="#" class="brand-logo">
+        <span class="brand-name">Sukun</span>
+        <span class="brand-arabic">(سُكُون)</span>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="#daily-dua" class="nav-link">Daily Dua</a>
+        <a href="#find-solution" class="nav-link">Find Solution</a>
+        <a href="#essentials" class="nav-link">Daily Tilawat</a>
+        <a href="#digital-tasbih" class="nav-link">Digital Tasbih</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Theme Toggle Button (Light & Dark Mode) -->
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="nav-btn" title="Toggle Light / Dark Sanctuary Mode">
+          <span id="themeToggleIcon">☀️</span> <span id="themeToggleText">Light</span>
+        </button>
+
+        <button onclick="openModal('saved')" class="nav-btn">
+          <span>Saved Duas</span>
+          <span id="savedCounter" class="badge-count">0</span>
+        </button>
+        <button id="navAuthBtn" onclick="openAuthModal()" class="nav-btn">
+          <span id="navAuthText">Sign In</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- Hero Header -->
+    <section class="hero-header">
+      <div class="hero-subtitle">ISLAMIC SPIRITUAL SANCTUARY</div>
+      <h1 class="hero-title">
+        Sanctuary For <span>The Soul</span>
+      </h1>
+      <p class="hero-desc">
+        From the depths of hardship to the peace of the soul — finding solace through authentic Quranic Ayahs and Prophetic Duas.
+      </p>
+    </section>
+
+    <!-- 1. SECTION: DAILY MASNOON DUA -->
+    <section id="daily-dua" class="section-block">
+      <div class="section-label">Daily Masnoon Dua</div>
+
+      <div class="daily-dua-card">
+        <!-- Top Meta Header & Actions -->
+        <div class="card-meta-header">
+          <div class="card-badge-row">
+            <span class="sunnah-badge">✦ Sunnah of the Prophet ﷺ</span>
+            <span class="category-badge">Daily Remembrance</span>
+          </div>
+          <div class="card-actions">
+            <button onclick="rotateDailyDua()" class="action-pill-btn" title="Shuffle Dua">
+              <span class="btn-icon">🔄</span> Shuffle Dua
+            </button>
+            <button id="dailyAudioBtn" onclick="playDuaAudio('daily')" class="action-pill-btn" title="Listen to Arabic Recitation">
+              <span class="btn-icon">🔊</span> Play Audio
+            </button>
+            <button onclick="copyDuaText('daily')" class="action-pill-btn" title="Copy to Clipboard">
+              <span class="btn-icon">📋</span> Copy
+            </button>
+            <button id="dailySaveBtn" onclick="toggleSaveDaily()" class="action-pill-btn" title="Save to Sanctuary">
+              <span class="btn-icon">🔖</span> Bookmark
+            </button>
+          </div>
+        </div>
+
+        <!-- Dua Title -->
+        <h2 id="dailyDuaTitle" class="dua-title">Morning Sunnah: Commencing the Day with Barakah</h2>
+
+        <!-- Illuminated Mihrab Calligraphy Plaque -->
+        <div class="arabic-mihrab-frame">
+          <div class="mihrab-arch-accent">
+            <span class="ornament-line">❖ ────────</span>
+            <span class="bismillah-callout">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
+            <span class="ornament-line">──────── ❖</span>
+          </div>
+          <div id="dailyDuaArabic" class="arabic-display">
+            اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ
+          </div>
+        </div>
+
+        <!-- Pronunciation / Transliteration Bar -->
+        <div class="pronunciation-bar">
+          <span class="pronunciation-tag">Pronunciation (Roman Urdu)</span>
+          <p id="dailyDuaRoman" class="roman-pronunciation">
+            Allahumma bika asbahnaa, wa bika amsaynaa, wa bika nahyaa, wa bika namootu, wa ilaikan-nushoor.
+          </p>
+        </div>
+
+        <!-- Dual Translations Container (Urdu & English Panels) -->
+        <div class="translations-container">
+          <div class="translation-urdu-card">
+            <div class="translation-header">
+              <span class="lang-tag">اردو ترجمہ (Urdu)</span>
+            </div>
+            <p id="dailyDuaUrdu" class="translation-urdu">
+              اے اللہ! تیری ہی توفیق سے ہم نے صبح کی، تیری ہی توفیق سے شام کی، تیرے ہی حکم سے ہم جیتے ہیں اور مرتے ہیں، اور تیری ہی طرف دوبارہ جی اٹھنا ہے۔
+            </p>
+          </div>
+
+          <div class="translation-english-card">
+            <div class="translation-header">
+              <span class="lang-tag">English Translation</span>
+            </div>
+            <p id="dailyDuaEnglish" class="translation-english">
+              O Allah, by You we enter the morning and by You we enter the evening, by You we live and by You we die, and unto You is the resurrection.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card Footer Meta & Verified Authentic Badge -->
+        <div class="card-footer-meta">
+          <div class="ref-badge">
+            <span>📖</span>
+            <span id="dailyDuaRef">Sunan at-Tirmidhi (3391) • Sahih</span>
+          </div>
+          <div class="verification-pill">
+            <span>✓</span> Authentic Hadith Reference
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SECTION: FIND SOLUTION WITH DUAS (AI SEARCH) -->
+    <section id="find-solution" class="section-block">
+      <div class="section-label">Find Solution With Duas</div>
+
+      <div class="search-container">
+        <textarea 
+          id="searchQuery"
+          rows="2" 
+          placeholder="Describe what is weighing on your heart or mind (e.g., anxiety, sadness, debt, anger, sickness, fear of future)..."
+          class="search-input-box"
+        ></textarea>
+
+        <div class="search-actions-row">
+          <span class="privacy-note">
+            <span>✦</span> 100% Authentic Quran & Hadith References
+          </span>
+          <button onclick="executeSearch(null, true, true)" class="primary-btn">FIND DUA</button>
+        </div>
+
+        <!-- Situational Topic Pills (Clean International English with Icons) -->
+        <div class="topic-pills-row">
+          <button onclick="selectTopicPill('gussa')" class="topic-pill">💢 Anger & Patience</button>
+          <button onclick="selectTopicPill('dil tuta')" class="topic-pill">💔 Heartbreak & Solace</button>
+          <button onclick="selectTopicPill('ghabrahat')" class="topic-pill">🌊 Anxiety & Relief</button>
+          <button onclick="selectTopicPill('karz')" class="topic-pill">💰 Debt & Sustenance</button>
+          <button onclick="selectTopicPill('bimari')" class="topic-pill">🌿 Illness & Healing</button>
+          <button onclick="selectTopicPill('gunah')" class="topic-pill">🤲 Guilt & Forgiveness</button>
+          <button onclick="selectTopicPill('khauf')" class="topic-pill">🛡️ Fear of Future</button>
+        </div>
+
+        <!-- Dynamic Solution Result Card -->
+        <div id="searchResultBox" class="search-result-box" style="display: none; margin-top: 30px;">
+          
+          <!-- Subtle Loading State for Neural Search -->
+          <div id="aiLoadingIndicator" style="display: none; text-align: center; padding: 45px 20px;">
+            <div class="ai-loading-spinner"></div>
+            <p style="font-family: var(--font-serif); font-size: 1.3rem; font-style: italic; color: var(--gold-bright); margin-top: 14px;">
+              Consulting Sacred Scriptures for Solace...
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;">
+              Retrieving authentic Quranic Ayat & Sahih Hadith
+            </p>
+          </div>
+
+          <!-- Main Result Content Container -->
+          <div id="resultCardContent">
+            <!-- AI Spiritual Dialogue & Counsel Box -->
+            <div id="aiCounselBox" class="ai-counsel-box">
+              <div class="counsel-header">
+                <div class="counsel-agent-info">
+                  <span class="counsel-avatar">✨</span>
+                  <div>
+                    <span class="counsel-agent-title">Sukun Sanctuary Companion</span>
+                    <span class="counsel-live-pill">● Speaking directly to your heart</span>
+                  </div>
+                </div>
+              </div>
+              <p id="resultCounselText" class="counsel-speech-bubble"></p>
+            </div>
+
+            <div class="card-meta-header">
+              <div class="card-badge-row">
+                <span class="sunnah-badge">✦ Prophetic Spiritual Remedy</span>
+              </div>
+              <div class="card-actions">
+                <button onclick="openModal('waqia')" class="action-pill-btn">
+                  <span class="btn-icon">📜</span> Read Hadith & Story
+                </button>
+                <button id="resultAudioBtn" onclick="playDuaAudio('result')" class="action-pill-btn">
+                  <span class="btn-icon">🔊</span> Play Audio
+                </button>
+                <button onclick="copyDuaText('result')" class="action-pill-btn">
+                  <span class="btn-icon">📋</span> Copy
+                </button>
+                <button id="resultSaveBtn" onclick="toggleSaveResult()" class="action-pill-btn">
+                  <span class="btn-icon">🔖</span> Bookmark
+                </button>
+              </div>
+            </div>
+
+            <h3 id="resultTitle" class="dua-title">Result Title</h3>
+
+            <div class="arabic-mihrab-frame">
+              <div id="resultArabic" class="arabic-display"></div>
+            </div>
+
+            <div class="pronunciation-bar">
+              <span class="pronunciation-tag">Pronunciation (Roman Urdu)</span>
+              <p id="resultRoman" class="roman-pronunciation"></p>
+            </div>
+
+            <div class="translations-container">
+              <div class="translation-urdu-card">
+                <div class="translation-header">
+                  <span class="lang-tag">اردو ترجمہ (Urdu)</span>
+                </div>
+                <p id="resultUrdu" class="translation-urdu"></p>
+              </div>
+
+              <div class="translation-english-card">
+                <div class="translation-header">
+                  <span class="lang-tag">English Translation</span>
+                </div>
+                <p id="resultEnglish" class="translation-english"></p>
+              </div>
+            </div>
+
+            <div class="card-footer-meta">
+              <div class="ref-badge">
+                <span>📖</span>
+                <span id="resultRef">Reference</span>
+              </div>
+              <div class="verification-pill">
+                <span>✓</span> Verified Source
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SECTION: DAILY TILAWAT -->
+    <section id="essentials" class="section-block">
+      <div class="section-label">Daily Tilawat</div>
+
+      <div class="essentials-grid">
+        <!-- Card 1: Ayat-ul-Kursi -->
+        <div class="essential-card">
+          <div>
+            <div class="essential-header">
+              <span class="essential-number">Surah 2:255</span>
+            </div>
+            <h3 class="essential-title">Ayat-ul-Kursi</h3>
+            <p class="essential-desc">
+              The greatest verse in the Holy Quran. Recited after obligatory prayers for direct protection and entrance into Paradise.
+            </p>
+          </div>
+          <a onclick="openModal('ayatul-kursi')" class="read-link">Read & Hadith Virtues →</a>
+        </div>
+
+        <!-- Card 2: Surah Yaseen -->
+        <div class="essential-card">
+          <div>
+            <div class="essential-header">
+              <span class="essential-number">Surah No. 36</span>
+            </div>
+            <h3 class="essential-title">Surah Yaseen</h3>
+            <p class="essential-desc">
+              The Heart of the Quran (Qalb-ul-Quran). Recited in the morning for fulfillment of all permissible needs and divine barakah.
+            </p>
+          </div>
+          <a onclick="openModal('surah-yaseen')" class="read-link">Read & Hadith Virtues →</a>
+        </div>
+
+        <!-- Card 3: Surah Al-Kahf -->
+        <div class="essential-card">
+          <div>
+            <div class="essential-header">
+              <span class="essential-number">Surah No. 18</span>
+              <span id="jummahBadge" class="jummah-tag" style="display: none;">Friday Sunnah</span>
+            </div>
+            <h3 class="essential-title">Surah Al-Kahf</h3>
+            <p class="essential-desc">
+              The Prophetic Sunnah of Friday. A luminous divine light illuminating between the two Fridays and immunity against Fitnah.
+            </p>
+          </div>
+          <a onclick="openModal('surah-kahf')" class="read-link">Read & Hadith Virtues →</a>
+        </div>
+
+        <!-- Card 4: Surah Al-Mulk -->
+        <div class="essential-card">
+          <div>
+            <div class="essential-header">
+              <span class="essential-number">Surah No. 67</span>
+            </div>
+            <h3 class="essential-title">Surah Al-Mulk</h3>
+            <p class="essential-desc">
+              The Protector from the Trials of the Grave. Recited nightly before sleeping to intercede for forgiveness on the Day of Judgment.
+            </p>
+          </div>
+          <a onclick="openModal('surah-mulk')" class="read-link">Read & Hadith Virtues →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SECTION: DIGITAL TASBIH COUNTER -->
+    <section id="digital-tasbih" class="section-block">
+      <div class="section-label">Digital Tasbih Counter</div>
+
+      <div class="tasbih-card">
+        <!-- Dhikr Selection Dropdown -->
+        <select id="tasbihSelect" class="tasbih-dhikr-select" onchange="changeDhikr(this.value)">
+          <option value="0">SubhanAllah (سُبْحَانَ اللَّهِ)</option>
+          <option value="1">Alhamdulillah (الْحَمْدُ لِلَّهِ)</option>
+          <option value="2">Allahu Akbar (اللَّهُ أَكْبَرُ)</option>
+          <option value="3">Astaghfirullah (أَسْتَغْفِرُ اللَّهَ)</option>
+          <option value="4">La ilaha illallah (لَا إِلَٰهَ إِلَّا اللَّهُ)</option>
+          <option value="5">Durood Ibrahim (اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ)</option>
+        </select>
+
+        <div id="tasbihArabic" class="tasbih-dhikr-name">سُبْحَانَ اللَّهِ</div>
+        <div id="tasbihMeaning" class="tasbih-dhikr-meaning">Glory be to Allah — Perfect beyond all imperfection</div>
+
+        <!-- Large Counter Display -->
+        <div id="tasbihCount" class="tasbih-display">00</div>
+        <div id="tasbihMeta" class="tasbih-target-label">Target: 33 • Completed: 0 Rounds</div>
+
+        <!-- Giant Interactive Tap Button -->
+        <button id="tasbihTapBtn" onclick="incrementTasbih()" class="tasbih-tap-button">
+          TAP (+1)
+        </button>
+
+        <!-- Presets Row -->
+        <div class="tasbih-presets">
+          <button id="preset-33" onclick="setTasbihPreset(33)" class="preset-btn active">33 Presets</button>
+          <button id="preset-100" onclick="setTasbihPreset(100)" class="preset-btn">100 Presets</button>
+          <button onclick="setCustomTarget()" class="preset-btn">Custom Target</button>
+          <button id="preset-0" onclick="setTasbihPreset(0)" class="preset-btn">Unlimited (∞)</button>
+        </div>
+
+        <!-- Controls Row -->
+        <div class="tasbih-controls-row">
+          <button onclick="resetTasbih()" class="tasbih-ctrl-btn">Reset</button>
+          <button id="tasbihSoundBtn" onclick="toggleTasbihSound()" class="tasbih-ctrl-btn">Sound: ON</button>
+          <button id="tasbihVibrateBtn" onclick="toggleTasbihVibrate()" class="tasbih-ctrl-btn">Vibrate: ON</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 5. MASTER EDITORIAL FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div>
+        <div class="footer-brand">Sukun (سُكُون)</div>
+        <p class="footer-desc">
+          An authentic sanctuary for the modern believer facing anxiety, heartbreak, and emotional burdens. Built with sincerity as a continuous charity (Sadaqah Jariyah). 100% free forever for all humanity.
+        </p>
+      </div>
+
+      <div>
+        <div class="footer-heading">Solace Navigation</div>
+        <ul class="footer-links">
+          <li><a href="#daily-dua">Daily Masnoon Dua</a></li>
+          <li><a href="#find-solution">Find Solution With Duas</a></li>
+          <li><a href="#essentials">Daily Tilawat</a></li>
+          <li><a href="#digital-tasbih">Digital Tasbih Counter</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-heading">Direct Contact & Inquiries</div>
+        <ul class="footer-links">
+          <li><a href="mailto:kaifofficial4@gmail.com" style="color: var(--gold-bright);">kaifofficial4@gmail.com</a></li>
+          <li><a href="javascript:void(0)" onclick="openModal('contact')">Suggest a Dua / Feedback</a></li>
+          <li><a href="admin.html" id="footerAdminLink" class="admin-link">Master Admin Portal →</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div>
+        Authentic Sources: Sahih al-Bukhari • Sahih Muslim • Jami' at-Tirmidhi • Hisnul Muslim
+      </div>
+      <div>
+        © 2026 Sukun. Dedicated for the Sake of Allah.
+      </div>
+    </div>
+  </footer>
+
+  <!-- GLOBAL READER & CONTACT MODAL -->
+  <div id="globalModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <button onclick="closeModal()" class="modal-close" title="Close">✕</button>
+      <h3 id="modalTitle" style="font-family: var(--font-serif); font-size: 1.55rem; font-style: italic; color: var(--gold-bright); margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border-gold);">Title</h3>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION MODAL (Real Email + Password System) -->
+  <div id="authModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <button onclick="closeAuthModal()" class="modal-close" title="Close">✕</button>
+
+      <!-- AUTH FORM (When NOT Logged In) -->
+      <div id="authFormsContainer">
+        <!-- Tab Navigation -->
+        <div class="auth-tab-buttons">
+          <button id="tabBtnSignIn" onclick="switchAuthTab('login')" class="auth-tab-btn active">Sign In</button>
+          <button id="tabBtnSignUp" onclick="switchAuthTab('register')" class="auth-tab-btn">Create Account</button>
+        </div>
+
+        <!-- 1. SIGN IN FORM -->
+        <form id="signInForm" onsubmit="event.preventDefault(); handleAuthLogin();">
+          <div class="auth-input-group">
+            <label class="auth-label">Registered Email</label>
+            <input type="email" id="loginEmail" class="auth-input" placeholder="e.g. name@gmail.com" required autocomplete="username">
+          </div>
+
+          <div class="auth-input-group">
+            <label class="auth-label">Password</label>
+            <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your password..." required autocomplete="current-password">
+          </div>
+
+          <div id="loginError" class="auth-error"></div>
+
+          <button type="submit" class="primary-btn" style="width: 100%; margin-top: 10px;">
+            SIGN IN TO SANCTUARY
+          </button>
+
+          <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 16px;">
+            New to Sukun? <a href="javascript:void(0)" onclick="switchAuthTab('register')" style="color: var(--gold-bright); text-decoration: underline;">Create an account</a>
+          </p>
+        </form>
+
+        <!-- 2. CREATE ACCOUNT (SIGN UP) FORM -->
+        <form id="signUpForm" onsubmit="event.preventDefault(); handleAuthRegister();" style="display: none;">
+          <div class="auth-input-group">
+            <label class="auth-label">Your Email Address</label>
+            <input type="email" id="regEmail" class="auth-input" placeholder="e.g. name@gmail.com" required autocomplete="username">
+          </div>
+
+          <div class="auth-input-group">
+            <label class="auth-label">Create Password (Min. 6 characters)</label>
+            <input type="password" id="regPassword" class="auth-input" placeholder="Create a secure password..." required autocomplete="new-password">
+          </div>
+
+          <div class="auth-input-group">
+            <label class="auth-label">Confirm Password</label>
+            <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Confirm your password..." required autocomplete="new-password">
+          </div>
+
+          <div id="registerError" class="auth-error"></div>
+
+          <button type="submit" class="primary-btn" style="width: 100%; margin-top: 10px;">
+            CREATE SANCTUARY ACCOUNT
+          </button>
+
+          <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 16px;">
+            Already have an account? <a href="javascript:void(0)" onclick="switchAuthTab('login')" style="color: var(--gold-bright); text-decoration: underline;">Sign In here</a>
+          </p>
+        </form>
+      </div>
+
+      <!-- 3. USER PROFILE (When Logged In) -->
+      <div id="authProfileStep" style="display: none;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.55rem; font-style: italic; color: var(--gold-bright); margin-bottom: 16px;">Account Sanctuary</h3>
+        
+        <div class="profile-details-card" style="padding: 22px; border-radius: 8px; border: 1px solid var(--border-gold); margin-bottom: 22px;">
+          <div style="font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-primary); margin-bottom: 6px;">Active Account:</div>
+          <div id="profileUserEmail" style="color: var(--gold-bright); font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;"></div>
+          
+          <div style="display: flex; gap: 24px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>Role: <strong id="profileUserRole" style="color: var(--text-cream);">User</strong></div>
+            <div>Saved Duas: <strong id="profileSavedCount" style="color: var(--gold-bright);">0</strong></div>
+          </div>
+        </div>
+
+        <div id="profileAdminAction" style="display: none; margin-bottom: 16px;">
+          <a href="admin.html" class="primary-btn" style="display: block; text-align: center; text-decoration: none; padding: 12px;">
+            OPEN MASTER ADMIN PORTAL
+          </a>
+        </div>
+
+        <button onclick="handleLogout()" class="primary-btn" style="width: 100%; background: #220e10; border: 1px solid #7f1d1d; color: #fca5a5;">
+          SIGN OUT
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="assets/js/surahs.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
