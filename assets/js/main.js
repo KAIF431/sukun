@@ -2311,7 +2311,7 @@ function copySingleAyahText(num) {
 
 // Dynamic Surah Renderer for all 114 Surahs
 async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
-  const allSurahs = window.SukunAllSurahsIndex || [];
+  const allSurahs = getGlobalSurahs();
   let s = allSurahs.find(item => item.id === surahKey);
   if (!s && typeof surahKey === 'string' && surahKey.startsWith('surah-')) {
     const rawName = surahKey.replace('surah-', '').replace(/-/g, ' ').toLowerCase();
@@ -2447,7 +2447,7 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
 
 // 30 Parahs (Juz) Modal
 function openParahModal(juzNumber) {
-  const allParahs = window.SukunAllParahsIndex || [];
+  const allParahs = getGlobalParahs();
   const parah = allParahs.find(p => p.juzNumber === juzNumber) || allParahs[0];
   const modal = document.getElementById("globalModal");
   const title = document.getElementById("modalTitle");
@@ -2710,10 +2710,41 @@ function filterDrawerContent(q) {
   }
 }
 
+// Registry Helper Getters (Guaranteed Fallback Across Scopes & Environments)
+function getGlobalSurahs() {
+  if (typeof SukunAllSurahsIndex !== 'undefined' && Array.isArray(SukunAllSurahsIndex) && SukunAllSurahsIndex.length > 0) {
+    return SukunAllSurahsIndex;
+  }
+  if (typeof window !== 'undefined' && window.SukunAllSurahsIndex && Array.isArray(window.SukunAllSurahsIndex) && window.SukunAllSurahsIndex.length > 0) {
+    return window.SukunAllSurahsIndex;
+  }
+  return [];
+}
+
+function getGlobalParahs() {
+  if (typeof SukunAllParahsIndex !== 'undefined' && Array.isArray(SukunAllParahsIndex) && SukunAllParahsIndex.length > 0) {
+    return SukunAllParahsIndex;
+  }
+  if (typeof window !== 'undefined' && window.SukunAllParahsIndex && Array.isArray(window.SukunAllParahsIndex) && window.SukunAllParahsIndex.length > 0) {
+    return window.SukunAllParahsIndex;
+  }
+  return [];
+}
+
+function getGlobalHadiths() {
+  if (typeof SukunHadithCollectionsIndex !== 'undefined' && Array.isArray(SukunHadithCollectionsIndex) && SukunHadithCollectionsIndex.length > 0) {
+    return SukunHadithCollectionsIndex;
+  }
+  if (typeof window !== 'undefined' && window.SukunHadithCollectionsIndex && Array.isArray(window.SukunHadithCollectionsIndex) && window.SukunHadithCollectionsIndex.length > 0) {
+    return window.SukunHadithCollectionsIndex;
+  }
+  return [];
+}
+
 function renderDrawerSurahs(filterQuery = '') {
   const container = document.getElementById("drawerSurahsGrid");
   if (!container) return;
-  const allSurahs = window.SukunAllSurahsIndex || [];
+  const allSurahs = getGlobalSurahs();
   const q = filterQuery.toLowerCase().trim();
 
   const filtered = allSurahs.filter(s => {
@@ -2727,7 +2758,14 @@ function renderDrawerSurahs(filterQuery = '') {
   });
 
   if (filtered.length === 0) {
-    container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px;">No Surah found matching "${filterQuery}".</p>`;
+    if (!q) {
+      container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 25px;">Loading 114 Sacred Surahs...</p>`;
+      setTimeout(() => {
+        if (getGlobalSurahs().length > 0) renderDrawerSurahs(filterQuery);
+      }, 150);
+    } else {
+      container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 25px;">No Surah found matching "${filterQuery}".</p>`;
+    }
     return;
   }
 
@@ -2771,7 +2809,7 @@ function playDrawerSurahAudio(audioUrl, surahName) {
 function renderDrawerParahs(filterQuery = '') {
   const container = document.getElementById("drawerParahsGrid");
   if (!container) return;
-  const allParahs = window.SukunAllParahsIndex || [];
+  const allParahs = getGlobalParahs();
   const q = filterQuery.toLowerCase().trim();
 
   const filtered = allParahs.filter(p => {
@@ -2785,7 +2823,14 @@ function renderDrawerParahs(filterQuery = '') {
   });
 
   if (filtered.length === 0) {
-    container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px;">No Parah (Juz) found matching "${filterQuery}".</p>`;
+    if (!q) {
+      container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 25px;">Loading 30 Sacred Parahs (Juz)...</p>`;
+      setTimeout(() => {
+        if (getGlobalParahs().length > 0) renderDrawerParahs(filterQuery);
+      }, 150);
+    } else {
+      container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 25px;">No Parah (Juz) found matching "${filterQuery}".</p>`;
+    }
     return;
   }
 
@@ -2818,7 +2863,7 @@ function renderDrawerParahs(filterQuery = '') {
 function renderDrawerHadith(filterQuery = '') {
   const container = document.getElementById("drawerHadithGrid");
   if (!container) return;
-  const collections = window.SukunHadithCollectionsIndex || [];
+  const collections = getGlobalHadiths();
   const q = filterQuery.toLowerCase().trim();
 
   const filtered = collections.filter(h => {

@@ -25,28 +25,29 @@
       </a>
 
       <nav class="nav-menu">
-        <a href="javascript:void(0)" onclick="openQuranDrawer('surahs')" class="nav-link">Quran & Hadith</a>
-        <a href="javascript:void(0)" onclick="openTasbihModal()" class="nav-link">Digital Tasbih</a>
-        <a href="#daily-dua" class="nav-link">Daily Dua</a>
+        <a href="#find-solution" onclick="focusSearchInput()" class="nav-link">
+          <span style="color: var(--gold-bright);">🔍</span> Search Duas
+        </a>
+        <a href="javascript:void(0)" onclick="openQuranDrawer('surahs')" class="nav-link">
+          <span>📖</span> Quran &amp; Hadith
+        </a>
+        <a href="#daily-dua" class="nav-link">
+          <span>✦</span> Daily Dua
+        </a>
       </nav>
 
       <div class="nav-actions">
-        <!-- 1. Quran & Hadith Library Drawer Button -->
-        <button onclick="openQuranDrawer('surahs')" class="nav-btn nav-quran-btn" title="Quran & Hadith Library">
-          <span class="nav-btn-icon">📖</span> <span class="nav-btn-label">Quran Library</span>
-        </button>
-
-        <!-- 2. Digital Tasbih Button (Dedicated Popup) -->
-        <button onclick="openTasbihModal()" class="nav-btn nav-tasbih-btn" title="Digital Tasbih">
+        <!-- 1. Digital Tasbih Button (Dedicated Popup - Single instance, no duplicate) -->
+        <button onclick="openTasbihModal()" class="nav-btn nav-tasbih-btn" title="Digital Tasbih Counter">
           <span class="nav-btn-icon">📿</span> <span class="nav-btn-label">Tasbih</span>
         </button>
 
-        <!-- 3. Theme Toggle Button (Light & Dark Mode) -->
+        <!-- 2. Theme Toggle Button (Light & Dark Mode) -->
         <button id="themeToggleBtn" onclick="toggleTheme()" class="nav-btn" title="Toggle Light / Dark Sanctuary Mode">
           <span id="themeToggleIcon">☀️</span> <span id="themeToggleText">Light</span>
         </button>
 
-        <!-- 4. Saved Duas -->
+        <!-- 3. Saved Duas -->
         <button onclick="openModal('saved')" class="nav-btn" title="Saved Sanctuary Duas">
           <span>Saved</span>
           <span id="savedCounter" class="badge-count">0</span>
@@ -68,6 +69,13 @@
     <!-- Mobile Slide-Down Navigation Drawer -->
     <div id="mobileNavDrawer" class="mobile-nav-drawer">
       <nav class="mobile-nav-list">
+        <a href="#find-solution" class="mobile-nav-link" onclick="closeMobileMenu(); focusSearchInput();">
+          <span class="nav-item-icon">🔍</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Search Duas &amp; Surahs</span>
+            <span class="nav-item-sub">Voice Search &amp; Prophetic Remedies</span>
+          </div>
+        </a>
         <a href="javascript:void(0)" class="mobile-nav-link" onclick="closeMobileMenu(); openQuranDrawer('surahs');">
           <span class="nav-item-icon">📖</span>
           <div class="nav-item-text">
@@ -131,12 +139,16 @@
 
       <!-- CENTERPIECE SEARCH & VOICE HUB -->
       <div class="search-container clean-search-hub">
+        <div class="section-label" style="text-align: center; margin-bottom: 14px; font-size: 0.82rem; letter-spacing: 2px;">
+          ✦ SEARCH AUTHENTIC DUAS &amp; QURANIC SURAHS
+        </div>
+
         <div class="search-input-wrapper">
           <span class="search-leading-icon">🔍</span>
           <input 
             type="text" 
             id="searchQuery"
-            placeholder="Search Duas, Surahs, or ask anything (e.g., peace, Surah Yaseen, illness)..."
+            placeholder="Type or speak any Dua, feeling, or Surah (e.g., Dua for anxiety, illness, Surah Yaseen)..."
             class="search-input-box elder-friendly-input"
             autocomplete="off"
           />
@@ -159,7 +171,7 @@
             onclick="executeSearch(null, true, true)" 
             class="primary-btn main-search-action-btn desktop-search-btn"
           >
-            <span>SEARCH</span>
+            <span>SEARCH DUAS</span>
             <span class="search-arrow-icon">➔</span>
           </button>
         </div>
@@ -171,7 +183,7 @@
           onclick="executeSearch(null, true, true)" 
           class="primary-btn mobile-search-action-btn"
         >
-          <span>SEARCH SANCTUARY</span>
+          <span>SEARCH DUAS &amp; SURAHS</span>
           <span class="search-arrow-icon">➔</span>
         </button>
 
@@ -179,6 +191,11 @@
         <div id="voiceStatusText" class="voice-status-banner" style="display: none;">
           <span class="pulse-dot"></span>
           <span id="voiceStatusMsg">🎙️ Listening... Speak your Dua or Surah name now...</span>
+        </div>
+
+        <div class="search-hint-row" style="margin: 10px 0 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <span class="search-hint-pill">💡 <strong>Search or Speak:</strong> Type or tap mic to find any Dua, Surah, or spiritual guidance</span>
+          <span class="privacy-note">✦ 100% Authentic Quran &amp; Sahih Hadith References</span>
         </div>
 
         <!-- 4 QUICK-ACCESS SANCTUARY SHORTCUTS (Elder-Friendly, Clean & Spacious) -->
@@ -408,98 +425,6 @@
           <div class="verification-pill">
             <span>✓</span> Authentic Hadith Reference
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. SECTION: DAILY TILAWAT -->
-    <section id="essentials" class="section-block">
-      <div class="section-label">Daily Tilawat</div>
-
-      <div class="essentials-grid">
-        <!-- Card 1: Ayat-ul-Kursi -->
-        <div class="essential-card">
-          <div>
-            <div class="essential-header">
-              <span class="essential-number">Surah 2:255</span>
-            </div>
-            <h3 class="essential-title">Ayat-ul-Kursi</h3>
-            <p class="essential-desc">
-              The greatest verse in the Holy Quran. Recited after obligatory prayers for direct protection and entrance into Paradise.
-            </p>
-          </div>
-          <a onclick="openModal('ayatul-kursi')" class="read-link">Read & Hadith Virtues →</a>
-        </div>
-
-        <!-- Card 2: Surah Yaseen -->
-        <div class="essential-card">
-          <div>
-            <div class="essential-header">
-              <span class="essential-number">Surah No. 36</span>
-            </div>
-            <h3 class="essential-title">Surah Yaseen</h3>
-            <p class="essential-desc">
-              The Heart of the Quran (Qalb-ul-Quran). Recited in the morning for fulfillment of all permissible needs and divine barakah.
-            </p>
-          </div>
-          <a onclick="openModal('surah-yaseen')" class="read-link">Read & Hadith Virtues →</a>
-        </div>
-
-        <!-- Card 3: Surah Al-Kahf -->
-        <div class="essential-card">
-          <div>
-            <div class="essential-header">
-              <span class="essential-number">Surah No. 18</span>
-              <span id="jummahBadge" class="jummah-tag" style="display: none;">Friday Sunnah</span>
-            </div>
-            <h3 class="essential-title">Surah Al-Kahf</h3>
-            <p class="essential-desc">
-              The Prophetic Sunnah of Friday. A luminous divine light illuminating between the two Fridays and immunity against Fitnah.
-            </p>
-          </div>
-          <a onclick="openModal('surah-kahf')" class="read-link">Read & Hadith Virtues →</a>
-        </div>
-
-        <!-- Card 4: Surah Al-Mulk -->
-        <div class="essential-card">
-          <div>
-            <div class="essential-header">
-              <span class="essential-number">Surah No. 67</span>
-            </div>
-            <h3 class="essential-title">Surah Al-Mulk</h3>
-            <p class="essential-desc">
-              The Protector from the Trials of the Grave. Recited nightly before sleeping to intercede for forgiveness on the Day of Judgment.
-            </p>
-          </div>
-          <a onclick="openModal('surah-mulk')" class="read-link">Read & Hadith Virtues →</a>
-        </div>
-
-        <!-- Card 5: Surah Ar-Rahman -->
-        <div class="essential-card">
-          <div>
-            <div class="essential-header">
-              <span class="essential-number">Surah No. 55</span>
-            </div>
-            <h3 class="essential-title">Surah Ar-Rahman</h3>
-            <p class="essential-desc">
-              The Bride of the Quran ('Aroos-ul-Quran). Recited to reflect upon divine favors, soften anxious hearts, and cultivate deep gratitude.
-            </p>
-          </div>
-          <a onclick="openModal('surah-rahman')" class="read-link">Read & Hadith Virtues →</a>
-        </div>
-
-        <!-- Card 6: Surah Al-Waqi'ah -->
-        <div class="essential-card">
-          <div>
-            <div class="essential-header">
-              <span class="essential-number">Surah No. 56</span>
-            </div>
-            <h3 class="essential-title">Surah Al-Waqi'ah</h3>
-            <p class="essential-desc">
-              The Inevitable Event. The Prophetic Sunnah for protection against poverty, debt relief, and spiritual abundance.
-            </p>
-          </div>
-          <a onclick="openModal('surah-waqiah')" class="read-link">Read & Hadith Virtues →</a>
         </div>
       </div>
     </section>
@@ -779,9 +704,9 @@
   </div>
 
   <!-- Core Scripts -->
-  <script src="assets/js/surah-registry.js"></script>
-  <script src="assets/js/surahs.js"></script>
-  <script src="assets/js/auth.js"></script>
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/surah-registry.js?v=3.2"></script>
+  <script src="assets/js/surahs.js?v=3.2"></script>
+  <script src="assets/js/auth.js?v=3.2"></script>
+  <script src="assets/js/main.js?v=3.2"></script>
 </body>
 </html>

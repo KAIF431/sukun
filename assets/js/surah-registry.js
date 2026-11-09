@@ -4,7 +4,7 @@
 // Authentic Metadata, Uthmani Script, Tilawat Audio & Hasanat Tracker
 // ============================================================================
 
-const SukunAllSurahsIndex = [
+var SukunAllSurahsIndex = [
   {
     "number": 1,
     "name": "Al-Fatihah",
@@ -1147,7 +1147,7 @@ const SukunAllSurahsIndex = [
   }
 ];
 
-const SukunAllParahsIndex = [
+var SukunAllParahsIndex = [
   {
     "juzNumber": 1,
     "arabic": "الم",
@@ -1390,7 +1390,7 @@ const SukunAllParahsIndex = [
   }
 ];
 
-const SukunHadithCollectionsIndex = [
+var SukunHadithCollectionsIndex = [
   {
     id: "bukhari",
     name: "Sahih al-Bukhari",
@@ -1434,4 +1434,12 @@ function calculateArabicHasanat(arabicText) {
   if (!arabicText) return 0;
   const lettersOnly = arabicText.replace(/[^\u0621-\u064A]/g, "");
   return lettersOnly.length * 10;
+}
+
+// Explicit Global Window Attachments
+if (typeof window !== "undefined") {
+  window.SukunAllSurahsIndex = SukunAllSurahsIndex;
+  window.SukunAllParahsIndex = SukunAllParahsIndex;
+  window.SukunHadithCollectionsIndex = SukunHadithCollectionsIndex;
+  window.calculateArabicHasanat = calculateArabicHasanat;
 }
