@@ -730,6 +730,18 @@ body.light-theme .mushaf-ayah-num {
   transform: translateY(-1px);
 }
 
+.nav-search-btn {
+  background: rgba(212, 175, 55, 0.16);
+  border-color: var(--gold-primary);
+  color: var(--gold-bright);
+}
+
+.nav-search-btn:hover {
+  background: var(--gold-primary);
+  color: #060a16;
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.4);
+}
+
 .badge-count {
   background: var(--gold-primary);
   color: #060a16;
@@ -1305,12 +1317,33 @@ body.light-theme .voice-mic-btn {
   flex-shrink: 0;
 }
 
+.desktop-search-btn {
+  display: inline-flex;
+}
+
+.mobile-search-action-btn {
+  display: none;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  font-size: 0.95rem;
+  letter-spacing: 1.5px;
+  font-weight: 800;
+  border-radius: 10px;
+  margin-top: 12px;
+  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.35);
+  touch-action: manipulation;
+}
+
 .search-arrow-icon {
   font-size: 1.1rem;
   transition: transform 0.2s ease;
 }
 
-.main-search-action-btn:hover .search-arrow-icon {
+.main-search-action-btn:hover .search-arrow-icon,
+.mobile-search-action-btn:hover .search-arrow-icon {
   transform: translateX(4px);
 }
 
@@ -2388,22 +2421,33 @@ body.light-theme .mobile-nav-admin {
   }
 
   /* Search Section & AI Spiritual Counsel */
+  .desktop-search-btn {
+    display: none !important;
+  }
+
+  .mobile-search-action-btn {
+    display: flex !important;
+  }
+
   .search-input-wrapper {
-    flex-wrap: wrap;
-    padding: 10px 12px;
-    gap: 8px;
+    flex-wrap: nowrap !important;
+    padding: 8px 12px !important;
+    gap: 8px !important;
   }
 
   .elder-friendly-input {
-    width: calc(100% - 95px);
+    flex: 1 !important;
+    width: auto !important;
+    min-width: 0 !important;
     font-size: 16px !important; /* Critical: Prevents iOS Safari input focus auto-zoom */
-    padding: 8px 4px;
+    padding: 8px 4px !important;
   }
 
   .voice-mic-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 1.2rem;
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 1.25rem !important;
+    flex-shrink: 0 !important;
   }
 
   .main-search-action-btn {
@@ -2732,6 +2776,15 @@ body.light-theme .mobile-nav-admin {
 
   #themeToggleText {
     display: none; /* Icon only for compact aesthetic */
+  }
+
+  .nav-search-btn .nav-search-label {
+    display: none; /* Icon only on compact screens */
+  }
+
+  .nav-search-btn {
+    padding: 6px 10px;
+    font-size: 0.82rem;
   }
 
   .hero-title {

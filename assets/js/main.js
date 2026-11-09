@@ -799,10 +799,10 @@ function toggleVoiceSearch() {
   if (!SpeechRecognition) {
     if (statusElem) {
       statusElem.style.display = "block";
-      statusElem.innerText = "Mic voice search Google Chrome aur Edge browser par behtareen chalta hai. Aap likhkar bhi dhoond sakte hain.";
+      statusElem.innerText = "Voice search is supported on Google Chrome, Microsoft Edge, and Android/Safari.";
       setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 4000);
     } else {
-      alert("Voice search is supported on Google Chrome, Edge, and Android/Safari browsers.");
+      alert("Voice search is supported on Google Chrome, Microsoft Edge, and Android/Safari.");
     }
     return;
   }
@@ -823,11 +823,11 @@ function toggleVoiceSearch() {
       isRecordingVoice = true;
       if (micBtn) {
         micBtn.classList.add("recording");
-        micBtn.title = "Sun raha hoon... Boliye (Tap to stop)";
+        micBtn.title = "Listening... Speak now (Tap to stop)";
       }
       if (statusElem) {
         statusElem.style.display = "block";
-        statusElem.innerText = "🎙️ Sun raha hoon... Boliye (Listening...) Surah ya Dua ka naam boliye...";
+        statusElem.innerText = "🎙️ Listening... Speak your Dua or Surah name now...";
       }
     };
 
@@ -846,9 +846,9 @@ function toggleVoiceSearch() {
       stopVoiceRecognition();
       if (statusElem) {
         if (event.error === "not-allowed") {
-          statusElem.innerText = "Microphone permission allow karein taake bolkar dhoond sakein.";
+          statusElem.innerText = "Please allow microphone access to use voice search.";
         } else {
-          statusElem.innerText = "Voice input band ho gaya. Aap likhkar bhi dhoond sakte hain.";
+          statusElem.innerText = "Voice input ended. You can also type in the search box.";
         }
         setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 3500);
       }
@@ -859,7 +859,7 @@ function toggleVoiceSearch() {
       if (searchInput && searchInput.value.trim()) {
         const spokenVal = searchInput.value.trim();
         if (statusElem) {
-          statusElem.innerText = `✓ Dhoonda ja raha hai: "${spokenVal}"...`;
+          statusElem.innerText = `✓ Searching: "${spokenVal}"...`;
           setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 2500);
         }
         executeSearch(spokenVal, true, true);
@@ -873,7 +873,7 @@ function toggleVoiceSearch() {
     stopVoiceRecognition();
     if (statusElem) {
       statusElem.style.display = "block";
-      statusElem.innerText = "Mic shuru nahi ho saka. Kripya dobara koshish karein.";
+      statusElem.innerText = "Could not initialize microphone. Please try again.";
       setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 3000);
     }
   }
@@ -884,7 +884,21 @@ function stopVoiceRecognition() {
   const micBtn = document.getElementById("voiceSearchBtn");
   if (micBtn) {
     micBtn.classList.remove("recording");
-    micBtn.title = "Voice Search (Bolkar dhoondein)";
+    micBtn.title = "Voice Search (Tap to speak)";
+  }
+}
+
+// Quick Navigation Search Focus (Scrolls directly to Search Hub from top bar)
+function focusSearchInput() {
+  const findSec = document.getElementById("find-solution");
+  const input = document.getElementById("searchQuery");
+  if (findSec) {
+    findSec.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (input) {
+    setTimeout(() => {
+      input.focus();
+    }, 300);
   }
 }
 
@@ -892,6 +906,7 @@ function stopVoiceRecognition() {
 function initLiveSearchListeners() {
   const searchBox = document.getElementById("searchQuery");
   const mainSearchBtn = document.getElementById("mainSearchBtn");
+  const mobileSearchBtn = document.getElementById("mobileMainSearchBtn");
   const voiceSearchBtn = document.getElementById("voiceSearchBtn");
 
   if (searchBox) {
@@ -911,6 +926,13 @@ function initLiveSearchListeners() {
 
   if (mainSearchBtn) {
     mainSearchBtn.addEventListener("click", () => {
+      const q = searchBox ? searchBox.value : "";
+      executeSearch(q, true, true);
+    });
+  }
+
+  if (mobileSearchBtn) {
+    mobileSearchBtn.addEventListener("click", () => {
       const q = searchBox ? searchBox.value : "";
       executeSearch(q, true, true);
     });
@@ -1465,7 +1487,7 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     openModal(matchedSurah);
     if (box) box.style.display = "none";
     if (typeof showToast === "function") {
-      showToast("Surah Mubarak khol di gayi hai. Tilawat aur tarjuma mulahiza farmayein.");
+      showToast("Opening Surah Tilawat Sanctuary...");
     }
     return;
   }

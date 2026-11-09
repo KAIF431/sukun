@@ -25,13 +25,19 @@
       </a>
 
       <nav class="nav-menu">
+        <a href="#find-solution" class="nav-link">Search & Surahs</a>
         <a href="#daily-dua" class="nav-link">Daily Dua</a>
-        <a href="#find-solution" class="nav-link">Find Solution</a>
         <a href="#essentials" class="nav-link">Daily Tilawat</a>
         <a href="#digital-tasbih" class="nav-link">Digital Tasbih</a>
       </nav>
 
       <div class="nav-actions">
+        <!-- Quick Search Navigation Button -->
+        <button onclick="focusSearchInput()" class="nav-btn nav-search-btn" title="Quick Search">
+          <span class="nav-search-icon">🔍</span>
+          <span class="nav-search-label">Search</span>
+        </button>
+
         <!-- Theme Toggle Button (Light & Dark Mode) -->
         <button id="themeToggleBtn" onclick="toggleTheme()" class="nav-btn" title="Toggle Light / Dark Sanctuary Mode">
           <span id="themeToggleIcon">☀️</span> <span id="themeToggleText">Light</span>
@@ -57,18 +63,18 @@
     <!-- Mobile Slide-Down Navigation Drawer -->
     <div id="mobileNavDrawer" class="mobile-nav-drawer">
       <nav class="mobile-nav-list">
+        <a href="#find-solution" class="mobile-nav-link" onclick="closeMobileMenu()">
+          <span class="nav-item-icon">🔍</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Search & Sacred Surahs</span>
+            <span class="nav-item-sub">Voice Search & Direct Surah Tilawat</span>
+          </div>
+        </a>
         <a href="#daily-dua" class="mobile-nav-link" onclick="closeMobileMenu()">
           <span class="nav-item-icon">✦</span>
           <div class="nav-item-text">
             <span class="nav-item-title">Daily Masnoon Dua</span>
             <span class="nav-item-sub">Prophetic Morning & Evening Remembrances</span>
-          </div>
-        </a>
-        <a href="#find-solution" class="mobile-nav-link" onclick="closeMobileMenu()">
-          <span class="nav-item-icon">🔍</span>
-          <div class="nav-item-text">
-            <span class="nav-item-title">Find Solution With Duas</span>
-            <span class="nav-item-sub">AI Spiritual Search & Sacred Remedies</span>
           </div>
         </a>
         <a href="#essentials" class="mobile-nav-link" onclick="closeMobileMenu()">
@@ -110,118 +116,34 @@
       </p>
     </section>
 
-    <!-- 1. SECTION: DAILY MASNOON DUA -->
-    <section id="daily-dua" class="section-block">
-      <div class="section-label">Daily Masnoon Dua</div>
-
-      <div class="daily-dua-card">
-        <!-- Top Meta Header & Actions -->
-        <div class="card-meta-header">
-          <div class="card-badge-row">
-            <span class="sunnah-badge">✦ Sunnah of the Prophet ﷺ</span>
-            <span class="category-badge">Daily Remembrance</span>
-          </div>
-          <div class="card-actions">
-            <button onclick="rotateDailyDua()" class="action-pill-btn" title="Shuffle Dua">
-              <span class="btn-icon">🔄</span> Shuffle Dua
-            </button>
-            <button id="dailyAudioBtn" onclick="playDuaAudio('daily')" class="action-pill-btn" title="Listen to Arabic Recitation">
-              <span class="btn-icon">🔊</span> Play Audio
-            </button>
-            <button onclick="copyDuaText('daily')" class="action-pill-btn" title="Copy to Clipboard">
-              <span class="btn-icon">📋</span> Copy
-            </button>
-            <button id="dailySaveBtn" onclick="toggleSaveDaily()" class="action-pill-btn" title="Save to Sanctuary">
-              <span class="btn-icon">🔖</span> Bookmark
-            </button>
-          </div>
-        </div>
-
-        <!-- Dua Title -->
-        <h2 id="dailyDuaTitle" class="dua-title">Morning Sunnah: Commencing the Day with Barakah</h2>
-
-        <!-- Illuminated Mihrab Calligraphy Plaque -->
-        <div class="arabic-mihrab-frame">
-          <div class="mihrab-arch-accent">
-            <span class="ornament-line">❖ ────────</span>
-            <span class="bismillah-callout">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
-            <span class="ornament-line">──────── ❖</span>
-          </div>
-          <div id="dailyDuaArabic" class="arabic-display">
-            اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ
-          </div>
-        </div>
-
-        <!-- Pronunciation / Transliteration Bar -->
-        <div class="pronunciation-bar">
-          <span class="pronunciation-tag">Pronunciation (Roman Urdu)</span>
-          <p id="dailyDuaRoman" class="roman-pronunciation">
-            Allahumma bika asbahnaa, wa bika amsaynaa, wa bika nahyaa, wa bika namootu, wa ilaikan-nushoor.
-          </p>
-        </div>
-
-        <!-- Dual Translations Container (Urdu & English Panels) -->
-        <div class="translations-container">
-          <div class="translation-urdu-card">
-            <div class="translation-header">
-              <span class="lang-tag">اردو ترجمہ (Urdu)</span>
-            </div>
-            <p id="dailyDuaUrdu" class="translation-urdu">
-              اے اللہ! تیری ہی توفیق سے ہم نے صبح کی، تیری ہی توفیق سے شام کی، تیرے ہی حکم سے ہم جیتے ہیں اور مرتے ہیں، اور تیری ہی طرف دوبارہ جی اٹھنا ہے۔
-            </p>
-          </div>
-
-          <div class="translation-english-card">
-            <div class="translation-header">
-              <span class="lang-tag">English Translation</span>
-            </div>
-            <p id="dailyDuaEnglish" class="translation-english">
-              O Allah, by You we enter the morning and by You we enter the evening, by You we live and by You we die, and unto You is the resurrection.
-            </p>
-          </div>
-        </div>
-
-        <!-- Card Footer Meta & Verified Authentic Badge -->
-        <div class="card-footer-meta">
-          <div class="ref-badge">
-            <span>📖</span>
-            <span id="dailyDuaRef">Sunan at-Tirmidhi (3391) • Sahih</span>
-          </div>
-          <div class="verification-pill">
-            <span>✓</span> Authentic Hadith Reference
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. SECTION: FIND SOLUTION WITH DUAS (AI SEARCH) -->
+    <!-- 1. SECTION: FIND SOLUTION WITH DUAS (AI SEARCH & DIRECT SURAHS) -->
     <section id="find-solution" class="section-block">
       <div class="section-label">Find Solution With Duas</div>
 
-      <!-- 2.1 ELDER & QUICK-ACCESS SURAH NAVIGATION BAR -->
+      <!-- 1.1 ELDER & QUICK-ACCESS SURAH NAVIGATION BAR -->
       <div class="quick-surah-bar-container">
         <div class="quick-surah-header">
-          <span class="quick-surah-title">📖 Direct Quranic Surahs (فوری سورتیں)</span>
-          <span class="quick-surah-subtitle">Tap to read full Surah with Tilawat audio</span>
+          <span class="quick-surah-title">📖 Direct Quranic Surahs</span>
+          <span class="quick-surah-subtitle">Instant Tilawat & line-by-line translation</span>
         </div>
         <div class="quick-surahs-row">
-          <button onclick="openModal('surah-yaseen')" class="quick-surah-chip">⭐ Surah Yaseen (یس)</button>
-          <button onclick="openModal('surah-mulk')" class="quick-surah-chip">🛡️ Surah Al-Mulk (الملک)</button>
-          <button onclick="openModal('surah-rahman')" class="quick-surah-chip">💖 Surah Ar-Rahman (الرحمن)</button>
-          <button onclick="openModal('surah-waqiah')" class="quick-surah-chip">🕊️ Surah Al-Waqi'ah (الواقعة)</button>
-          <button onclick="openModal('surah-kahf')" class="quick-surah-chip">✨ Surah Al-Kahf (الکہف)</button>
-          <button onclick="openModal('ayatul-kursi')" class="quick-surah-chip">👑 Ayat-ul-Kursi (آیة الکرسی)</button>
+          <button onclick="openModal('surah-yaseen')" class="quick-surah-chip">⭐ Surah Yaseen (36)</button>
+          <button onclick="openModal('surah-mulk')" class="quick-surah-chip">🛡️ Surah Al-Mulk (67)</button>
+          <button onclick="openModal('surah-rahman')" class="quick-surah-chip">💖 Surah Ar-Rahman (55)</button>
+          <button onclick="openModal('surah-waqiah')" class="quick-surah-chip">🕊️ Surah Al-Waqi'ah (56)</button>
+          <button onclick="openModal('surah-kahf')" class="quick-surah-chip">✨ Surah Al-Kahf (18)</button>
+          <button onclick="openModal('ayatul-kursi')" class="quick-surah-chip">👑 Ayat-ul-Kursi (2:255)</button>
         </div>
       </div>
 
-      <!-- 2.2 HIGH-VISIBILITY SEARCH HUB (WITH VOICE MIC & PROMINENT BUTTON) -->
+      <!-- 1.2 HIGH-VISIBILITY SEARCH HUB (WITH VOICE MIC & DUAL RESPONSIVE BUTTONS) -->
       <div class="search-container enhanced-search-hub">
         <div class="search-input-wrapper">
           <span class="search-leading-icon">🔍</span>
           <input 
             type="text" 
             id="searchQuery"
-            placeholder="Bolkar ya likhkar dua/surah dhoondein (e.g., bimari, ghabrahat, Surah Yaseen, karz)..."
+            placeholder="Search Duas, Quranic Surahs, or feelings (e.g. Health, Anxiety, Peace, Surah Yaseen)..."
             class="search-input-box elder-friendly-input"
             autocomplete="off"
           />
@@ -231,32 +153,43 @@
             type="button" 
             onclick="toggleVoiceSearch()" 
             class="voice-mic-btn" 
-            title="Bolkar dhoondein (Tap to Speak)"
+            title="Voice Search (Tap to Speak)"
             aria-label="Voice Search"
           >
             <span class="mic-icon">🎙️</span>
             <span class="mic-wave"></span>
           </button>
-          <!-- Prominent Search Button -->
+          <!-- Prominent Search Button (Desktop & Tablet) -->
           <button 
             type="button" 
             id="mainSearchBtn" 
             onclick="executeSearch(null, true, true)" 
-            class="primary-btn main-search-action-btn"
+            class="primary-btn main-search-action-btn desktop-search-btn"
           >
-            <span>DHOONDEIN / SEARCH</span>
+            <span>SEARCH</span>
             <span class="search-arrow-icon">➔</span>
           </button>
         </div>
 
+        <!-- Dedicated Full-Width Search Action Button for Mobile Devices -->
+        <button 
+          type="button" 
+          id="mobileMainSearchBtn" 
+          onclick="executeSearch(null, true, true)" 
+          class="primary-btn mobile-search-action-btn"
+        >
+          <span>SEARCH SANCTUARY</span>
+          <span class="search-arrow-icon">➔</span>
+        </button>
+
         <!-- Voice Recognition Status Banner -->
         <div id="voiceStatusText" class="voice-status-banner" style="display: none;">
           <span class="pulse-dot"></span>
-          <span id="voiceStatusMsg">🎙️ Sun rahe hain... Boliye (Listening... Speak now)</span>
+          <span id="voiceStatusMsg">🎙️ Listening... Speak your Dua or Surah name now...</span>
         </div>
 
         <div class="search-hint-row">
-          <span class="search-hint-pill">💡 <strong>Bol kar dhoondein:</strong> Mic dabakar bolein <em>"Surah Yaseen"</em>, <em>"Ghabrahat ki dua"</em>, ya <em>"Maa baap ke liye dua"</em></span>
+          <span class="search-hint-pill">💡 <strong>Voice Search:</strong> Tap the mic and speak (e.g. <em>"Surah Yaseen"</em>, <em>"Dua for illness"</em>, or <em>"Peace of mind"</em>)</span>
           <span class="privacy-note">✦ 100% Authentic Quran & Sahih Hadith References</span>
         </div>
 
@@ -357,6 +290,90 @@
                 <span>✓</span> Verified Source
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SECTION: DAILY MASNOON DUA -->
+    <section id="daily-dua" class="section-block">
+      <div class="section-label">Daily Masnoon Dua</div>
+
+      <div class="daily-dua-card">
+        <!-- Top Meta Header & Actions -->
+        <div class="card-meta-header">
+          <div class="card-badge-row">
+            <span class="sunnah-badge">✦ Sunnah of the Prophet ﷺ</span>
+            <span class="category-badge">Daily Remembrance</span>
+          </div>
+          <div class="card-actions">
+            <button onclick="rotateDailyDua()" class="action-pill-btn" title="Shuffle Dua">
+              <span class="btn-icon">🔄</span> Shuffle Dua
+            </button>
+            <button id="dailyAudioBtn" onclick="playDuaAudio('daily')" class="action-pill-btn" title="Listen to Arabic Recitation">
+              <span class="btn-icon">🔊</span> Play Audio
+            </button>
+            <button onclick="copyDuaText('daily')" class="action-pill-btn" title="Copy to Clipboard">
+              <span class="btn-icon">📋</span> Copy
+            </button>
+            <button id="dailySaveBtn" onclick="toggleSaveDaily()" class="action-pill-btn" title="Save to Sanctuary">
+              <span class="btn-icon">🔖</span> Bookmark
+            </button>
+          </div>
+        </div>
+
+        <!-- Dua Title -->
+        <h2 id="dailyDuaTitle" class="dua-title">Morning Sunnah: Commencing the Day with Barakah</h2>
+
+        <!-- Illuminated Mihrab Calligraphy Plaque -->
+        <div class="arabic-mihrab-frame">
+          <div class="mihrab-arch-accent">
+            <span class="ornament-line">❖ ────────</span>
+            <span class="bismillah-callout">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
+            <span class="ornament-line">──────── ❖</span>
+          </div>
+          <div id="dailyDuaArabic" class="arabic-display">
+            اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ
+          </div>
+        </div>
+
+        <!-- Pronunciation / Transliteration Bar -->
+        <div class="pronunciation-bar">
+          <span class="pronunciation-tag">Pronunciation (Roman Urdu)</span>
+          <p id="dailyDuaRoman" class="roman-pronunciation">
+            Allahumma bika asbahnaa, wa bika amsaynaa, wa bika nahyaa, wa bika namootu, wa ilaikan-nushoor.
+          </p>
+        </div>
+
+        <!-- Dual Translations Container (Urdu & English Panels) -->
+        <div class="translations-container">
+          <div class="translation-urdu-card">
+            <div class="translation-header">
+              <span class="lang-tag">اردو ترجمہ (Urdu)</span>
+            </div>
+            <p id="dailyDuaUrdu" class="translation-urdu">
+              اے اللہ! تیری ہی توفیق سے ہم نے صبح کی، تیری ہی توفیق سے شام کی، تیرے ہی حکم سے ہم جیتے ہیں اور مرتے ہیں، اور تیری ہی طرف دوبارہ جی اٹھنا ہے۔
+            </p>
+          </div>
+
+          <div class="translation-english-card">
+            <div class="translation-header">
+              <span class="lang-tag">English Translation</span>
+            </div>
+            <p id="dailyDuaEnglish" class="translation-english">
+              O Allah, by You we enter the morning and by You we enter the evening, by You we live and by You we die, and unto You is the resurrection.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card Footer Meta & Verified Authentic Badge -->
+        <div class="card-footer-meta">
+          <div class="ref-badge">
+            <span>📖</span>
+            <span id="dailyDuaRef">Sunan at-Tirmidhi (3391) • Sahih</span>
+          </div>
+          <div class="verification-pill">
+            <span>✓</span> Authentic Hadith Reference
           </div>
         </div>
       </div>
