@@ -786,23 +786,141 @@ function updateThemeButtonUI() {
   if (text) text.innerText = isLight ? "Dark" : "Light";
 }
 
+// Voice Recognition & Search Handlers (Web Speech API for Elder Accessibility)
+let speechRecognizer = null;
+let isRecordingVoice = false;
+
+function toggleVoiceSearch() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const statusElem = document.getElementById("voiceStatusText");
+  const micBtn = document.getElementById("voiceSearchBtn");
+  const searchInput = document.getElementById("searchQuery");
+
+  if (!SpeechRecognition) {
+    if (statusElem) {
+      statusElem.style.display = "block";
+      statusElem.innerText = "Mic voice search Google Chrome aur Edge browser par behtareen chalta hai. Aap likhkar bhi dhoond sakte hain.";
+      setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 4000);
+    } else {
+      alert("Voice search is supported on Google Chrome, Edge, and Android/Safari browsers.");
+    }
+    return;
+  }
+
+  if (isRecordingVoice && speechRecognizer) {
+    try { speechRecognizer.stop(); } catch (e) {}
+    stopVoiceRecognition();
+    return;
+  }
+
+  try {
+    speechRecognizer = new SpeechRecognition();
+    speechRecognizer.continuous = false;
+    speechRecognizer.interimResults = true;
+    speechRecognizer.lang = "hi-IN"; // Accurately captures Urdu, Hindi & English speech
+
+    speechRecognizer.onstart = () => {
+      isRecordingVoice = true;
+      if (micBtn) {
+        micBtn.classList.add("recording");
+        micBtn.title = "Sun raha hoon... Boliye (Tap to stop)";
+      }
+      if (statusElem) {
+        statusElem.style.display = "block";
+        statusElem.innerText = "🎙️ Sun raha hoon... Boliye (Listening...) Surah ya Dua ka naam boliye...";
+      }
+    };
+
+    speechRecognizer.onresult = (event) => {
+      let speechText = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        speechText += event.results[i][0].transcript;
+      }
+      const spoken = speechText.trim();
+      if (spoken && searchInput) {
+        searchInput.value = spoken;
+      }
+    };
+
+    speechRecognizer.onerror = (event) => {
+      stopVoiceRecognition();
+      if (statusElem) {
+        if (event.error === "not-allowed") {
+          statusElem.innerText = "Microphone permission allow karein taake bolkar dhoond sakein.";
+        } else {
+          statusElem.innerText = "Voice input band ho gaya. Aap likhkar bhi dhoond sakte hain.";
+        }
+        setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 3500);
+      }
+    };
+
+    speechRecognizer.onend = () => {
+      stopVoiceRecognition();
+      if (searchInput && searchInput.value.trim()) {
+        const spokenVal = searchInput.value.trim();
+        if (statusElem) {
+          statusElem.innerText = `✓ Dhoonda ja raha hai: "${spokenVal}"...`;
+          setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 2500);
+        }
+        executeSearch(spokenVal, true, true);
+      } else {
+        if (statusElem) statusElem.style.display = "none";
+      }
+    };
+
+    speechRecognizer.start();
+  } catch (err) {
+    stopVoiceRecognition();
+    if (statusElem) {
+      statusElem.style.display = "block";
+      statusElem.innerText = "Mic shuru nahi ho saka. Kripya dobara koshish karein.";
+      setTimeout(() => { if (statusElem) statusElem.style.display = "none"; }, 3000);
+    }
+  }
+}
+
+function stopVoiceRecognition() {
+  isRecordingVoice = false;
+  const micBtn = document.getElementById("voiceSearchBtn");
+  if (micBtn) {
+    micBtn.classList.remove("recording");
+    micBtn.title = "Voice Search (Bolkar dhoondein)";
+  }
+}
+
 // Setup Live Real-Time Search Listeners
 function initLiveSearchListeners() {
   const searchBox = document.getElementById("searchQuery");
-  if (!searchBox) return;
+  const mainSearchBtn = document.getElementById("mainSearchBtn");
+  const voiceSearchBtn = document.getElementById("voiceSearchBtn");
 
-  // Real-time live input listener (updates dynamically as user types)
-  searchBox.addEventListener("input", (e) => {
-    debounceSearch(e.target.value);
-  });
+  if (searchBox) {
+    // Real-time live input listener (updates dynamically as user types)
+    searchBox.addEventListener("input", (e) => {
+      debounceSearch(e.target.value);
+    });
 
-  // Enter key support triggers deep search
-  searchBox.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      executeSearch(e.target.value, true, true);
-    }
-  });
+    // Enter key support triggers deep search
+    searchBox.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        executeSearch(e.target.value, true, true);
+      }
+    });
+  }
+
+  if (mainSearchBtn) {
+    mainSearchBtn.addEventListener("click", () => {
+      const q = searchBox ? searchBox.value : "";
+      executeSearch(q, true, true);
+    });
+  }
+
+  if (voiceSearchBtn) {
+    voiceSearchBtn.addEventListener("click", () => {
+      toggleVoiceSearch();
+    });
+  }
 }
 
 // Friday / Jummah Auto-Detection
@@ -1052,14 +1170,14 @@ function sanitizeScriptureOutput(obj) {
 async function fetchCandidateFromGemini(queryText, apiKey) {
   if (!apiKey) return null;
   const modelsToTry = [
+    "gemini-2.5-flash",
     "gemini-3.5-flash-lite", 
-    "gemini-3.1-flash-lite", 
-    "gemini-3.5-flash", 
-    "gemini-flash-lite-latest", 
-    "gemini-3.8-flash"
+    "gemini-flash-latest", 
+    "gemini-2.5-flash-lite", 
+    "gemini-3.5-flash"
   ];
   const payload = {
-    contents: [{ role: "user", parts: [{ text: `Seeker's state/query: "${queryText}"\nProvide the most authentic, spiritually soothing Quranic prayer or Sahih Hadith with complete reference for this exact situation.` }] }],
+    contents: [{ role: "user", parts: [{ text: `Seeker's question/state: "${queryText}"\nProvide an authentic Islamic response with verified Quranic verse or Sahih Hadith dua strictly following the JSON schema.` }] }],
     systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION_SCRIPTURE }] },
     generationConfig: { 
       responseMimeType: "application/json", 
@@ -1084,9 +1202,18 @@ async function fetchCandidateFromGemini(queryText, apiKey) {
       const data = await res.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (text) {
-        const parsed = JSON.parse(text);
-        parsed._aiProvider = "Gemini";
-        return sanitizeScriptureOutput(parsed);
+        let cleanText = text.trim();
+        if (cleanText.startsWith("```json")) {
+          cleanText = cleanText.replace(/^```json\s*/, "").replace(/```$/, "").trim();
+        } else if (cleanText.startsWith("```")) {
+          cleanText = cleanText.replace(/^```\s*/, "").replace(/```$/, "").trim();
+        }
+        const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          parsed._aiProvider = "Gemini";
+          return sanitizeScriptureOutput(parsed);
+        }
       }
     } catch (e) { continue; }
   }
@@ -1294,6 +1421,32 @@ async function fetchSecretScriptureFromAI(queryText) {
   }
 }
 
+// Surah name detection helper for fast 1-tap navigation
+function detectSurahInQuery(q) {
+  if (!q) return null;
+  const lower = q.toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
+  
+  if (lower.includes("yaseen") || lower.includes("yasin") || lower.includes("ya-sin") || lower.includes("ya seen")) {
+    return "surah-yaseen";
+  }
+  if (lower.includes("rahman") || lower.includes("rehman") || lower.includes("al rahman") || lower.includes("ar rahman")) {
+    return "surah-rahman";
+  }
+  if (lower.includes("waqiah") || lower.includes("waqia") || lower.includes("waqi'ah") || lower.includes("al waqiah") || lower.includes("al waqia")) {
+    return "surah-waqiah";
+  }
+  if (lower.includes("mulk") || lower.includes("al mulk") || lower.includes("tabarak")) {
+    return "surah-mulk";
+  }
+  if (lower.includes("kahf") || lower.includes("al kahf") || lower.includes("surah kahf")) {
+    return "surah-kahf";
+  }
+  if (lower.includes("kursi") || lower.includes("ayatul kursi") || lower.includes("ayat al kursi") || lower.includes("kursy")) {
+    return "ayatul-kursi";
+  }
+  return null;
+}
+
 async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicitSearch = false) {
   const inputElem = document.getElementById("searchQuery");
   const query = (forcedQuery !== null ? forcedQuery : (inputElem ? inputElem.value : "")).trim();
@@ -1306,20 +1459,20 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     return;
   }
 
-  const thisToken = ++currentSearchToken;
-
-  // 1. Check local authentic knowledge first (0 ms response for common Sunnah duas)
-  const localResult = findBestDuaMatch(query);
-
-  if (localResult && localResult.match && localResult.score >= 120) {
-    currentSearchResult = localResult.match;
-    if (loader) loader.style.display = "none";
-    if (content) content.style.display = "block";
-    displaySearchResult(localResult.match, shouldScroll);
+  // 1. Instant Surah Detection (Directly opens full Surah Sanctuary for elders)
+  const matchedSurah = detectSurahInQuery(query);
+  if (matchedSurah && typeof openModal === "function") {
+    openModal(matchedSurah);
+    if (box) box.style.display = "none";
+    if (typeof showToast === "function") {
+      showToast("Surah Mubarak khol di gayi hai. Tilawat aur tarjuma mulahiza farmayein.");
+    }
     return;
   }
 
-  // 2. Multi-AI Ensemble trigger for conversational, emotional, or explicit searches
+  const thisToken = ++currentSearchToken;
+
+  // 2. Multi-AI Ensemble trigger (Gemini + ChatGPT + Claude + OpenRouter)
   const hasAi = Boolean(
     localStorage.getItem("sukun_gemini_api_key") || 
     DEFAULT_GEMINI_KEY || 
@@ -1328,9 +1481,19 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     localStorage.getItem("sukun_openrouter_api_key")
   );
 
-  const isConversational = query.split(/\s+/).length >= 3 || isExplicitSearch;
+  const localResult = findBestDuaMatch(query);
 
-  if (hasAi && isConversational) {
+  // If live typing and NOT explicit search, provide immediate local match without waiting
+  if (!isExplicitSearch && localResult && localResult.match && localResult.score >= 100) {
+    currentSearchResult = localResult.match;
+    if (loader) loader.style.display = "none";
+    if (content) content.style.display = "block";
+    displaySearchResult(localResult.match, shouldScroll);
+    return;
+  }
+
+  // Deep AI invocation on explicit search (Enter, Mic, Search Button) or conversational query
+  if (hasAi) {
     if (box) box.style.display = "block";
     if (loader) loader.style.display = "block";
     if (content) content.style.display = "none";
@@ -1354,11 +1517,11 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     }
   }
 
-  // 3. Fallback to best local match if AI not available
+  // 3. Fallback to best local match if AI offline
   if (loader) loader.style.display = "none";
   if (content) content.style.display = "block";
 
-  if (localResult && localResult.match && localResult.score >= 50) {
+  if (localResult && localResult.match && localResult.score >= 40) {
     currentSearchResult = localResult.match;
     displaySearchResult(localResult.match, shouldScroll);
   } else {
@@ -1728,7 +1891,7 @@ function openModal(type) {
         </div>
       `).join('');
     }
-  } else if (type === 'surah-yaseen' || type === 'surah-mulk' || type === 'surah-kahf' || type === 'ayatul-kursi') {
+  } else if (type.startsWith('surah-') || type === 'ayatul-kursi') {
     renderCompleteQuranSurah(type, title, body);
   } else if (type === 'contact') {
     title.innerText = "Contact Sukun • Suggest a Dua";

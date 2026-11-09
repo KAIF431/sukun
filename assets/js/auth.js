@@ -6,6 +6,7 @@
 
 const SukunAuth = (function() {
   const MASTER_ADMIN_EMAIL = "kaifofficial4@gmail.com";
+  const AUTHORIZED_ADMINS = ["kaifofficial4@gmail.com", "kaifoffcial4@gmail.com"];
   const STORAGE_SESSION_KEY = "sukun_auth_session";
   const STORAGE_USERS_KEY = "sukun_registered_users";
 
@@ -65,7 +66,7 @@ const SukunAuth = (function() {
 
     isAdmin: function() {
       const session = getSession();
-      return session && session.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase();
+      return session && session.email && AUTHORIZED_ADMINS.includes(session.email.toLowerCase());
     },
 
     // 1. REGISTER NEW USER (Sign Up)
@@ -191,7 +192,7 @@ function updateNavUI() {
     const displayEmail = user.email.length > 18 ? user.email.substring(0, 16) + "..." : user.email;
     text.innerText = displayEmail;
     btn.title = "Logged in as " + user.email;
-    if (adminFooterLink && user.email.toLowerCase() === "kaifofficial4@gmail.com") {
+    if (adminFooterLink && user.email && AUTHORIZED_ADMINS.includes(user.email.toLowerCase())) {
       adminFooterLink.style.display = "inline-block";
     }
   } else {

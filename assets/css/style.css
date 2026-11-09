@@ -1113,13 +1113,247 @@ body.light-theme .mushaf-ayah-num {
   letter-spacing: 0.5px;
 }
 
-/* ================= 7. FIND SOLUTION (AI SEARCH) ================= */
+/* ================= 6.9 ELDER-FRIENDLY QUICK SURAH BAR ================= */
+.quick-surah-bar-container {
+  background: rgba(12, 19, 42, 0.7);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  backdrop-filter: blur(10px);
+}
+
+body.light-theme .quick-surah-bar-container {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(163, 114, 24, 0.3);
+}
+
+.quick-surah-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-surah-title {
+  font-family: var(--font-brand);
+  font-size: 0.95rem;
+  letter-spacing: 1.5px;
+  color: var(--gold-bright);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+body.light-theme .quick-surah-title {
+  color: #7c530e;
+}
+
+.quick-surah-subtitle {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.quick-surahs-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quick-surah-chip {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--border-gold);
+  color: var(--gold-light);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  touch-action: manipulation;
+}
+
+body.light-theme .quick-surah-chip {
+  background: rgba(163, 114, 24, 0.08);
+  border-color: rgba(163, 114, 24, 0.35);
+  color: #7c530e;
+}
+
+.quick-surah-chip:hover {
+  background: rgba(212, 175, 55, 0.25);
+  border-color: var(--gold-bright);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* ================= 7. ENHANCED SEARCH HUB & VOICE MIC ================= */
 .search-container {
   background: radial-gradient(ellipse at 50% 20%, #101938 0%, #0a1024 60%, #060914 100%);
   border: 1px solid var(--border-gold);
   border-radius: 12px;
   padding: 36px 32px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #070c1a;
+  border: 2px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 6px 8px 6px 16px;
+  gap: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.light-theme .search-input-wrapper {
+  background: #fdfbf7;
+  border-color: rgba(163, 114, 24, 0.4);
+  box-shadow: 0 8px 25px rgba(163, 114, 24, 0.1);
+}
+
+.search-input-wrapper:focus-within {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+}
+
+.search-leading-icon {
+  font-size: 1.25rem;
+  color: var(--gold-primary);
+  flex-shrink: 0;
+}
+
+.elder-friendly-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-cream);
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  outline: none;
+  padding: 10px 4px;
+}
+
+body.light-theme .elder-friendly-input {
+  color: #181d28;
+}
+
+.elder-friendly-input::placeholder {
+  color: #717d94;
+  font-size: 0.95rem;
+}
+
+/* Voice Mic Button */
+.voice-mic-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1.5px solid var(--border-gold);
+  color: var(--gold-bright);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+
+body.light-theme .voice-mic-btn {
+  background: rgba(163, 114, 24, 0.1);
+  border-color: rgba(163, 114, 24, 0.4);
+  color: #7c530e;
+}
+
+.voice-mic-btn:hover {
+  background: rgba(212, 175, 55, 0.25);
+  border-color: var(--gold-bright);
+  transform: scale(1.05);
+}
+
+/* Pulsing Recording State */
+.voice-mic-btn.recording {
+  background: #dc2626 !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
+  animation: pulseMic 1.2s infinite;
+}
+
+@keyframes pulseMic {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); transform: scale(1); }
+  70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); transform: scale(1.08); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); transform: scale(1); }
+}
+
+.main-search-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.search-arrow-icon {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.main-search-action-btn:hover .search-arrow-icon {
+  transform: translateX(4px);
+}
+
+/* Voice Status Banner */
+.voice-status-banner {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-top: 14px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: blinkDot 1s infinite;
+}
+
+@keyframes blinkDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.search-hint-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.search-hint-pill {
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 .search-input-box {
@@ -2154,28 +2388,55 @@ body.light-theme .mobile-nav-admin {
   }
 
   /* Search Section & AI Spiritual Counsel */
-  .search-input-box {
+  .search-input-wrapper {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .elder-friendly-input {
+    width: calc(100% - 95px);
     font-size: 16px !important; /* Critical: Prevents iOS Safari input focus auto-zoom */
+    padding: 8px 4px;
+  }
+
+  .voice-mic-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .main-search-action-btn {
+    width: 100% !important;
+    justify-content: center;
+    padding: 14px !important;
+    font-size: 0.88rem !important;
+    margin-top: 6px;
+  }
+
+  .quick-surahs-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+  }
+
+  .quick-surahs-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .quick-surah-chip {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    font-size: 0.78rem;
+    padding: 8px 14px;
+  }
+
+  .search-input-box {
+    font-size: 16px !important;
     padding: 14px 16px;
-    min-height: 72px;
-  }
-
-  .search-actions-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    margin-top: 12px;
-  }
-
-  .privacy-note {
-    font-size: 0.72rem;
-    text-align: center;
-  }
-
-  .search-actions-row .primary-btn {
-    width: 100%;
-    padding: 13px;
-    font-size: 0.84rem;
   }
 
   /* Smooth Horizontal Swipeable Chips for Situational Topics */

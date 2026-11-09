@@ -198,19 +198,66 @@
     <section id="find-solution" class="section-block">
       <div class="section-label">Find Solution With Duas</div>
 
-      <div class="search-container">
-        <textarea 
-          id="searchQuery"
-          rows="2" 
-          placeholder="Describe what is weighing on your heart or mind (e.g., anxiety, sadness, debt, anger, sickness, fear of future)..."
-          class="search-input-box"
-        ></textarea>
+      <!-- 2.1 ELDER & QUICK-ACCESS SURAH NAVIGATION BAR -->
+      <div class="quick-surah-bar-container">
+        <div class="quick-surah-header">
+          <span class="quick-surah-title">📖 Direct Quranic Surahs (فوری سورتیں)</span>
+          <span class="quick-surah-subtitle">Tap to read full Surah with Tilawat audio</span>
+        </div>
+        <div class="quick-surahs-row">
+          <button onclick="openModal('surah-yaseen')" class="quick-surah-chip">⭐ Surah Yaseen (یس)</button>
+          <button onclick="openModal('surah-mulk')" class="quick-surah-chip">🛡️ Surah Al-Mulk (الملک)</button>
+          <button onclick="openModal('surah-rahman')" class="quick-surah-chip">💖 Surah Ar-Rahman (الرحمن)</button>
+          <button onclick="openModal('surah-waqiah')" class="quick-surah-chip">🕊️ Surah Al-Waqi'ah (الواقعة)</button>
+          <button onclick="openModal('surah-kahf')" class="quick-surah-chip">✨ Surah Al-Kahf (الکہف)</button>
+          <button onclick="openModal('ayatul-kursi')" class="quick-surah-chip">👑 Ayat-ul-Kursi (آیة الکرسی)</button>
+        </div>
+      </div>
 
-        <div class="search-actions-row">
-          <span class="privacy-note">
-            <span>✦</span> 100% Authentic Quran & Hadith References
-          </span>
-          <button onclick="executeSearch(null, true, true)" class="primary-btn">FIND DUA</button>
+      <!-- 2.2 HIGH-VISIBILITY SEARCH HUB (WITH VOICE MIC & PROMINENT BUTTON) -->
+      <div class="search-container enhanced-search-hub">
+        <div class="search-input-wrapper">
+          <span class="search-leading-icon">🔍</span>
+          <input 
+            type="text" 
+            id="searchQuery"
+            placeholder="Bolkar ya likhkar dua/surah dhoondein (e.g., bimari, ghabrahat, Surah Yaseen, karz)..."
+            class="search-input-box elder-friendly-input"
+            autocomplete="off"
+          />
+          <!-- Voice Search Microphone Button -->
+          <button 
+            id="voiceSearchBtn" 
+            type="button" 
+            onclick="toggleVoiceSearch()" 
+            class="voice-mic-btn" 
+            title="Bolkar dhoondein (Tap to Speak)"
+            aria-label="Voice Search"
+          >
+            <span class="mic-icon">🎙️</span>
+            <span class="mic-wave"></span>
+          </button>
+          <!-- Prominent Search Button -->
+          <button 
+            type="button" 
+            id="mainSearchBtn" 
+            onclick="executeSearch(null, true, true)" 
+            class="primary-btn main-search-action-btn"
+          >
+            <span>DHOONDEIN / SEARCH</span>
+            <span class="search-arrow-icon">➔</span>
+          </button>
+        </div>
+
+        <!-- Voice Recognition Status Banner -->
+        <div id="voiceStatusText" class="voice-status-banner" style="display: none;">
+          <span class="pulse-dot"></span>
+          <span id="voiceStatusMsg">🎙️ Sun rahe hain... Boliye (Listening... Speak now)</span>
+        </div>
+
+        <div class="search-hint-row">
+          <span class="search-hint-pill">💡 <strong>Bol kar dhoondein:</strong> Mic dabakar bolein <em>"Surah Yaseen"</em>, <em>"Ghabrahat ki dua"</em>, ya <em>"Maa baap ke liye dua"</em></span>
+          <span class="privacy-note">✦ 100% Authentic Quran & Sahih Hadith References</span>
         </div>
 
         <!-- Situational Topic Pills (Clean International English with Icons) -->
@@ -375,6 +422,34 @@
             </p>
           </div>
           <a onclick="openModal('surah-mulk')" class="read-link">Read & Hadith Virtues →</a>
+        </div>
+
+        <!-- Card 5: Surah Ar-Rahman -->
+        <div class="essential-card">
+          <div>
+            <div class="essential-header">
+              <span class="essential-number">Surah No. 55</span>
+            </div>
+            <h3 class="essential-title">Surah Ar-Rahman</h3>
+            <p class="essential-desc">
+              The Bride of the Quran ('Aroos-ul-Quran). Recited to reflect upon divine favors, soften anxious hearts, and cultivate deep gratitude.
+            </p>
+          </div>
+          <a onclick="openModal('surah-rahman')" class="read-link">Read & Hadith Virtues →</a>
+        </div>
+
+        <!-- Card 6: Surah Al-Waqi'ah -->
+        <div class="essential-card">
+          <div>
+            <div class="essential-header">
+              <span class="essential-number">Surah No. 56</span>
+            </div>
+            <h3 class="essential-title">Surah Al-Waqi'ah</h3>
+            <p class="essential-desc">
+              The Inevitable Event. The Prophetic Sunnah for protection against poverty, debt relief, and spiritual abundance.
+            </p>
+          </div>
+          <a onclick="openModal('surah-waqiah')" class="read-link">Read & Hadith Virtues →</a>
         </div>
       </div>
     </section>

@@ -5,8 +5,14 @@
    ========================================================================== */
 
 const MASTER_ADMIN = "kaifofficial4@gmail.com";
+const AUTHORIZED_ADMINS = ["kaifofficial4@gmail.com", "kaifoffcial4@gmail.com"];
 const MASTER_PASSWORD_KEY = "sukun_admin_master_password";
 const DEFAULT_MASTER_PASSWORD = "KaifAdmin@786";
+
+function isAuthorizedAdmin(email) {
+  if (!email) return false;
+  return AUTHORIZED_ADMINS.includes(email.trim().toLowerCase());
+}
 
 function getMasterPassword() {
   return localStorage.getItem(MASTER_PASSWORD_KEY) || DEFAULT_MASTER_PASSWORD;
@@ -30,7 +36,7 @@ function checkAdminAccess() {
   const headerEmail = document.getElementById("adminHeaderEmail");
   const headerLogout = document.getElementById("adminHeaderLogoutBtn");
 
-  if (session && session.email && session.email.toLowerCase() === MASTER_ADMIN.toLowerCase()) {
+  if (session && session.email && isAuthorizedAdmin(session.email)) {
     if (loginGate) loginGate.style.display = "none";
     if (dashboard) dashboard.style.display = "block";
     if (headerEmail) {
@@ -57,8 +63,8 @@ function submitAdminLogin() {
 
   errElem.style.display = "none";
 
-  if (email !== MASTER_ADMIN.toLowerCase()) {
-    errElem.innerText = "Access Denied: Only kaifofficial4@gmail.com is authorized as Master Admin.";
+  if (!isAuthorizedAdmin(email)) {
+    errElem.innerText = "Access Denied: Only Kaif Official is authorized as Master Admin.";
     errElem.style.display = "block";
     return;
   }
