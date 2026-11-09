@@ -25,28 +25,33 @@
       </a>
 
       <nav class="nav-menu">
-        <a href="#find-solution" class="nav-link">Search & Surahs</a>
+        <a href="javascript:void(0)" onclick="openQuranDrawer('surahs')" class="nav-link">Quran & Hadith</a>
+        <a href="javascript:void(0)" onclick="openTasbihModal()" class="nav-link">Digital Tasbih</a>
         <a href="#daily-dua" class="nav-link">Daily Dua</a>
-        <a href="#essentials" class="nav-link">Daily Tilawat</a>
-        <a href="#digital-tasbih" class="nav-link">Digital Tasbih</a>
       </nav>
 
       <div class="nav-actions">
-        <!-- Quick Search Navigation Button -->
-        <button onclick="focusSearchInput()" class="nav-btn nav-search-btn" title="Quick Search">
-          <span class="nav-search-icon">🔍</span>
-          <span class="nav-search-label">Search</span>
+        <!-- 1. Quran & Hadith Library Drawer Button -->
+        <button onclick="openQuranDrawer('surahs')" class="nav-btn nav-quran-btn" title="Quran & Hadith Library">
+          <span class="nav-btn-icon">📖</span> <span class="nav-btn-label">Quran Library</span>
         </button>
 
-        <!-- Theme Toggle Button (Light & Dark Mode) -->
+        <!-- 2. Digital Tasbih Button (Dedicated Popup) -->
+        <button onclick="openTasbihModal()" class="nav-btn nav-tasbih-btn" title="Digital Tasbih">
+          <span class="nav-btn-icon">📿</span> <span class="nav-btn-label">Tasbih</span>
+        </button>
+
+        <!-- 3. Theme Toggle Button (Light & Dark Mode) -->
         <button id="themeToggleBtn" onclick="toggleTheme()" class="nav-btn" title="Toggle Light / Dark Sanctuary Mode">
           <span id="themeToggleIcon">☀️</span> <span id="themeToggleText">Light</span>
         </button>
 
-        <button onclick="openModal('saved')" class="nav-btn">
-          <span>Saved Duas</span>
+        <!-- 4. Saved Duas -->
+        <button onclick="openModal('saved')" class="nav-btn" title="Saved Sanctuary Duas">
+          <span>Saved</span>
           <span id="savedCounter" class="badge-count">0</span>
         </button>
+
         <button id="navAuthBtn" onclick="openAuthModal()" class="nav-btn">
           <span id="navAuthText">Sign In</span>
         </button>
@@ -63,11 +68,32 @@
     <!-- Mobile Slide-Down Navigation Drawer -->
     <div id="mobileNavDrawer" class="mobile-nav-drawer">
       <nav class="mobile-nav-list">
-        <a href="#find-solution" class="mobile-nav-link" onclick="closeMobileMenu()">
-          <span class="nav-item-icon">🔍</span>
+        <a href="javascript:void(0)" class="mobile-nav-link" onclick="closeMobileMenu(); openQuranDrawer('surahs');">
+          <span class="nav-item-icon">📖</span>
           <div class="nav-item-text">
-            <span class="nav-item-title">Search & Sacred Surahs</span>
-            <span class="nav-item-sub">Voice Search & Direct Surah Tilawat</span>
+            <span class="nav-item-title">114 Quranic Surahs</span>
+            <span class="nav-item-sub">Tilawat, Ayahs & Neki Tracker</span>
+          </div>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-link" onclick="closeMobileMenu(); openQuranDrawer('parahs');">
+          <span class="nav-item-icon">📜</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">30 Parahs (Juz)</span>
+            <span class="nav-item-sub">Full Quran Parah Navigation</span>
+          </div>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-link" onclick="closeMobileMenu(); openQuranDrawer('hadith');">
+          <span class="nav-item-icon">📚</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">4 Hadith Collections</span>
+            <span class="nav-item-sub">Bukhari, Muslim, Tirmidhi, Abu Dawood</span>
+          </div>
+        </a>
+        <a href="javascript:void(0)" class="mobile-nav-link" onclick="closeMobileMenu(); openTasbihModal();">
+          <span class="nav-item-icon">📿</span>
+          <div class="nav-item-text">
+            <span class="nav-item-title">Digital Tasbih Counter</span>
+            <span class="nav-item-sub">Continuous Dhikr & Haptic Counter</span>
           </div>
         </a>
         <a href="#daily-dua" class="mobile-nav-link" onclick="closeMobileMenu()">
@@ -75,20 +101,6 @@
           <div class="nav-item-text">
             <span class="nav-item-title">Daily Masnoon Dua</span>
             <span class="nav-item-sub">Prophetic Morning & Evening Remembrances</span>
-          </div>
-        </a>
-        <a href="#essentials" class="mobile-nav-link" onclick="closeMobileMenu()">
-          <span class="nav-item-icon">📖</span>
-          <div class="nav-item-text">
-            <span class="nav-item-title">Daily Tilawat</span>
-            <span class="nav-item-sub">Surah Yaseen, Mulk, Kahf & Ayat-ul-Kursi</span>
-          </div>
-        </a>
-        <a href="#digital-tasbih" class="mobile-nav-link" onclick="closeMobileMenu()">
-          <span class="nav-item-icon">📿</span>
-          <div class="nav-item-text">
-            <span class="nav-item-title">Digital Tasbih Counter</span>
-            <span class="nav-item-sub">Continuous Dhikr & Haptic Counter</span>
           </div>
         </a>
         <a href="admin.html" class="mobile-nav-link mobile-nav-admin" onclick="closeMobileMenu()">
@@ -105,45 +117,26 @@
   <!-- Main Content Wrapper -->
   <main class="main-wrapper">
 
-    <!-- Hero Header -->
-    <section class="hero-header">
-      <div class="hero-subtitle">ISLAMIC SPIRITUAL SANCTUARY</div>
-      <h1 class="hero-title">
-        Sanctuary For <span>The Soul</span>
-      </h1>
-      <p class="hero-desc">
-        From the depths of hardship to the peace of the soul — finding solace through authentic Quranic Ayahs and Prophetic Duas.
-      </p>
-    </section>
-
-    <!-- 1. SECTION: FIND SOLUTION WITH DUAS (AI SEARCH & DIRECT SURAHS) -->
-    <section id="find-solution" class="section-block">
-      <div class="section-label">Find Solution With Duas</div>
-
-      <!-- 1.1 ELDER & QUICK-ACCESS SURAH NAVIGATION BAR -->
-      <div class="quick-surah-bar-container">
-        <div class="quick-surah-header">
-          <span class="quick-surah-title">📖 Direct Quranic Surahs</span>
-          <span class="quick-surah-subtitle">Instant Tilawat & line-by-line translation</span>
-        </div>
-        <div class="quick-surahs-row">
-          <button onclick="openModal('surah-yaseen')" class="quick-surah-chip">⭐ Surah Yaseen (36)</button>
-          <button onclick="openModal('surah-mulk')" class="quick-surah-chip">🛡️ Surah Al-Mulk (67)</button>
-          <button onclick="openModal('surah-rahman')" class="quick-surah-chip">💖 Surah Ar-Rahman (55)</button>
-          <button onclick="openModal('surah-waqiah')" class="quick-surah-chip">🕊️ Surah Al-Waqi'ah (56)</button>
-          <button onclick="openModal('surah-kahf')" class="quick-surah-chip">✨ Surah Al-Kahf (18)</button>
-          <button onclick="openModal('ayatul-kursi')" class="quick-surah-chip">👑 Ayat-ul-Kursi (2:255)</button>
-        </div>
+    <!-- 1. COMPACT MINIMALIST HERO & TOP SEARCH HUB -->
+    <section id="find-solution" class="section-block top-sanctuary-hub">
+      <div class="compact-hero-header">
+        <div class="hero-subtitle">ISLAMIC SPIRITUAL SANCTUARY</div>
+        <h1 class="compact-hero-title">
+          Sanctuary For <span>The Soul</span>
+        </h1>
+        <p class="compact-hero-desc">
+          Authentic solace through Quranic Tilawat, Prophetic Duas, and conversational spiritual companion.
+        </p>
       </div>
 
-      <!-- 1.2 HIGH-VISIBILITY SEARCH HUB (WITH VOICE MIC & DUAL RESPONSIVE BUTTONS) -->
-      <div class="search-container enhanced-search-hub">
+      <!-- CENTERPIECE SEARCH & VOICE HUB -->
+      <div class="search-container clean-search-hub">
         <div class="search-input-wrapper">
           <span class="search-leading-icon">🔍</span>
           <input 
             type="text" 
             id="searchQuery"
-            placeholder="Search Duas, Quranic Surahs, or feelings (e.g. Health, Anxiety, Peace, Surah Yaseen)..."
+            placeholder="Search Duas, Surahs, or ask anything (e.g., peace, Surah Yaseen, illness)..."
             class="search-input-box elder-friendly-input"
             autocomplete="off"
           />
@@ -188,108 +181,148 @@
           <span id="voiceStatusMsg">🎙️ Listening... Speak your Dua or Surah name now...</span>
         </div>
 
-        <div class="search-hint-row">
-          <span class="search-hint-pill">💡 <strong>Voice Search:</strong> Tap the mic and speak (e.g. <em>"Surah Yaseen"</em>, <em>"Dua for illness"</em>, or <em>"Peace of mind"</em>)</span>
-          <span class="privacy-note">✦ 100% Authentic Quran & Sahih Hadith References</span>
+        <!-- 4 QUICK-ACCESS SANCTUARY SHORTCUTS (Elder-Friendly, Clean & Spacious) -->
+        <div class="sanctuary-shortcuts-row">
+          <button onclick="openQuranDrawer('surahs')" class="shortcut-pill" title="Explore All 114 Surahs">
+            <span class="shortcut-icon">📖</span>
+            <span class="shortcut-text">114 Surahs</span>
+          </button>
+          <button onclick="openQuranDrawer('parahs')" class="shortcut-pill" title="Explore All 30 Parahs">
+            <span class="shortcut-icon">📜</span>
+            <span class="shortcut-text">30 Parahs (Juz)</span>
+          </button>
+          <button onclick="openQuranDrawer('hadith')" class="shortcut-pill" title="4 Authentic Hadith Books">
+            <span class="shortcut-icon">📚</span>
+            <span class="shortcut-text">4 Hadith Books</span>
+          </button>
+          <button onclick="openTasbihModal()" class="shortcut-pill" title="Open Digital Tasbih Counter">
+            <span class="shortcut-icon">📿</span>
+            <span class="shortcut-text">Digital Tasbih</span>
+          </button>
         </div>
 
         <!-- Situational Topic Pills (Clean International English with Icons) -->
         <div class="topic-pills-row">
-          <button onclick="selectTopicPill('gussa')" class="topic-pill">💢 Anger & Patience</button>
-          <button onclick="selectTopicPill('dil tuta')" class="topic-pill">💔 Heartbreak & Solace</button>
-          <button onclick="selectTopicPill('ghabrahat')" class="topic-pill">🌊 Anxiety & Relief</button>
-          <button onclick="selectTopicPill('karz')" class="topic-pill">💰 Debt & Sustenance</button>
-          <button onclick="selectTopicPill('bimari')" class="topic-pill">🌿 Illness & Healing</button>
-          <button onclick="selectTopicPill('gunah')" class="topic-pill">🤲 Guilt & Forgiveness</button>
+          <button onclick="selectTopicPill('gussa')" class="topic-pill">💢 Anger &amp; Patience</button>
+          <button onclick="selectTopicPill('dil tuta')" class="topic-pill">💔 Heartbreak &amp; Solace</button>
+          <button onclick="selectTopicPill('ghabrahat')" class="topic-pill">🌊 Anxiety &amp; Relief</button>
+          <button onclick="selectTopicPill('karz')" class="topic-pill">💰 Debt &amp; Sustenance</button>
+          <button onclick="selectTopicPill('bimari')" class="topic-pill">🌿 Illness &amp; Healing</button>
+          <button onclick="selectTopicPill('gunah')" class="topic-pill">🤲 Guilt &amp; Forgiveness</button>
           <button onclick="selectTopicPill('khauf')" class="topic-pill">🛡️ Fear of Future</button>
         </div>
 
-        <!-- Dynamic Solution Result Card -->
-        <div id="searchResultBox" class="search-result-box" style="display: none; margin-top: 30px;">
+        <!-- Dynamic Solution Result Card & Interactive Conversational AI Hub -->
+        <div id="searchResultBox" class="search-result-box" style="display: none; margin-top: 24px;">
           
           <!-- Subtle Loading State for Neural Search -->
-          <div id="aiLoadingIndicator" style="display: none; text-align: center; padding: 45px 20px;">
+          <div id="aiLoadingIndicator" style="display: none; text-align: center; padding: 40px 20px;">
             <div class="ai-loading-spinner"></div>
-            <p style="font-family: var(--font-serif); font-size: 1.3rem; font-style: italic; color: var(--gold-bright); margin-top: 14px;">
+            <p style="font-family: var(--font-serif); font-size: 1.25rem; font-style: italic; color: var(--gold-bright); margin-top: 14px;">
               Consulting Sacred Scriptures for Solace...
             </p>
             <p style="color: var(--text-muted); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;">
-              Retrieving authentic Quranic Ayat & Sahih Hadith
+              Authentic Quranic Ayat &amp; Sahih Hadith
             </p>
           </div>
 
           <!-- Main Result Content Container -->
           <div id="resultCardContent">
-            <!-- AI Spiritual Dialogue & Counsel Box -->
-            <div id="aiCounselBox" class="ai-counsel-box">
+            <!-- Conversational Chat Stream (Interactive Dialogue) -->
+            <div id="aiConversationHub" class="ai-conversation-hub">
               <div class="counsel-header">
                 <div class="counsel-agent-info">
                   <span class="counsel-avatar">✨</span>
                   <div>
-                    <span class="counsel-agent-title">Sukun Sanctuary Companion</span>
-                    <span class="counsel-live-pill">● Speaking directly to your heart</span>
+                    <span class="counsel-agent-title">Sukun Spiritual Companion</span>
+                    <span class="counsel-live-pill">● Conversational Sanctuary Guidance</span>
                   </div>
                 </div>
-              </div>
-              <p id="resultCounselText" class="counsel-speech-bubble"></p>
-            </div>
-
-            <div class="card-meta-header">
-              <div class="card-badge-row">
-                <span class="sunnah-badge">✦ Prophetic Spiritual Remedy</span>
-              </div>
-              <div class="card-actions">
-                <button onclick="openModal('waqia')" class="action-pill-btn">
-                  <span class="btn-icon">📜</span> Read Hadith & Story
-                </button>
-                <button id="resultAudioBtn" onclick="playDuaAudio('result')" class="action-pill-btn">
-                  <span class="btn-icon">🔊</span> Play Audio
-                </button>
-                <button onclick="copyDuaText('result')" class="action-pill-btn">
-                  <span class="btn-icon">📋</span> Copy
-                </button>
-                <button id="resultSaveBtn" onclick="toggleSaveResult()" class="action-pill-btn">
-                  <span class="btn-icon">🔖</span> Bookmark
+                <button onclick="clearConversation()" class="clear-convo-btn" title="Reset Conversation">
+                  <span>↺ New Topic</span>
                 </button>
               </div>
+
+              <!-- Message History Bubbles -->
+              <div id="chatMessagesList" class="chat-messages-list">
+                <!-- Initial or Dynamic messages will be inserted here -->
+              </div>
+
+              <!-- Follow-Up Chat Input Bar -->
+              <div class="chat-followup-row">
+                <input 
+                  type="text" 
+                  id="chatFollowUpInput" 
+                  placeholder="Ask a follow-up question or share how you feel..." 
+                  class="chat-followup-input"
+                  onkeydown="if(event.key === 'Enter') sendFollowUpMessage();"
+                />
+                <button onclick="sendFollowUpMessage()" class="chat-send-btn" title="Send Follow-up">
+                  <span>Send</span> ➔
+                </button>
+              </div>
             </div>
 
-            <h3 id="resultTitle" class="dua-title">Result Title</h3>
-
-            <div class="arabic-mihrab-frame">
-              <div id="resultArabic" class="arabic-display"></div>
-            </div>
-
-            <div class="pronunciation-bar">
-              <span class="pronunciation-tag">Pronunciation (Roman Urdu)</span>
-              <p id="resultRoman" class="roman-pronunciation"></p>
-            </div>
-
-            <div class="translations-container">
-              <div class="translation-urdu-card">
-                <div class="translation-header">
-                  <span class="lang-tag">اردو ترجمہ (Urdu)</span>
+            <!-- Authentic Scripture Mihrab Card (Always accompanying the counsel) -->
+            <div id="scriptureCardWrapper" class="scripture-card-wrapper" style="margin-top: 20px;">
+              <div class="card-meta-header">
+                <div class="card-badge-row">
+                  <span class="sunnah-badge">✦ Prophetic Spiritual Remedy</span>
                 </div>
-                <p id="resultUrdu" class="translation-urdu"></p>
-              </div>
-
-              <div class="translation-english-card">
-                <div class="translation-header">
-                  <span class="lang-tag">English Translation</span>
+                <div class="card-actions">
+                  <button onclick="openModal('waqia')" class="action-pill-btn">
+                    <span class="btn-icon">📜</span> Read Hadith &amp; Story
+                  </button>
+                  <button id="resultAudioBtn" onclick="playDuaAudio('result')" class="action-pill-btn">
+                    <span class="btn-icon">🔊</span> Play Audio
+                  </button>
+                  <button onclick="copyDuaText('result')" class="action-pill-btn">
+                    <span class="btn-icon">📋</span> Copy
+                  </button>
+                  <button id="resultSaveBtn" onclick="toggleSaveResult()" class="action-pill-btn">
+                    <span class="btn-icon">🔖</span> Bookmark
+                  </button>
                 </div>
-                <p id="resultEnglish" class="translation-english"></p>
+              </div>
+
+              <h3 id="resultTitle" class="dua-title">Result Title</h3>
+
+              <div class="arabic-mihrab-frame">
+                <div id="resultArabic" class="arabic-display"></div>
+              </div>
+
+              <div class="pronunciation-bar">
+                <span class="pronunciation-tag">Pronunciation (Roman Urdu)</span>
+                <p id="resultRoman" class="roman-pronunciation"></p>
+              </div>
+
+              <div class="translations-container">
+                <div class="translation-urdu-card">
+                  <div class="translation-header">
+                    <span class="lang-tag">اردو ترجمہ (Urdu)</span>
+                  </div>
+                  <p id="resultUrdu" class="translation-urdu"></p>
+                </div>
+
+                <div class="translation-english-card">
+                  <div class="translation-header">
+                    <span class="lang-tag">English Translation</span>
+                  </div>
+                  <p id="resultEnglish" class="translation-english"></p>
+                </div>
+              </div>
+
+              <div class="card-footer-meta">
+                <div class="ref-badge">
+                  <span>📖</span>
+                  <span id="resultRef">Reference</span>
+                </div>
+                <div class="verification-pill">
+                  <span>✓</span> Verified Source
+                </div>
               </div>
             </div>
 
-            <div class="card-footer-meta">
-              <div class="ref-badge">
-                <span>📖</span>
-                <span id="resultRef">Reference</span>
-              </div>
-              <div class="verification-pill">
-                <span>✓</span> Verified Source
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -471,11 +504,72 @@
       </div>
     </section>
 
-    <!-- 4. SECTION: DIGITAL TASBIH COUNTER -->
-    <section id="digital-tasbih" class="section-block">
-      <div class="section-label">Digital Tasbih Counter</div>
+  </main>
 
-      <div class="tasbih-card">
+  <!-- 5. MASTER EDITORIAL FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div>
+        <div class="footer-brand">Sukun (سُكُون)</div>
+        <p class="footer-desc">
+          An authentic sanctuary for the modern believer facing anxiety, heartbreak, and emotional burdens. Built with sincerity as a continuous charity (Sadaqah Jariyah). 100% free forever for all humanity.
+        </p>
+      </div>
+
+      <div>
+        <div class="footer-heading">Solace Navigation</div>
+        <ul class="footer-links">
+          <li><a href="javascript:void(0)" onclick="openQuranDrawer('surahs')">114 Quranic Surahs</a></li>
+          <li><a href="javascript:void(0)" onclick="openQuranDrawer('parahs')">30 Parahs (Juz)</a></li>
+          <li><a href="javascript:void(0)" onclick="openQuranDrawer('hadith')">4 Hadith Collections</a></li>
+          <li><a href="javascript:void(0)" onclick="openTasbihModal()">Digital Tasbih Counter</a></li>
+          <li><a href="#daily-dua">Daily Masnoon Dua</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-heading">Direct Contact & Inquiries</div>
+        <ul class="footer-links">
+          <li><a href="mailto:kaifofficial4@gmail.com" style="color: var(--gold-bright);">kaifofficial4@gmail.com</a></li>
+          <li><a href="javascript:void(0)" onclick="openModal('contact')">Suggest a Dua / Feedback</a></li>
+          <li><a href="admin.html" id="footerAdminLink" class="admin-link">Master Admin Portal →</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div>
+        Authentic Sources: Sahih al-Bukhari • Sahih Muslim • Jami' at-Tirmidhi • Hisnul Muslim
+      </div>
+      <div>
+        © 2026 Sukun. Dedicated for the Sake of Allah.
+      </div>
+    </div>
+  </footer>
+
+  <!-- GLOBAL READER & CONTACT MODAL -->
+  <div id="globalModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <button onclick="closeModal()" class="modal-close" title="Close">✕</button>
+      <h3 id="modalTitle" style="font-family: var(--font-serif); font-size: 1.55rem; font-style: italic; color: var(--gold-bright); margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border-gold);">Title</h3>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- DEDICATED DIGITAL TASBIH MODAL (On-Demand Popup) -->
+  <div id="tasbihModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content tasbih-modal-dialog">
+      <button onclick="closeTasbihModal()" class="modal-close" title="Close">✕</button>
+      
+      <div class="tasbih-modal-header">
+        <span class="tasbih-modal-icon">📿</span>
+        <div>
+          <h3 class="tasbih-modal-title">Digital Tasbih Sanctuary</h3>
+          <p class="tasbih-modal-sub">Continuous Dhikr, Mindfulness &amp; Haptic Counter</p>
+        </div>
+      </div>
+
+      <div class="tasbih-card tasbih-modal-body">
         <!-- Dhikr Selection Dropdown -->
         <select id="tasbihSelect" class="tasbih-dhikr-select" onchange="changeDhikr(this.value)">
           <option value="0">SubhanAllah (سُبْحَانَ اللَّهِ)</option>
@@ -513,58 +607,83 @@
           <button id="tasbihVibrateBtn" onclick="toggleTasbihVibrate()" class="tasbih-ctrl-btn">Vibrate: ON</button>
         </div>
       </div>
-    </section>
-
-  </main>
-
-  <!-- 5. MASTER EDITORIAL FOOTER -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <div>
-        <div class="footer-brand">Sukun (سُكُون)</div>
-        <p class="footer-desc">
-          An authentic sanctuary for the modern believer facing anxiety, heartbreak, and emotional burdens. Built with sincerity as a continuous charity (Sadaqah Jariyah). 100% free forever for all humanity.
-        </p>
-      </div>
-
-      <div>
-        <div class="footer-heading">Solace Navigation</div>
-        <ul class="footer-links">
-          <li><a href="#daily-dua">Daily Masnoon Dua</a></li>
-          <li><a href="#find-solution">Find Solution With Duas</a></li>
-          <li><a href="#essentials">Daily Tilawat</a></li>
-          <li><a href="#digital-tasbih">Digital Tasbih Counter</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <div class="footer-heading">Direct Contact & Inquiries</div>
-        <ul class="footer-links">
-          <li><a href="mailto:kaifofficial4@gmail.com" style="color: var(--gold-bright);">kaifofficial4@gmail.com</a></li>
-          <li><a href="javascript:void(0)" onclick="openModal('contact')">Suggest a Dua / Feedback</a></li>
-          <li><a href="admin.html" id="footerAdminLink" class="admin-link">Master Admin Portal →</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom-bar">
-      <div>
-        Authentic Sources: Sahih al-Bukhari • Sahih Muslim • Jami' at-Tirmidhi • Hisnul Muslim
-      </div>
-      <div>
-        © 2026 Sukun. Dedicated for the Sake of Allah.
-      </div>
-    </div>
-  </footer>
-
-  <!-- GLOBAL READER & CONTACT MODAL -->
-  <div id="globalModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-      <button onclick="closeModal()" class="modal-close" title="Close">✕</button>
-      <h3 id="modalTitle" style="font-family: var(--font-serif); font-size: 1.55rem; font-style: italic; color: var(--gold-bright); margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border-gold);">Title</h3>
-      <div id="modalBody"></div>
     </div>
   </div>
+
+  <!-- OFF-CANVAS SLIDE-OUT QURAN & HADITH DRAWER -->
+  <div id="quranDrawerOverlay" class="drawer-overlay" onclick="closeQuranDrawer()" style="display: none;"></div>
+  
+  <aside id="quranDrawer" class="quran-slide-drawer" aria-label="Quran and Hadith Library">
+    <!-- Drawer Top Bar -->
+    <div class="drawer-header">
+      <div class="drawer-title-box">
+        <span class="drawer-icon">📖</span>
+        <div>
+          <h2 class="drawer-heading">Sacred Scriptures Library</h2>
+          <p class="drawer-subheading">114 Surahs • 30 Parahs • 4 Authentic Hadith Collections</p>
+        </div>
+      </div>
+      <button onclick="closeQuranDrawer()" class="drawer-close-btn" title="Close Library">✕</button>
+    </div>
+
+    <!-- Drawer Navigation Tabs -->
+    <div class="drawer-tabs-row">
+      <button id="drawerTabSurahs" onclick="switchDrawerTab('surahs')" class="drawer-tab-btn active">
+        <span>📖 114 Surahs</span>
+      </button>
+      <button id="drawerTabParahs" onclick="switchDrawerTab('parahs')" class="drawer-tab-btn">
+        <span>📜 30 Parahs (Juz)</span>
+      </button>
+      <button id="drawerTabHadith" onclick="switchDrawerTab('hadith')" class="drawer-tab-btn">
+        <span>📚 4 Hadith Books</span>
+      </button>
+    </div>
+
+    <!-- Quick Filter Search Box inside Drawer -->
+    <div class="drawer-search-box">
+      <span class="drawer-search-icon">🔍</span>
+      <input 
+        type="text" 
+        id="drawerFilterInput" 
+        placeholder="Filter by name, number, or keyword..." 
+        class="drawer-filter-input"
+        oninput="filterDrawerContent(this.value)"
+      />
+    </div>
+
+    <!-- Drawer Content Views -->
+    <div class="drawer-scroll-container">
+      <!-- 1. Surahs List View -->
+      <div id="drawerSurahsView" class="drawer-tab-content active">
+        <div class="drawer-view-info">
+          <span>Complete 114 Surahs with Tilawat Audio &amp; Ayah-by-Ayah Hasanat (نیکیاں)</span>
+        </div>
+        <div id="drawerSurahsGrid" class="drawer-items-list">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- 2. Parahs (Juz) List View -->
+      <div id="drawerParahsView" class="drawer-tab-content" style="display: none;">
+        <div class="drawer-view-info">
+          <span>All 30 Parahs (Juz) with Arabic titles, Ayah boundaries &amp; Audio Recitation</span>
+        </div>
+        <div id="drawerParahsGrid" class="drawer-items-list">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- 3. Hadith Collections View -->
+      <div id="drawerHadithView" class="drawer-tab-content" style="display: none;">
+        <div class="drawer-view-info">
+          <span>Four Pillars of Hadith: Bukhari, Muslim, Tirmidhi &amp; Abu Dawood</span>
+        </div>
+        <div id="drawerHadithGrid" class="drawer-items-list">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+  </aside>
 
   <!-- AUTHENTICATION MODAL (Real Email + Password System) -->
   <div id="authModal" class="modal-overlay" style="display: none;">
@@ -660,6 +779,7 @@
   </div>
 
   <!-- Core Scripts -->
+  <script src="assets/js/surah-registry.js"></script>
   <script src="assets/js/surahs.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/main.js"></script>

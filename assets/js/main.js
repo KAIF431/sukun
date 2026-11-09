@@ -1192,11 +1192,9 @@ function sanitizeScriptureOutput(obj) {
 async function fetchCandidateFromGemini(queryText, apiKey) {
   if (!apiKey) return null;
   const modelsToTry = [
-    "gemini-2.5-flash",
     "gemini-3.5-flash-lite", 
-    "gemini-flash-latest", 
-    "gemini-2.5-flash-lite", 
-    "gemini-3.5-flash"
+    "gemini-3.5-flash",
+    "gemini-flash-latest"
   ];
   const payload = {
     contents: [{ role: "user", parts: [{ text: `Seeker's question/state: "${queryText}"\nProvide an authentic Islamic response with verified Quranic verse or Sahih Hadith dua strictly following the JSON schema.` }] }],
@@ -1610,6 +1608,16 @@ function displaySearchResult(item, shouldScroll = true) {
   if (counselElem) counselElem.innerText = dialogueText;
   if (counselBox) counselBox.style.display = "block";
 
+  // Conversational interactive chat stream
+  if (userQuery && (!chatConversationHistory.length || chatConversationHistory[chatConversationHistory.length - 1].text !== userQuery)) {
+    chatConversationHistory.push({ role: 'user', text: userQuery, timestamp: Date.now() });
+  }
+  chatConversationHistory.push({ role: 'model', text: dialogueText, item, timestamp: Date.now() });
+  renderChatMessages();
+
+  const scriptureCard = document.getElementById("scriptureCardWrapper");
+  if (scriptureCard) scriptureCard.style.display = "block";
+
   const titleElem = document.getElementById("resultTitle");
   if (titleElem) titleElem.innerText = item.title;
 
@@ -1914,7 +1922,20 @@ function openModal(type) {
       `).join('');
     }
   } else if (type.startsWith('surah-') || type === 'ayatul-kursi') {
-    renderCompleteQuranSurah(type, title, body);
+    const db = window.SukunQuranDatabase || (typeof SukunQuranDatabase !== 'undefined' ? SukunQuranDatabase : {});
+    if (db[type]) {
+      renderCompleteQuranSurah(type, title, body);
+    } else {
+      renderDynamicSurah(type, title, body);
+    }
+  } else if (type.startsWith('parah-') || type.startsWith('juz-')) {
+    const num = parseInt(type.replace(/\D/g, ''), 10) || 1;
+    openParahModal(num);
+    return;
+  } else if (type.startsWith('hadith-')) {
+    const collId = type.replace('hadith-', '');
+    openHadithModal(collId);
+    return;
   } else if (type === 'contact') {
     title.innerText = "Contact Sukun • Suggest a Dua";
     body.innerHTML = `
@@ -1950,6 +1971,8 @@ function closeModal() {
 }
 
 // ================= 11. QURANIC TILAWAT SANCTUARY READER =================
+let currentSessionHasanat = 0;
+
 function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
   const db = window.SukunQuranDatabase || (typeof SukunQuranDatabase !== 'undefined' ? SukunQuranDatabase : {});
   const surah = db[surahKey];
@@ -1958,10 +1981,12 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
   if (modalContent) modalContent.classList.add("quran-reader-modal");
 
   if (!surah || !surah.ayahs) {
-    titleElem.innerText = "Quranic Tilawat Sanctuary";
-    bodyElem.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 40px;">Loading sacred text from archive...</p>`;
+    renderDynamicSurah(surahKey, titleElem, bodyElem);
     return;
   }
+
+  currentSessionHasanat = 0;
+  const totalHasanat = surah.ayahs.reduce((acc, a) => acc + (typeof calculateArabicHasanat === 'function' ? calculateArabicHasanat(a.arabic) : (a.arabic.length * 10)), 0);
 
   titleElem.innerHTML = `
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; width: 100%;">
@@ -1973,6 +1998,27 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
   `;
 
   bodyElem.innerHTML = `
+    <!-- Live Hasanat (Neki) Counter Banner -->
+    <div class="hasanat-meter-banner">
+      <div class="hasanat-meter-stat">
+        <span class="hasanat-meter-icon">✨</span>
+        <div>
+          <div class="hasanat-meter-title">Total Surah Hasanat (نیکیاں)</div>
+          <div class="hasanat-meter-val" id="totalSurahHasanatVal">+${totalHasanat.toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="hasanat-meter-stat">
+        <span class="hasanat-meter-icon">🤲</span>
+        <div>
+          <div class="hasanat-meter-title">Your Recited Hasanat</div>
+          <div class="hasanat-meter-val" id="recitedHasanatVal" style="color: var(--gold-bright);">+0</div>
+        </div>
+      </div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); max-width: 220px; line-height: 1.5;">
+        ✦ Jami' at-Tirmidhi (2910): 10 Hasanat for every Arabic letter recited.
+      </div>
+    </div>
+
     <!-- Hadith Virtues Callout -->
     <div style="background: rgba(212, 175, 55, 0.08); padding: 16px 20px; border-left: 3px solid var(--gold-bright); border-radius: 6px; margin-bottom: 22px;">
       <span style="font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 6px;">
@@ -2011,17 +2057,31 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
 
     <!-- View 1: Ayat-by-Ayat Study View (Default) -->
     <div id="surahStudyView">
-      ${surah.ayahs.map(a => `
+      ${surah.ayahs.map(a => {
+        const ayahHasanat = typeof calculateArabicHasanat === 'function' ? calculateArabicHasanat(a.arabic) : (a.arabic.length * 10);
+        return `
         <div class="quran-ayah-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span class="ayah-badge">Ayah ${a.ayahNumber}</span>
-            <button onclick="copySingleAyah(${a.ayahNumber})" class="action-btn" style="padding: 4px 10px; font-size: 0.7rem;">Copy Ayah</button>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="ayah-badge">Ayah ${a.ayahNumber}</span>
+              <span class="ayah-hasanat-badge">✨ +${ayahHasanat.toLocaleString()} Hasanat</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button onclick="playSingleAyahAudio(${surah.number}, ${a.ayahNumber}, ${ayahHasanat})" class="ayah-audio-play-btn" title="Listen to this Ayah">
+                <span>🔊 Listen</span>
+              </button>
+              <button onclick="markAyahRead(${a.ayahNumber}, ${ayahHasanat})" id="readBtn_${a.ayahNumber}" class="ayah-audio-play-btn" title="Mark recited">
+                <span>✓ Read</span>
+              </button>
+              <button onclick="copySingleAyah(${a.ayahNumber})" class="action-btn" style="padding: 4px 10px; font-size: 0.7rem;">Copy</button>
+            </div>
           </div>
           <p class="ayah-arabic-text" id="ayahText_${a.ayahNumber}">${a.arabic}</p>
           <div class="ayah-urdu-text">${a.urdu}</div>
           <div class="ayah-english-text">${a.english}</div>
         </div>
-      `).join('')}
+      `;
+      }).join('')}
     </div>
 
     <!-- View 2: Continuous Mushaf View -->
@@ -2201,20 +2261,739 @@ function showToast(message) {
   }, 3200);
 }
 
+// ==========================================================================
+// 14. LIVE HASANAT (NEKI) TRACKER & AYAH-BY-AYAH AUDIO CONTROLLERS
+// (Jami' at-Tirmidhi 2910: 10 Hasanat per Arabic letter)
+// ==========================================================================
+function markAyahRead(num, hasanat) {
+  currentSessionHasanat += hasanat;
+  const valElem = document.getElementById("recitedHasanatVal");
+  if (valElem) {
+    valElem.innerText = "+" + currentSessionHasanat.toLocaleString();
+  }
+  const btn = document.getElementById("readBtn_" + num);
+  if (btn) {
+    btn.innerHTML = "<span>✓ Recited</span>";
+    btn.style.background = "var(--gold-bright)";
+    btn.style.color = "#0b111e";
+  }
+  showToast(`MashaAllah! +${hasanat.toLocaleString()} Hasanat added (Ayah ${num})`);
+}
+
+function playSingleAyahAudio(surahNum, ayahNum, hasanat) {
+  if (!('speechSynthesis' in window)) {
+    markAyahRead(ayahNum, hasanat);
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const elem = document.getElementById("ayahText_" + ayahNum);
+  if (elem) {
+    const text = elem.innerText;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ar-SA";
+    utterance.rate = 0.85;
+    utterance.onend = () => {
+      markAyahRead(ayahNum, hasanat);
+    };
+    window.speechSynthesis.speak(utterance);
+    showToast(`Playing Ayah ${ayahNum} recitation...`);
+  }
+}
+
+function copySingleAyahText(num) {
+  const elem = document.getElementById("ayahText_" + num);
+  if (elem) {
+    navigator.clipboard.writeText(elem.innerText).then(() => {
+      showToast(`Ayah ${num} copied to clipboard!`);
+    });
+  }
+}
+
+// Dynamic Surah Renderer for all 114 Surahs
+async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
+  const allSurahs = window.SukunAllSurahsIndex || [];
+  let s = allSurahs.find(item => item.id === surahKey);
+  if (!s && typeof surahKey === 'string' && surahKey.startsWith('surah-')) {
+    const rawName = surahKey.replace('surah-', '').replace(/-/g, ' ').toLowerCase();
+    s = allSurahs.find(item => item.name.toLowerCase().includes(rawName));
+  }
+  if (!s) s = allSurahs[0];
+
+  const estimatedHasanat = s.ayahs * 45 * 10;
+  currentSessionHasanat = 0;
+
+  titleElem.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; width: 100%;">
+      <span>Surah ${s.name} (${s.arabic})</span>
+      <span style="font-size: 0.76rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-bright); font-family: var(--font-sans); font-weight: 700; background: rgba(212, 175, 55, 0.12); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border-gold);">
+        ${s.revelation} • ${s.ayahs} Ayahs
+      </span>
+    </div>
+  `;
+
+  bodyElem.innerHTML = `
+    <!-- Live Hasanat Meter Banner -->
+    <div class="hasanat-meter-banner">
+      <div class="hasanat-meter-stat">
+        <span class="hasanat-meter-icon">✨</span>
+        <div>
+          <div class="hasanat-meter-title">Total Surah Hasanat (نیکیاں)</div>
+          <div class="hasanat-meter-val" id="totalSurahHasanatVal">+${estimatedHasanat.toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="hasanat-meter-stat">
+        <span class="hasanat-meter-icon">🤲</span>
+        <div>
+          <div class="hasanat-meter-title">Your Recited Hasanat</div>
+          <div class="hasanat-meter-val" id="recitedHasanatVal" style="color: var(--gold-bright);">+0</div>
+        </div>
+      </div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); max-width: 220px; line-height: 1.5;">
+        ✦ Jami' at-Tirmidhi (2910): 10 Hasanat for every Arabic letter recited.
+      </div>
+    </div>
+
+    <!-- Audio Player Bar (Mishary Rashid Alafasy) -->
+    <div class="surah-audio-bar" style="margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.35rem;">🎧</span>
+        <div>
+          <strong style="color: var(--gold-bright); font-size: 0.85rem; display: block;">Mishary Rashid Alafasy Recitation</strong>
+          <span style="color: var(--text-muted); font-size: 0.74rem;">Full Studio Tilawat Audio (${s.name})</span>
+        </div>
+      </div>
+      <audio controls controlsList="nodownload" style="height: 38px; max-width: 340px; outline: none; border-radius: 20px;" src="${s.audioUrl}"></audio>
+    </div>
+
+    <!-- Bismillah Calligraphy (Except Surah 9) -->
+    ${s.number !== 9 && s.number !== 1 ? `
+      <div class="bismillah-header" style="text-align: center; font-family: var(--font-arabic); font-size: 2.1rem; color: var(--gold-bright); margin: 15px 0 25px;">
+        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+      </div>
+    ` : ''}
+
+    <div id="dynamicAyahsContainer" style="display: flex; flex-direction: column; gap: 14px;">
+      <div style="text-align: center; padding: 30px 16px;">
+        <div class="ai-loading-spinner" style="margin: 0 auto 12px;"></div>
+        <p style="color: var(--gold-bright); font-family: var(--font-serif); font-size: 1.1rem; font-style: italic;">
+          Retrieving complete Uthmani script &amp; translations for Surah ${s.name}...
+        </p>
+      </div>
+    </div>
+  `;
+
+  // Fetch full Ayahs live from Quran API
+  try {
+    const res = await fetch(`https://api.alquran.cloud/v1/surah/${s.number}/editions/quran-uthmani,ur.jalandhry,en.sahih`);
+    if (res.ok) {
+      const data = await res.json();
+      const arabicAyahs = data.data?.[0]?.ayahs || [];
+      const urduAyahs = data.data?.[1]?.ayahs || [];
+      const enAyahs = data.data?.[2]?.ayahs || [];
+
+      let actualTotalHasanat = 0;
+      arabicAyahs.forEach(a => {
+        actualTotalHasanat += typeof calculateArabicHasanat === 'function' ? calculateArabicHasanat(a.text) : (a.text.length * 10);
+      });
+
+      const totalElem = document.getElementById("totalSurahHasanatVal");
+      if (totalElem) totalElem.innerText = "+" + actualTotalHasanat.toLocaleString();
+
+      const container = document.getElementById("dynamicAyahsContainer");
+      if (container && arabicAyahs.length > 0) {
+        container.innerHTML = arabicAyahs.map((a, idx) => {
+          const ayahHasanat = typeof calculateArabicHasanat === 'function' ? calculateArabicHasanat(a.text) : (a.text.length * 10);
+          const urduText = urduAyahs[idx] ? urduAyahs[idx].text : "";
+          const enText = enAyahs[idx] ? enAyahs[idx].text : "";
+          return `
+            <div class="quran-ayah-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="ayah-badge">Ayah ${a.numberInSurah}</span>
+                  <span class="ayah-hasanat-badge">✨ +${ayahHasanat.toLocaleString()} Hasanat</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <button onclick="playSingleAyahAudio(${s.number}, ${a.numberInSurah}, ${ayahHasanat})" class="ayah-audio-play-btn" title="Listen to this Ayah">
+                    <span>🔊 Listen</span>
+                  </button>
+                  <button onclick="markAyahRead(${a.numberInSurah}, ${ayahHasanat})" id="readBtn_${a.numberInSurah}" class="ayah-audio-play-btn" title="Mark recited">
+                    <span>✓ Read</span>
+                  </button>
+                  <button onclick="copySingleAyahText('${a.numberInSurah}')" class="action-btn" style="padding: 4px 10px; font-size: 0.7rem;">Copy</button>
+                </div>
+              </div>
+              <p class="ayah-arabic-text" id="ayahText_${a.numberInSurah}">${a.text}</p>
+              ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
+              ${enText ? `<div class="ayah-english-text">${enText}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load dynamic Quran text:", err);
+    const container = document.getElementById("dynamicAyahsContainer");
+    if (container) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+          <p style="color: var(--text-cream); font-size: 1rem; line-height: 1.7;">
+            Tilawat audio for Surah ${s.name} is ready above. Tap play to listen to complete recitation by Mishary Rashid Alafasy.
+          </p>
+        </div>
+      `;
+    }
+  }
+}
+
+// 30 Parahs (Juz) Modal
+function openParahModal(juzNumber) {
+  const allParahs = window.SukunAllParahsIndex || [];
+  const parah = allParahs.find(p => p.juzNumber === juzNumber) || allParahs[0];
+  const modal = document.getElementById("globalModal");
+  const title = document.getElementById("modalTitle");
+  const body = document.getElementById("modalBody");
+  const audioUrl = `https://server8.mp3quran.net/afs/${juzNumber.toString().padStart(3, '0')}.mp3`;
+  const estimatedHasanat = (parah.ayahsCount || 200) * 45 * 10;
+
+  title.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; width: 100%;">
+      <span>Juz ${parah.juzNumber}: ${parah.title} (${parah.arabic})</span>
+      <span style="font-size: 0.76rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-bright); font-family: var(--font-sans); font-weight: 700; background: rgba(212, 175, 55, 0.12); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border-gold);">
+        ${parah.ayahsCount} Ayahs
+      </span>
+    </div>
+  `;
+
+  body.innerHTML = `
+    <!-- Live Hasanat Meter Banner -->
+    <div class="hasanat-meter-banner">
+      <div class="hasanat-meter-stat">
+        <span class="hasanat-meter-icon">✨</span>
+        <div>
+          <div class="hasanat-meter-title">Total Parah Hasanat (نیکیاں)</div>
+          <div class="hasanat-meter-val">+${estimatedHasanat.toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="hasanat-meter-stat">
+        <span class="hasanat-meter-icon">📜</span>
+        <div>
+          <div class="hasanat-meter-title">Surah Boundaries</div>
+          <div style="font-size: 0.88rem; color: var(--gold-bright); font-weight: 600;">${parah.startSurah} → ${parah.endSurah}</div>
+        </div>
+      </div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); max-width: 200px;">
+        ✦ Jami' at-Tirmidhi (2910): 10 Hasanat for every Arabic letter recited.
+      </div>
+    </div>
+
+    <!-- Parah Tilawat Audio Player -->
+    <div class="surah-audio-bar" style="margin-bottom: 24px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.35rem;">🎧</span>
+        <div>
+          <strong style="color: var(--gold-bright); font-size: 0.85rem; display: block;">Mishary Rashid Alafasy Recitation</strong>
+          <span style="color: var(--text-muted); font-size: 0.74rem;">Full Parah ${parah.juzNumber} Tilawat Audio</span>
+        </div>
+      </div>
+      <audio controls controlsList="nodownload" style="height: 38px; max-width: 340px; outline: none; border-radius: 20px;" src="${audioUrl}"></audio>
+    </div>
+
+    <div style="text-align: center; padding: 24px 16px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-gold);">
+      <div style="font-family: var(--font-arabic-title); font-size: 2.8rem; color: var(--gold-bright); margin-bottom: 12px;">
+        ${parah.arabic}
+      </div>
+      <h3 style="font-family: var(--font-serif); font-size: 1.4rem; color: var(--text-cream); margin-bottom: 6px;">
+        Juz ${parah.juzNumber} • ${parah.title}
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 600px; margin: 0 auto 16px; line-height: 1.7;">
+        Encompassing sacred revelations from <strong>${parah.startSurah}</strong> through <strong>${parah.endSurah}</strong>. Reciting this entire section carries approximately <strong>+${estimatedHasanat.toLocaleString()} Hasanat</strong>.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 12px;">
+        <button onclick="playDrawerSurahAudio('${audioUrl}', 'Juz ${parah.juzNumber}')" class="primary-btn" style="padding: 10px 22px;">
+          <span>🔊 Play Full Tilawat</span>
+        </button>
+        <button onclick="openModal('surah-al-fatihah')" class="action-pill-btn" style="padding: 10px 18px;">
+          <span>📖 Read Starting Surah</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+// 4 Authentic Hadith Collections Registry & Reader
+const AuthenticHadithRegistry = {
+  "bukhari": {
+    name: "Sahih al-Bukhari",
+    arabic: "صحيح البخاري",
+    author: "Imam Muhammad al-Bukhari (رحمه الله)",
+    hadiths: [
+      {
+        num: 1,
+        arabic: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
+        urdu: "اعمال کا دارومدار نیتوں پر ہے اور ہر انسان کے لیے وہی ہے جس کی اس نے نیت کی۔",
+        english: "Actions are but by intention and every man shall have only that which he intended.",
+        reference: "Sahih al-Bukhari 1"
+      },
+      {
+        num: 13,
+        arabic: "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+        urdu: "تم میں سے کوئی شخص اس وقت تک مومن نہیں ہو سکتا جب تک وہ اپنے بھائی کے لیے وہی پسند نہ کرے جو اپنے لیے پسند کرتا ہے۔",
+        english: "None of you truly believes until he loves for his brother what he loves for himself.",
+        reference: "Sahih al-Bukhari 13"
+      },
+      {
+        num: 5027,
+        arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ",
+        urdu: "تم میں سے بہترین شخص وہ ہے جس نے قرآن سیکھا اور دوسروں کو سکھایا۔",
+        english: "The best among you are those who learn the Qur'an and teach it.",
+        reference: "Sahih al-Bukhari 5027"
+      }
+    ]
+  },
+  "muslim": {
+    name: "Sahih Muslim",
+    arabic: "صحيح مسلم",
+    author: "Imam Muslim ibn al-Hajjaj (رحمه الله)",
+    hadiths: [
+      {
+        num: 223,
+        arabic: "الطُّهُورُ شَطْرُ الإِيمَانِ وَالْحَمْدُ لِلَّهِ تَمْلأُ الْمِيزَانَ",
+        urdu: "پاکیزگی نصف ایمان ہے، اور 'الحمد لله' میزان کو بھر دیتا ہے۔",
+        english: "Cleanliness is half of faith and 'Alhamdulillah' (Praise be to Allah) fills the scale.",
+        reference: "Sahih Muslim 223"
+      },
+      {
+        num: 2699,
+        arabic: "مَنْ نَفَّسَ عَنْ مُؤْمِنٍ كُرْبَةً مِنْ كُرَبِ الدُّنْيَا نَفَّسَ اللَّهُ عَنْهُ كُرْبَةً مِنْ كُرَبِ يَوْمِ الْقِيَامَةِ",
+        urdu: "جس نے کسی مسلمان کی دنیاوی تکلیف دور کی، اللہ تعالی قیامت کے دن اس کی تکلیفوں میں سے ایک تکلیف دور فرمائے گا۔",
+        english: "Whoever relieves a believer of a distress from the distresses of this world, Allah will relieve him of a distress from the distresses of the Day of Resurrection.",
+        reference: "Sahih Muslim 2699"
+      }
+    ]
+  },
+  "tirmidhi": {
+    name: "Jami' at-Tirmidhi",
+    arabic: "جامع الترمذي",
+    author: "Imam Abu 'Isa at-Tirmidhi (رحمه الله)",
+    hadiths: [
+      {
+        num: 2910,
+        arabic: "مَنْ قَرَأَ حَرْفًا مِنْ كِتَابِ اللَّهِ فَلَهُ بِهِ حَسَنَةٌ، وَالحَسَنَةُ بِعَشْرِ أَمْثَالِهَا، لَا أَقُولُ الم حَرْفٌ، وَلَكِنْ أَلِفٌ حَرْفٌ وَلاَمٌ حَرْفٌ وَمِيمٌ حَرْفٌ",
+        urdu: "جس نے اللہ کی کتاب کا ایک حرف پڑھا اس کے لیے ایک نیکی ہے، اور ایک نیکی کا ثواب دس گنا ملتا ہے۔ میں یہ نہیں کہتا کہ 'الم' ایک حرف ہے، بلکہ الف ایک حرف ہے، لام ایک حرف ہے اور میم ایک حرف ہے۔",
+        english: "Whoever recites a letter from the Book of Allah, he will receive one good deed, and one good deed receives a tenfold reward. I do not say that Alif-Lam-Meem is one letter, but Alif is a letter, Lam is a letter and Meem is a letter.",
+        reference: "Jami' at-Tirmidhi 2910 • Hasan Sahih"
+      },
+      {
+        num: 1987,
+        arabic: "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ",
+        urdu: "اپنے بھائی کے سامنے تمہارا مسکرانا تمہارے لیے صدقہ ہے۔",
+        english: "Your smiling in the face of your brother is charity for you.",
+        reference: "Jami' at-Tirmidhi 1987 • Hasan"
+      }
+    ]
+  },
+  "abudawood": {
+    name: "Sunan Abi Dawood",
+    arabic: "سنن أبي داود",
+    author: "Imam Abu Dawood as-Sijistani (رحمه الله)",
+    hadiths: [
+      {
+        num: 1520,
+        arabic: "إِنَّ الدُّعَاءَ هُوَ الْعِبَادَةُ",
+        urdu: "بے شک دعا ہی عبادت ہے۔",
+        english: "Verily, supplication (Dua) is worship itself.",
+        reference: "Sunan Abi Dawood 1520 • Sahih"
+      },
+      {
+        num: 4941,
+        arabic: "الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ، ارْحَمُوا مَنْ فِي الأَرْضِ يَرْحَمْكُمْ مَنْ فِي السَّمَاءِ",
+        urdu: "رحم کرنے والوں پر رحمن رحم فرماتا ہے۔ تم زمین والوں پر رحم کرو، آسمان والا تم پر رحم کرے گا۔",
+        english: "The merciful will be shown mercy by the Most Merciful. Be merciful to those on the earth and the One in the heavens will have mercy upon you.",
+        reference: "Sunan Abi Dawood 4941 • Sahih"
+      }
+    ]
+  }
+};
+
+function openHadithModal(collectionId) {
+  const collection = AuthenticHadithRegistry[collectionId] || AuthenticHadithRegistry["bukhari"];
+  const modal = document.getElementById("globalModal");
+  const title = document.getElementById("modalTitle");
+  const body = document.getElementById("modalBody");
+
+  title.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; width: 100%;">
+      <span>${collection.name} (${collection.arabic})</span>
+      <span style="font-size: 0.76rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-bright); font-family: var(--font-sans); font-weight: 700; background: rgba(212, 175, 55, 0.12); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border-gold);">
+        Authentic Prophetic Traditions
+      </span>
+    </div>
+  `;
+
+  body.innerHTML = `
+    <div style="margin-bottom: 20px; padding: 14px 18px; background: rgba(212,168,83,0.08); border-left: 3px solid var(--gold-bright); border-radius: 6px;">
+      <span style="font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 4px;">
+        ✦ Scholar: ${collection.author}
+      </span>
+      <p style="color: var(--text-cream); font-size: 0.9rem; margin: 0; line-height: 1.6;">
+        Rigorous, verified traditions transmitted directly with continuous Sahih chains back to the Messenger of Allah ﷺ.
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      ${collection.hadiths.map(h => `
+        <div class="quran-ayah-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span class="ayah-badge">Hadith #${h.num}</span>
+            <span style="font-size: 0.74rem; color: var(--gold-muted);">${h.reference}</span>
+          </div>
+          <p class="ayah-arabic-text" style="font-size: 1.5rem; line-height: 2.2;">${h.arabic}</p>
+          <div class="ayah-urdu-text">${h.urdu}</div>
+          <div class="ayah-english-text">${h.english}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+// ==========================================================================
+// 15. OFF-CANVAS QURAN & HADITH DRAWER CONTROLLERS
+// ==========================================================================
+function openQuranDrawer(tab = 'surahs') {
+  const drawer = document.getElementById("quranDrawer");
+  const overlay = document.getElementById("quranDrawerOverlay");
+  if (drawer) drawer.classList.add("open");
+  if (overlay) overlay.classList.add("active");
+  document.body.style.overflow = "hidden";
+  switchDrawerTab(tab);
+}
+
+function closeQuranDrawer() {
+  const drawer = document.getElementById("quranDrawer");
+  const overlay = document.getElementById("quranDrawerOverlay");
+  if (drawer) drawer.classList.remove("open");
+  if (overlay) overlay.classList.remove("active");
+  document.body.style.overflow = "auto";
+}
+
+function switchDrawerTab(tab) {
+  const tabs = ['surahs', 'parahs', 'hadith'];
+  tabs.forEach(t => {
+    const btn = document.getElementById('drawerTab' + t.charAt(0).toUpperCase() + t.slice(1));
+    const view = document.getElementById('drawer' + t.charAt(0).toUpperCase() + t.slice(1) + 'View');
+    if (btn) btn.classList.toggle('active', t === tab);
+    if (view) {
+      view.style.display = (t === tab) ? 'block' : 'none';
+    }
+  });
+
+  const filterInput = document.getElementById("drawerFilterInput");
+  const query = filterInput ? filterInput.value.trim() : "";
+
+  if (tab === 'surahs') renderDrawerSurahs(query);
+  else if (tab === 'parahs') renderDrawerParahs(query);
+  else if (tab === 'hadith') renderDrawerHadith(query);
+}
+
+function filterDrawerContent(q) {
+  const activeTabBtn = document.querySelector(".drawer-tab-btn.active");
+  if (activeTabBtn) {
+    if (activeTabBtn.id === "drawerTabSurahs") renderDrawerSurahs(q);
+    else if (activeTabBtn.id === "drawerTabParahs") renderDrawerParahs(q);
+    else if (activeTabBtn.id === "drawerTabHadith") renderDrawerHadith(q);
+  }
+}
+
+function renderDrawerSurahs(filterQuery = '') {
+  const container = document.getElementById("drawerSurahsGrid");
+  if (!container) return;
+  const allSurahs = window.SukunAllSurahsIndex || [];
+  const q = filterQuery.toLowerCase().trim();
+
+  const filtered = allSurahs.filter(s => {
+    if (!q) return true;
+    return (
+      s.name.toLowerCase().includes(q) ||
+      s.arabic.includes(q) ||
+      s.meaning.toLowerCase().includes(q) ||
+      s.number.toString() === q
+    );
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px;">No Surah found matching "${filterQuery}".</p>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(s => {
+    const hasanatApprox = s.ayahs * 45 * 10;
+    return `
+      <div class="drawer-item-card">
+        <div class="drawer-item-left">
+          <div class="drawer-item-num">${s.number}</div>
+          <div class="drawer-item-text">
+            <h4 class="drawer-item-name">${s.name}</h4>
+            <div class="drawer-item-sub">${s.meaning} • ${s.ayahs} Ayahs • ~${hasanatApprox.toLocaleString()} Hasanat</div>
+          </div>
+        </div>
+        <div class="drawer-item-actions">
+          <span class="drawer-item-arabic">${s.arabic}</span>
+          <button onclick="playDrawerSurahAudio('${s.audioUrl}', '${s.name}')" class="drawer-action-btn" title="Listen to Tilawat">
+            <span>🔊 Tilawat</span>
+          </button>
+          <button onclick="closeQuranDrawer(); openModal('${s.id}')" class="drawer-action-btn" style="background: var(--gold-primary); color: #0b111e; font-weight: 600;" title="Read Surah with Ayah by Ayah Neki Counter">
+            <span>📖 Read</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function playDrawerSurahAudio(audioUrl, surahName) {
+  let drawerAudio = document.getElementById("drawerAudioPlayer");
+  if (!drawerAudio) {
+    drawerAudio = document.createElement("audio");
+    drawerAudio.id = "drawerAudioPlayer";
+    document.body.appendChild(drawerAudio);
+  }
+  drawerAudio.src = audioUrl;
+  drawerAudio.play();
+  showToast(`Playing Tilawat of ${surahName} (Mishary Rashid Alafasy)...`);
+}
+
+function renderDrawerParahs(filterQuery = '') {
+  const container = document.getElementById("drawerParahsGrid");
+  if (!container) return;
+  const allParahs = window.SukunAllParahsIndex || [];
+  const q = filterQuery.toLowerCase().trim();
+
+  const filtered = allParahs.filter(p => {
+    if (!q) return true;
+    return (
+      p.title.toLowerCase().includes(q) ||
+      p.arabic.includes(q) ||
+      p.juzNumber.toString() === q ||
+      (p.startSurah && p.startSurah.toLowerCase().includes(q))
+    );
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px;">No Parah (Juz) found matching "${filterQuery}".</p>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(p => {
+    const hasanatApprox = (p.ayahsCount || 200) * 45 * 10;
+    const audioUrl = `https://server8.mp3quran.net/afs/${p.juzNumber.toString().padStart(3, '0')}.mp3`;
+    return `
+      <div class="drawer-item-card">
+        <div class="drawer-item-left">
+          <div class="drawer-item-num">Juz ${p.juzNumber}</div>
+          <div class="drawer-item-text">
+            <h4 class="drawer-item-name">${p.title}</h4>
+            <div class="drawer-item-sub">${p.startSurah} → ${p.endSurah} (${p.ayahsCount} Ayahs • ~${hasanatApprox.toLocaleString()} Hasanat)</div>
+          </div>
+        </div>
+        <div class="drawer-item-actions">
+          <span class="drawer-item-arabic">${p.arabic}</span>
+          <button onclick="playDrawerSurahAudio('${audioUrl}', 'Juz ${p.juzNumber} - ${p.title}')" class="drawer-action-btn" title="Listen Tilawat">
+            <span>🔊 Tilawat</span>
+          </button>
+          <button onclick="closeQuranDrawer(); openParahModal(${p.juzNumber})" class="drawer-action-btn" style="background: var(--gold-primary); color: #0b111e; font-weight: 600;">
+            <span>📖 Read</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDrawerHadith(filterQuery = '') {
+  const container = document.getElementById("drawerHadithGrid");
+  if (!container) return;
+  const collections = window.SukunHadithCollectionsIndex || [];
+  const q = filterQuery.toLowerCase().trim();
+
+  const filtered = collections.filter(h => {
+    if (!q) return true;
+    return (
+      h.name.toLowerCase().includes(q) ||
+      h.arabic.includes(q) ||
+      h.author.toLowerCase().includes(q)
+    );
+  });
+
+  container.innerHTML = filtered.map(h => {
+    return `
+      <div class="drawer-item-card" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div>
+            <h4 class="drawer-item-name" style="font-size: 1.05rem; color: var(--gold-bright);">${h.name}</h4>
+            <div class="drawer-item-sub">${h.author} • ${h.hadithCount.toLocaleString()} Hadiths</div>
+          </div>
+          <span class="drawer-item-arabic" style="font-size: 1.25rem;">${h.arabic}</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+          ${h.description}
+        </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-top: 1px dashed rgba(212,168,83,0.2); padding-top: 8px;">
+          <span style="font-size: 0.72rem; color: var(--gold-muted); font-weight: 600;">✦ ${h.status}</span>
+          <button onclick="closeQuranDrawer(); openHadithModal('${h.id}')" class="drawer-action-btn" style="background: var(--gold-primary); color: #0b111e; font-weight: 600;">
+            <span>📖 Explore Hadiths</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ==========================================================================
+// 16. DEDICATED DIGITAL TASBIH MODAL CONTROLLERS
+// ==========================================================================
+function openTasbihModal() {
+  const modal = document.getElementById("tasbihModal");
+  if (modal) modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closeTasbihModal() {
+  const modal = document.getElementById("tasbihModal");
+  if (modal) modal.style.display = "none";
+  document.body.style.overflow = "auto";
+}
+
+// ==========================================================================
+// 17. CONVERSATIONAL AI CHAT COMPANION ENGINE
+// ==========================================================================
+let chatConversationHistory = [];
+
+function appendChatMessage(role, text, metadata = {}) {
+  chatConversationHistory.push({ role, text, metadata, timestamp: Date.now() });
+  renderChatMessages();
+}
+
+function renderChatMessages() {
+  const container = document.getElementById("chatMessagesList");
+  if (!container) return;
+
+  if (chatConversationHistory.length === 0) {
+    container.innerHTML = `
+      <div class="chat-bubble ai-chat-bubble" style="opacity: 0.85;">
+        <p style="margin: 0;"><strong>Assalamu Alaikum wa Rahmatullahi wa Barakatuh.</strong></p>
+        <p style="margin: 6px 0 0; font-size: 0.9rem;">I am your Sukun Spiritual Companion. How can I help you today? You may ask about feelings of anxiety, debt, family peace, a specific Surah, or request an authentic Dua from Quran and Sunnah.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = chatConversationHistory.map(msg => {
+    if (msg.role === 'user') {
+      return `
+        <div class="chat-bubble user-chat-bubble">
+          <strong>You:</strong> ${escapeHtml(msg.text)}
+        </div>
+      `;
+    } else {
+      return `
+        <div class="chat-bubble ai-chat-bubble">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 0.76rem; color: var(--gold-bright); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+            <span>✨</span> Sukun Companion
+          </div>
+          <div>${escapeHtml(msg.text)}</div>
+        </div>
+      `;
+    }
+  }).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+function clearConversation() {
+  chatConversationHistory = [];
+  renderChatMessages();
+  const input = document.getElementById("chatFollowUpInput");
+  if (input) input.value = "";
+  const scriptureCard = document.getElementById("scriptureCardWrapper");
+  if (scriptureCard) scriptureCard.style.display = "none";
+  showToast("Conversation cleared. Ready for your new inquiry.");
+}
+
+async function sendFollowUpMessage() {
+  const input = document.getElementById("chatFollowUpInput");
+  if (!input) return;
+  const userText = input.value.trim();
+  if (!userText) return;
+  input.value = "";
+
+  appendChatMessage('user', userText);
+
+  const container = document.getElementById("chatMessagesList");
+  const typingId = "typingIndicator_" + Date.now();
+  if (container) {
+    const typingBubble = document.createElement("div");
+    typingBubble.id = typingId;
+    typingBubble.className = "chat-bubble ai-chat-bubble";
+    typingBubble.innerHTML = `<em>Consulting authentic scriptures...</em>`;
+    container.appendChild(typingBubble);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  try {
+    const aiResponse = await fetchSecretScriptureFromAI(userText);
+    const typingElem = document.getElementById(typingId);
+    if (typingElem) typingElem.remove();
+
+    if (aiResponse) {
+      const counselText = generateConversationalCounsel(aiResponse, userText);
+      appendChatMessage('model', counselText);
+      displaySearchResult(aiResponse, false);
+    } else {
+      appendChatMessage('model', "SubhanAllah. May Allah ease your affairs and grant tranquility to your heart. Please reflect upon the Dua and Ayah presented below.");
+    }
+  } catch (err) {
+    console.warn("Follow-up error:", err);
+    const typingElem = document.getElementById(typingId);
+    if (typingElem) typingElem.remove();
+    appendChatMessage('model', "May Allah grant you ease. Please review the sacred scripture below for comfort and guidance.");
+  }
+}
+
+function escapeHtml(text) {
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // Global key handlers
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     closeModal();
     closeAuthModal();
+    closeTasbihModal();
+    closeQuranDrawer();
   }
   if (e.code === "Space" && e.target === document.body) {
-    const tasbih = document.getElementById("digital-tasbih");
-    if (tasbih) {
-      const rect = tasbih.getBoundingClientRect();
-      if (rect.top >= 0 && rect.bottom <= window.innerHeight + 100) {
-        e.preventDefault();
-        incrementTasbih();
-      }
+    const tasbihModal = document.getElementById("tasbihModal");
+    if (tasbihModal && tasbihModal.style.display === "flex") {
+      e.preventDefault();
+      incrementTasbih();
     }
   }
 });
+
+// Initialize on DOM load
+document.addEventListener("DOMContentLoaded", () => {
+  renderChatMessages();
+});
+

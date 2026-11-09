@@ -2836,3 +2836,702 @@ body.light-theme .mobile-nav-admin {
     font-size: 0.9rem;
   }
 }
+
+/* ==========================================================================
+   12. ELDER-FRIENDLY COMPACT SANCTUARY & OFF-CANVAS QURAN DRAWER SYSTEM
+   Clean, Airy ("Halka Khali-Khali"), Zero Visual Noise & High Contrast
+   ========================================================================== */
+
+/* Compact Hero Header (Spacious, Elegant & Dignified) */
+.compact-hero-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 10px 10px 0;
+}
+
+.compact-hero-title {
+  font-family: var(--font-serif);
+  font-size: 2.35rem;
+  font-weight: 400;
+  color: var(--text-cream);
+  letter-spacing: 0.5px;
+  margin: 8px 0 10px;
+}
+
+.compact-hero-title span {
+  font-style: italic;
+  color: var(--gold-bright);
+}
+
+.compact-hero-desc {
+  max-width: 640px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* 4 Quick Sanctuary Feature Shortcuts (Under Top Search Bar) */
+.sanctuary-shortcuts-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 18px 0 16px;
+}
+
+.shortcut-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: 9999px;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-cream);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  white-space: nowrap;
+}
+
+.shortcut-pill:hover {
+  background: rgba(212, 168, 83, 0.12);
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(212, 168, 83, 0.22);
+}
+
+.shortcut-pill:active {
+  transform: translateY(0);
+}
+
+.shortcut-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+body.light-theme .shortcut-pill {
+  background: #ffffff;
+  border-color: rgba(184, 134, 11, 0.28);
+  color: #1a1612;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+body.light-theme .shortcut-pill:hover {
+  background: #fbf7ee;
+  border-color: #b8860b;
+  color: #8b6508;
+}
+
+/* ==========================================================================
+   13. OFF-CANVAS QURAN & HADITH SLIDE-OUT DRAWER
+   Complete 114 Surahs, 30 Parahs & 4 Hadith Collections
+   ========================================================================== */
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-overlay.active {
+  display: block !important;
+  opacity: 1;
+}
+
+.quran-slide-drawer {
+  position: fixed;
+  top: 0;
+  right: -520px;
+  width: 500px;
+  max-width: 90vw;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-navy-dark);
+  border-left: 1px solid var(--border-gold);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 35px rgba(0, 0, 0, 0.7);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.quran-slide-drawer.open {
+  transform: translateX(-520px);
+}
+
+body.light-theme .quran-slide-drawer {
+  background: #fbf7ee;
+  border-left-color: rgba(184, 134, 11, 0.28);
+  box-shadow: -8px 0 35px rgba(0, 0, 0, 0.15);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-gold);
+  flex-shrink: 0;
+}
+
+body.light-theme .drawer-header {
+  background: #ffffff;
+}
+
+.drawer-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drawer-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.drawer-heading {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--gold-bright);
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.drawer-subheading {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin: 3px 0 0;
+}
+
+.drawer-close-btn {
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  color: var(--text-cream);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drawer-close-btn:hover {
+  background: rgba(212, 168, 83, 0.15);
+  color: var(--gold-bright);
+}
+
+/* Drawer Tabs Switcher */
+.drawer-tabs-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border-gold);
+  padding: 8px 12px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+body.light-theme .drawer-tabs-row {
+  background: #f4ecdc;
+}
+
+.drawer-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.drawer-tab-btn.active {
+  background: var(--bg-card);
+  border-color: var(--border-gold);
+  color: var(--gold-bright);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+body.light-theme .drawer-tab-btn.active {
+  background: #ffffff;
+  border-color: rgba(184, 134, 11, 0.3);
+  color: #8b6508;
+}
+
+/* Drawer Filter Input */
+.drawer-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-gold);
+  flex-shrink: 0;
+}
+
+.drawer-search-icon {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.drawer-filter-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-cream);
+  font-size: 0.92rem;
+}
+
+.drawer-filter-input::placeholder {
+  color: var(--text-muted);
+}
+
+body.light-theme .drawer-filter-input {
+  color: #1a1612;
+}
+
+/* Drawer Scroll View & Item Cards */
+.drawer-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 18px 30px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.drawer-view-info {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  text-align: center;
+  padding: 6px 12px;
+  background: rgba(212, 168, 83, 0.06);
+  border-radius: 6px;
+  border: 1px dashed rgba(212, 168, 83, 0.2);
+}
+
+.drawer-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawer-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+}
+
+.drawer-item-card:hover {
+  border-color: var(--gold-bright);
+  background: rgba(212, 168, 83, 0.08);
+  transform: translateX(3px);
+}
+
+body.light-theme .drawer-item-card {
+  background: #ffffff;
+  border-color: rgba(184, 134, 11, 0.2);
+}
+
+body.light-theme .drawer-item-card:hover {
+  background: #fbf7ee;
+  border-color: #b8860b;
+}
+
+.drawer-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.drawer-item-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: rgba(212, 168, 83, 0.12);
+  color: var(--gold-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.drawer-item-text {
+  min-width: 0;
+}
+
+.drawer-item-name {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--text-cream);
+  margin: 0;
+}
+
+body.light-theme .drawer-item-name {
+  color: #1a1612;
+}
+
+.drawer-item-sub {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.drawer-item-arabic {
+  font-family: var(--font-arabic-title);
+  font-size: 1.35rem;
+  color: var(--gold-bright);
+  direction: rtl;
+  margin-right: 8px;
+}
+
+.drawer-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.drawer-action-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: var(--text-cream);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.drawer-action-btn:hover {
+  background: var(--gold-primary);
+  border-color: var(--gold-primary);
+  color: #0b111e;
+}
+
+body.light-theme .drawer-action-btn {
+  background: #fbf7ee;
+  color: #1a1612;
+}
+
+/* ==========================================================================
+   14. CONVERSATIONAL AI SANCTUARY COMPANION & CHAT STREAM
+   Continuous Dialogue, Clear Question & Answer Bubbles
+   ========================================================================== */
+
+.ai-conversation-hub {
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+body.light-theme .ai-conversation-hub {
+  background: #ffffff;
+  border-color: rgba(184, 134, 11, 0.28);
+}
+
+.counsel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(212, 168, 83, 0.18);
+  margin-bottom: 16px;
+}
+
+.clear-convo-btn {
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-convo-btn:hover {
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
+  background: rgba(212, 168, 83, 0.1);
+}
+
+.chat-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.chat-bubble {
+  max-width: 90%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.user-chat-bubble {
+  align-self: flex-end;
+  background: rgba(212, 168, 83, 0.16);
+  border: 1px solid var(--gold-bright);
+  color: var(--gold-bright);
+  border-bottom-right-radius: 2px;
+}
+
+body.light-theme .user-chat-bubble {
+  background: #fdf3d8;
+  border-color: #b8860b;
+  color: #634304;
+}
+
+.ai-chat-bubble {
+  align-self: flex-start;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(212, 168, 83, 0.22);
+  color: var(--text-cream);
+  border-bottom-left-radius: 2px;
+}
+
+body.light-theme .ai-chat-bubble {
+  background: #fbf7ee;
+  border-color: rgba(184, 134, 11, 0.2);
+  color: #1a1612;
+}
+
+.chat-followup-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(212, 168, 83, 0.18);
+}
+
+.chat-followup-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-cream);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.chat-followup-input:focus {
+  border-color: var(--gold-bright);
+}
+
+body.light-theme .chat-followup-input {
+  background: #fbf7ee;
+  color: #1a1612;
+}
+
+.chat-send-btn {
+  background: var(--gold-primary);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  color: #0b111e;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.chat-send-btn:hover {
+  background: var(--gold-bright);
+}
+
+/* ==========================================================================
+   15. LIVE HASANAT (NEKI) METER & AYAH-BY-AYAH TRACKER
+   Prophetic Virtue (Jami' at-Tirmidhi 2910: 10 Hasanat per Arabic Letter)
+   ========================================================================== */
+
+.hasanat-meter-banner {
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.18) 0%, rgba(26, 42, 68, 0.45) 100%);
+  border: 1px solid var(--gold-bright);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+body.light-theme .hasanat-meter-banner {
+  background: linear-gradient(135deg, #fdf5e2 0%, #faebd7 100%);
+  border-color: #b8860b;
+}
+
+.hasanat-meter-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hasanat-meter-icon {
+  font-size: 1.4rem;
+}
+
+.hasanat-meter-title {
+  font-size: 0.74rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  margin-bottom: 2px;
+}
+
+.hasanat-meter-val {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-cream);
+}
+
+body.light-theme .hasanat-meter-val {
+  color: #1a1612;
+}
+
+.ayah-hasanat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(212, 168, 83, 0.14);
+  border: 1px solid var(--border-gold);
+  border-radius: 9999px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gold-bright);
+}
+
+.ayah-audio-play-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  color: var(--text-cream);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.ayah-audio-play-btn:hover {
+  background: var(--gold-primary);
+  border-color: var(--gold-primary);
+  color: #0b111e;
+}
+
+/* Dedicated Tasbih Modal Styling */
+.tasbih-modal-dialog {
+  max-width: 480px !important;
+  padding: 24px !important;
+}
+
+.tasbih-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.tasbih-modal-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.tasbih-modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: var(--gold-bright);
+  margin: 0;
+}
+
+.tasbih-modal-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 3px 0 0;
+}
+
+.tasbih-modal-body {
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .sanctuary-shortcuts-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .shortcut-pill {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+  }
+
+  .quran-slide-drawer {
+    width: 100vw;
+    max-width: 100vw;
+    right: -100vw;
+  }
+
+  .quran-slide-drawer.open {
+    transform: translateX(-100vw);
+  }
+
+  .drawer-tabs-row {
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .drawer-tab-btn {
+    font-size: 0.74rem;
+    padding: 6px 4px;
+  }
+}
