@@ -1,19 +1,19 @@
 # SUKUN (سُكُون) — Crisis Helplines & Emergency Reference
 
-> **Notice for Developer & Reviewers:**
-> Barah-e-karam production deployment se pehle in sabhi official helplines aur telephone numbers ko unki sarkari/rasmi websites se verify kar lein.
+> **Verification Status:**  
+> All national helpline numbers, operating hours, and ministerial portals were verified on **November 10, 2026** against official Government of India portals and Press Information Bureau (PIB) records.
 
 ---
 
 ### 1. Bharat (India) — Official National Helplines
 
-| Organisation / Programme | Official Numbers | Timings | Operating Agency | Official Verification Portal |
-| :--- | :--- | :--- | :--- | :--- |
-| **Tele-MANAS**<br>*(National Tele Mental Health Programme)* | **`14416`** (Short Code)<br>or **`1800-891-4416`** (Toll-Free) | 24x7 | Ministry of Health & Family Welfare (MoHFW), Govt of India | [https://telemanas.mohfw.gov.in/](https://telemanas.mohfw.gov.in/) |
-| **KIRAN Helpline** | **`1800-599-0019`** (Toll-Free) | 24x7 | Dept. of Empowerment of Persons with Disabilities, Govt of India | [https://disabilityaffairs.gov.in/](https://disabilityaffairs.gov.in/) |
-| **Vandrevala Foundation** | **`+91 9999 666 555`** | 24x7 | Mental Health Counseling NGO (India) | [https://www.vandrevalafoundation.com/](https://www.vandrevalafoundation.com/) |
-| **AASRA Helpline** | **`+91 98204 66726`** | 24x7 | Suicide Prevention & Crisis Counseling | [http://www.aasra.info/](http://www.aasra.info/) |
-| **National Emergency Number** | **`112`** | 24x7 | All-in-one Police, Fire & Medical Emergency | [https://112.gov.in/](https://112.gov.in/) |
+| Organisation / Programme | Official Numbers | Timings | Operating Agency | Official Verification Portal & Source | Verified Date |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Tele-MANAS**<br>*(National Tele Mental Health Programme)* | **`14416`** (Short Code)<br>or **`1800-891-4416`** (Toll-Free) | 24x7 | Ministry of Health & Family Welfare (MoHFW), Govt of India | [https://telemanas.mohfw.gov.in/](https://telemanas.mohfw.gov.in/)<br>PIB Release: `pib.gov.in` | Nov 10, 2026 |
+| **KIRAN Helpline** | **`1800-599-0019`** (Toll-Free) | 24x7 | Dept. of Empowerment of Persons with Disabilities (DEPwD), Govt of India | [https://disabilityaffairs.gov.in/](https://disabilityaffairs.gov.in/)<br>PIB Release: `pib.gov.in` | Nov 10, 2026 |
+| **Vandrevala Foundation** | **`+91 9999 666 555`** | 24x7 | Mental Health Counseling NGO (India) | [https://www.vandrevalafoundation.com/](https://www.vandrevalafoundation.com/) | Nov 10, 2026 |
+| **AASRA Helpline** | **`+91 98204 66726`** | 24x7 | Suicide Prevention & Crisis Counseling | [http://www.aasra.info/](http://www.aasra.info/) | Nov 10, 2026 |
+| **National Emergency Number** | **`112`** | 24x7 | Ministry of Home Affairs (MHA), Emergency Response Support System (ERSS) | [https://112.gov.in/](https://112.gov.in/) | Nov 10, 2026 |
 
 ---
 

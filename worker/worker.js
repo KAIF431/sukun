@@ -20,25 +20,53 @@ function getAllowedOrigin(request, env) {
   return PROD_ORIGIN;
 }
 
+// Base64URL Decoders and Encoders (RFC 4648 compliant)
+// Converts URL-safe '-' to '+' and '_' to '/' with required padding before passing to atob()
+function base64UrlDecode(str) {
+  if (!str) return "";
+  let b64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  while (b64.length % 4 !== 0) {
+    b64 += "=";
+  }
+  return atob(b64);
+}
+
+function base64UrlEncode(str) {
+  return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// Normalizes Eastern Arabic & Urdu/Persian digits to standard Western Arabic numerals
+function normalizeArabicNumerals(str) {
+  if (!str) return "";
+  return str
+    .replace(/[٠۰]/g, '0').replace(/[١۱]/g, '1').replace(/[٢۲]/g, '2')
+    .replace(/[٣۳]/g, '3').replace(/[٤۴]/g, '4').replace(/[٥۵]/g, '5')
+    .replace(/[٦۶]/g, '6').replace(/[٧۷]/g, '7').replace(/[٨۸]/g, '8')
+    .replace(/[٩۹]/g, '9');
+}
+
 // Disambiguates time (e.g. 10:30 am, meeting at 12:45) from Quran Ayah coordinates (1:1 to 114:6)
+// Handles edge cases: extra spaces around colon ("2 : 255"), Arabic-Indic digits, and Hadith citations
 function extractScriptureReferences(text) {
   const refs = [];
   if (!text) return refs;
 
-  // 1. Ayah coordinates (Surah 1-114, Ayah 1-286)
-  const ayahPattern = /(?:\b(?:ayah|surah|quran|verse|aayat)\s+)?(?:\(|\b)([1-9]|[1-9]\d|10\d|11[0-4]):([1-9]|[1-9]\d|[12]\d{2})(?:\)|\b)/gi;
+  const normalizedText = normalizeArabicNumerals(text);
+
+  // 1. Ayah coordinates (Surah 1-114, Ayah 1-286) with optional whitespace around colon
+  const ayahPattern = /(?:\b(?:ayah|surah|quran|verse|aayat)\s+)?(?:\(|\b)([1-9]|[1-9]\d|10\d|11[0-4])\s*:\s*([1-9]|[1-9]\d|[12]\d{2})(?:\)|\b)/gi;
   let m;
-  while ((m = ayahPattern.exec(text)) !== null) {
+  while ((m = ayahPattern.exec(normalizedText)) !== null) {
     const fullMatch = m[0];
     const surah = parseInt(m[1], 10);
     const ayah = parseInt(m[2], 10);
 
     const startIdx = Math.max(0, m.index - 15);
-    const endIdx = Math.min(text.length, m.index + fullMatch.length + 15);
-    const window = text.substring(startIdx, endIdx).toLowerCase();
+    const endIdx = Math.min(normalizedText.length, m.index + fullMatch.length + 15);
+    const window = normalizedText.substring(startIdx, endIdx).toLowerCase();
 
-    const isTime = /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm)\s+\d+:\d+/i.test(window) ||
-                   /\d+:\d+\s*(?:am|pm|baje|hrs|hours|morning|evening|night)\b/i.test(window);
+    const isTime = /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm)\s+\d+\s*:\s*\d+/i.test(window) ||
+                   /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|evening|night)\b/i.test(window);
 
     if (!isTime && surah >= 1 && surah <= 114 && ayah >= 1 && ayah <= 286) {
       refs.push(`${surah}:${ayah}`);
@@ -46,14 +74,14 @@ function extractScriptureReferences(text) {
   }
 
   // 2. Named Surah patterns (English & Urdu script, supporting Urdu/Arabic numerals)
-  const namedSurahPattern = /(?:Surah|Surat|سورة|سورۃ)\s+([A-Za-z'-]+|[\u0600-\u06FF]+)\s*(?:Ayah|Aayat|Verse|آیت)?\s*([0-9۰-۹٠-٩]+)/gi;
-  while ((m = namedSurahPattern.exec(text)) !== null) {
+  const namedSurahPattern = /(?:Surah|Surat|سورة|سورۃ)\s+([A-Za-z'-]+|[\u0600-\u06FF]+)\s*(?:Ayah|Aayat|Verse|آیت)?\s*([0-9]+)/gi;
+  while ((m = namedSurahPattern.exec(normalizedText)) !== null) {
     refs.push(m[0].trim());
   }
 
-  // 3. Hadith book citations
-  const hadithPattern = /\b(?:Bukhari|Muslim|Tirmidhi|Abu Dawood|Ibn Majah|Nasai|بخاري|مسلم|ترمذي)\s*#?\s*([0-9۰-۹٠-٩]+)/gi;
-  while ((m = hadithPattern.exec(text)) !== null) {
+  // 3. Hadith book citations (Sahih Bukhari, Muslim, Tirmidhi, Abu Dawood, etc.)
+  const hadithPattern = /\b(?:Sahih\s+)?(?:Bukhari|Muslim|Tirmidhi|Abu Dawood|Ibn Majah|Nasai|بخاري|مسلم|ترمذي|أبو داود)\s*#?\s*([0-9]+)/gi;
+  while ((m = hadithPattern.exec(normalizedText)) !== null) {
     refs.push(m[0].trim());
   }
 
@@ -61,6 +89,7 @@ function extractScriptureReferences(text) {
 }
 
 // In-Memory Burst Rate Limiter (No KV cost for normal traffic)
+// Note: Per-isolate burst guard. Primary DDoS & brute-force protection is Cloudflare Turnstile + Google Daily Quota Cap.
 const inMemoryIpHits = new Map();
 function checkBurstRateLimit(ip) {
   const now = Date.now();
@@ -75,7 +104,7 @@ function checkBurstRateLimit(ip) {
   return record.count <= 25; // Max 25 calls per minute per IP
 }
 
-// HMAC-SHA256 Signed Short-Lived Session Token
+// HMAC-SHA256 Signed Short-Lived Session Token (Base64URL Compliant & Constant-Time Verification)
 async function verifySessionToken(token, secret) {
   try {
     const [payloadB64, sigB64] = token.split(".");
@@ -88,15 +117,19 @@ async function verifySessionToken(token, secret) {
       false,
       ["verify"]
     );
+    // Constant-time signature verification via Web Crypto API (BoringSSL/OpenSSL in V8 workerd)
+    const rawSig = base64UrlDecode(sigB64);
     const isValid = await crypto.subtle.verify(
       "HMAC",
       key,
-      Uint8Array.from(atob(sigB64), c => c.charCodeAt(0)),
+      Uint8Array.from(rawSig, c => c.charCodeAt(0)),
       encoder.encode(payloadB64)
     );
     if (!isValid) return false;
-    const payload = JSON.parse(atob(payloadB64));
-    if (Date.now() > payload.exp) return false;
+
+    // Payload expiry check
+    const payload = JSON.parse(base64UrlDecode(payloadB64));
+    if (typeof payload.exp !== "number" || Date.now() > payload.exp) return false;
     return true;
   } catch (e) {
     return false;
@@ -110,7 +143,7 @@ async function createSessionToken(secret) {
     iat: Date.now(),
     exp: Date.now() + 30 * 60 * 1000 // 30 minutes validity
   });
-  const payloadB64 = btoa(payload);
+  const payloadB64 = base64UrlEncode(payload);
   const key = await crypto.subtle.importKey(
     "raw",
     encoder.encode(secret),
@@ -119,7 +152,7 @@ async function createSessionToken(secret) {
     ["sign"]
   );
   const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(payloadB64));
-  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig)));
+  const sigB64 = base64UrlEncode(String.fromCharCode(...new Uint8Array(sig)));
   return `${payloadB64}.${sigB64}`;
 }
 

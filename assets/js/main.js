@@ -164,8 +164,8 @@ const MasterKnowledge = [
     roman: "Bismika Allahumma amootu wa ahyaa.",
     translationUrdu: "اے اللہ! تیرے ہی نام کے ساتھ میں مرتا (سوتا) ہوں اور جیتا (جاگتا) ہوں۔",
     translationEnglish: "In Your Name, O Allah, do I die and do I live.",
-    reference: "Sahih al-Bukhari (6324, 6312) • Sahih Muslim (2711 / Book 48, Hadith 80)",
-    waqia: "Narrated by Hudhayfah (RA) in Sahih al-Bukhari (6324: 'Bismika Allahumma amootu wa ahya', and 6312: 'Bismika amootu wa ahya'). Also narrated by Al-Bara' bin 'Azib (RA) in Sahih Muslim (2711) with the wording: 'Allahumma bismika ahya wa amoot'. Both Bukhari and Muslim record the sleeping and waking supplications together.",
+    reference: "Sahih al-Bukhari (6324, 6312, 6313) • Sahih Muslim (2711 / Book 48, Hadith 81) [https://sunnah.com/bukhari:6324 | https://sunnah.com/muslim:2711]",
+    waqia: "Narrated by Hudhayfah (RA) in Sahih al-Bukhari (6324: 'Bismika Allahumma amootu wa ahya', and 6312: 'Allahumma bismika ahya wa amoot'). Also narrated by Al-Bara' bin 'Azib (RA) in Sahih Muslim 2711. (Note: Muslim 2710 is Al-Bara's narration for the bedtime Wudu/Fitrah dua 'Allahumma aslamtu nafsi ilayk').",
     lesson: "Sleep is the minor transition of the soul. Entrusting your life to Allah grants restful sleep and peaceful dreams."
   },
   {
@@ -178,8 +178,8 @@ const MasterKnowledge = [
     roman: "Al-hamdu lillaahil-ladhee ahyaanaa ba'da maa amaatanaa wa ilaihin-nushoor.",
     translationUrdu: "تمام تعریفیں اللہ کے لیے ہیں جس نے ہمیں مارنے کے بعد دوبارہ زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔",
     translationEnglish: "All praise is for Allah who gave us life after having caused us to die, and unto Him is the resurrection.",
-    reference: "Sahih al-Bukhari (6312, 6324) • Sahih Muslim (2711 / Book 48, Hadith 80)",
-    waqia: "Narrated by Hudhayfah (RA) in Sahih al-Bukhari (6312, 6324) and Al-Bara' bin 'Azib (RA) in Sahih Muslim (2711). Upon waking, the Messenger of Allah ﷺ thanked Allah for restoring life.",
+    reference: "Sahih al-Bukhari (6312, 6324) • Sahih Muslim (2711 / Book 48, Hadith 81) [https://sunnah.com/bukhari:6312 | https://sunnah.com/muslim:2711]",
+    waqia: "Narrated by Hudhayfah (RA) in Sahih al-Bukhari (6312, 6324) and Al-Bara' bin 'Azib (RA) in Sahih Muslim (2711). Both collections record the waking supplication immediately alongside the sleeping supplication.",
     lesson: "Ignites morning vitality, gratitude, and conscious awareness of our ultimate return to Allah."
   },
   {
@@ -510,9 +510,9 @@ const MasterKnowledge = [
     roman: "Allahumma innee as'aluka hubbaka, wa hubba man yuhibbuka, wal-'amalal-ladhee yuballighunee hubbak.",
     translationUrdu: "اے اللہ! میں تجھ سے تیری محبت مانگتا ہوں، اور ہر اس شخص کی محبت جو تجھ سے محبت کرتا ہے، اور ایسے عمل کی محبت جو مجھے تیری محبت تک پہنچا دے۔",
     translationEnglish: "O Allah, I ask You for Your divine love, the pure love of those who love You, and the righteous deeds that will lead me to attain Your love.",
-    reference: "Jami' at-Tirmidhi (3490) • Grade: Hasan (https://sunnah.com/tirmidhi:3490)",
+    reference: "Jami' at-Tirmidhi (3490) • Grade: Hasan Gharib (Imam at-Tirmidhi & Darussalam) / Da'if (Shaykh al-Albani, Da'if al-Jami' 4477) • https://sunnah.com/tirmidhi:3490",
     waqia: "Prophet Dawud (A.S) used to supplicate with these profound words, recognizing that all true and enduring love originates with Allah, and anchoring our hearts in divine love brings eternal tranquility.",
-    lesson: "Anchors the heart in the love of the Creator. Recite to attain spiritual peace and pure intentions in all worldly interactions."
+    lesson: "Hukm/Grading: Imam at-Tirmidhi graded it 'Hasan Gharib' and Darussalam graded it 'Hasan', whereas Shaykh al-Albani graded its sanad as 'Da'if' in Da'if al-Jami' (4477) due to narrator Abdullah ibn Rabi'ah. The supplication's meaning is virtuous for seeking pure love of Allah."
   },
   {
     id: "dua-knowledge",

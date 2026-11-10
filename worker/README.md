@@ -3,6 +3,9 @@
 > **Security Rule:**
 > Koi bhi secret value (API key, password, token) is file ya git me kabhi commit na karein.
 
+> **Rate Limiting Reality Check:**
+> Worker ka in-memory burst throttle (`checkBurstRateLimit`: 25 req/min per IP) sirf per-isolate halka burst-guard hai. Multi-region Cloudflare edge par asal DDoS aur budget overspend protection **Cloudflare Turnstile verification** aur **Google Cloud Console ka Daily Quota Cap** (`Requests per day`) hain.
+
 ---
 
 ### 1. Cloudflare Dashboard me Worker Setup
