@@ -1503,7 +1503,7 @@ let currentSearchToken = 0;
 var SUKUN_WORKER_ENDPOINT = window.SUKUN_WORKER_ENDPOINT || "https://sukun-gateway.kaifofficial4.workers.dev";
 
 // Pre-AI Crisis Interceptor Regex (Dual layer: Explicit vs Religious Context)
-const EXPLICIT_CRISIS_REGEX = /(?:^|[\s،۔!?\p{P}])(?:suicide|kill\s+myself|end\s+my\s+life|want\s+to\s+die|feel\s+like\s+dying|self\s*harm|(?:apne\s+aap|khud)\s+ko\s+(?:nuksan|harm)|(?:zindagi|khud\s+ko)\s+khatam(?:\s+karna|\s+kar\s+lu|\s+kar\s+dun)|marna\s+chahta(?:\s+h(?:u|un|oon))?|marna\s+chahti(?:\s+h(?:u|un|oon))?|mar\s+jana\s+chahta(?:\s+h(?:u|un|oon))?|mar\s+jana\s+chahti(?:\s+h(?:u|un|oon))?|marne\s+ka\s+(?:dil|mann)|mar\s*ja(?:u|un|aun|on|unga|ungi)|marne\s+(?:wale|par|ki\s+dua)|maut\s+(?:aane|chahiye|maangne|mangne|ki\s+dua)|khud\s*kush[iy]|khud\s*khus[iy]|jaan\s+de\s+(?:du|dunga|dungi)|jeene\s+ka\s+(?:man[n]?|koi\s+maqsad)\s+nahi|zeher\s+khane|phansi\s+lagane|kaash\s+subah\s+aankh\s+na\s+khule|so\s+ja(?:u|un|aun|on)\s+(?:aur\s+)?kabhi\s+na\s+uth(?:u|un|aun|oon)|(?:sab\s*pe|sabke\s+liye|sab\s+ke\s+liye)?\s*bojh\s+h(?:u|un|oon)|sab\s+khatam\s+ho\s+jaye|life\s+is\s+meaningless|ab\s+aur\s+nahi\s+ho\s+sakta|خودکشی|مرنا\s+چاہتا|زندگی\s+ختم|مجھے\s+مرنا\s+ہے)(?:$|[\s،۔!?\p{P}])/iu;
+const EXPLICIT_CRISIS_REGEX = /(?:^|[\s،۔!?\p{P}])(?:suicide|kill\s+myself|end\s+my\s+life|want\s+to\s+die|feel\s+like\s+dying|self\s*harm|(?:apne\s+aap|khud)\s+ko\s+(?:nuksan|harm)|(?:nuksan|harm)\s+pahun?chana|(?:zindagi|khud\s+ko)\s+khatam(?:\s+karna|\s+kar\s+lu|\s+kar\s+dun)|marna\s+chahta(?:\s+h(?:u|un|oon))?|marna\s+chahti(?:\s+h(?:u|un|oon))?|mar\s+jana\s+chahta(?:\s+h(?:u|un|oon))?|mar\s+jana\s+chahti(?:\s+h(?:u|un|oon))?|marne\s+ka\s+(?:dil|mann)|mar\s*ja(?:u|un|aun|on|unga|ungi)|marne\s+(?:wale|par|ki\s+dua)|maut\s+(?:aane|chahiye|maangne|mangne|ki\s+dua)|khud\s*kush[iy]|khud\s*khus[iy]|jaan\s+de\s+(?:du|dunga|dungi)|jeene\s+ka\s+(?:man[n]?|koi\s+maqsad)\s+nahi|zeher\s+kha(?:ne|na|un)|phansi\s+lagane|kaash\s+subah\s+aankh\s+na\s+khule|so\s+ja(?:u|un|aun|on)\s+(?:aur\s+)?kabhi\s+na\s+uth(?:u|un|aun|oon)|(?:sab\s*pe|sabke\s+liye|sab\s+ke\s+liye)?\s*bojh\s+h(?:u|un|oon)(?:\s+ab)?(?:\s+nahi\s+jeena)?|sab\s+khatam\s+ho\s+jaye(?:\s+to\s+ach(?:a|ha))?|life\s+is\s+meaningless|ab\s+aur\s+nahi\s+ho\s+sakta|خودکشی|مرنا\s+چاہتا|زندگی\s+ختم|مجھے\s+مرنا\s+ہے)(?:$|[\s،۔!?\p{P}])/iu;
 const RELIGIOUS_INTENT_REGEX = /(?:dua|wazifa|kaffara|janaza|hukm|fiqh|masla|hadith|ayah|ayat|padhte|parhte|sunnah|marne\s+wale|mayyat|grave|qabar)/iu;
 
 function evaluateCrisisIntent(text) {
@@ -1739,6 +1739,15 @@ async function fetchScriptureFromAI(queryText) {
       try { sessionStorage.setItem("sukun_session_token", rawData.sessionToken); } catch (e) {}
     }
 
+    // Safety Block, Crisis Interceptor, or Empty Reply from AI
+    if (rawData.crisisTriggered || rawData.blockReason === "SAFETY" || (!rawData.reply && !rawData.arabic)) {
+      return {
+        crisisTriggered: true,
+        blockReason: rawData.blockReason || "SAFETY",
+        reply: rawData.reply || ""
+      };
+    }
+
     const sanitized = sanitizeAIResponse(rawData);
 
     if (sanitized && sanitized.arabic && sanitized.reference) {
@@ -1859,6 +1868,16 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     try {
       const aiDua = await fetchScriptureFromAI(query);
       if (thisToken !== currentSearchToken) return;
+
+      // 1. If Gemini safety blocked, crisis triggered, or empty reply: show compassionate helpline card
+      if (aiDua && aiDua.crisisTriggered) {
+        if (loader) loader.style.display = "none";
+        if (content) {
+          content.style.display = "block";
+          content.innerHTML = getCrisisHelpCardHtml(false);
+        }
+        return;
+      }
 
       if (aiDua && aiDua.arabic && aiDua.reference) {
         currentSearchResult = aiDua;
@@ -3911,6 +3930,10 @@ async function sendFollowUpMessage() {
     if (typingElem) typingElem.remove();
 
     if (aiResponse) {
+      if (aiResponse.crisisTriggered) {
+        appendChatMessage('model', getCrisisHelpCardHtml(false));
+        return;
+      }
       const counselText = generateConversationalCounsel(aiResponse, userText);
       appendChatMessage('model', counselText);
       displaySearchResult(aiResponse, false);
