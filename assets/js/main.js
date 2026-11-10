@@ -721,6 +721,158 @@ function playCompletionChime() {
   } catch (e) {}
 }
 
+// ==========================================================================
+// ARABIC TO ROMAN URDU PHONETIC TRANSLITERATOR (TALAFFUZ ENGINE)
+// Enables non-Arabic / non-Urdu script readers and elders to recite fluently
+// ==========================================================================
+function transliterateArabic(text) {
+  if (!text || typeof text !== "string") return "";
+
+  // 1. Strip Quranic pause signs, sajda markers, and decorative glyphs
+  let s = text.replace(/[\u06D6-\u06ED\u0610-\u061A\uFD3E\uFD3F]/g, " ");
+
+  // 2. Sacred Prophetic phrases and divine expressions
+  s = s.replace(/بِسْمِ\s*ٱ?للَّهِ\s*ٱلرَّحْمَٰنِ\s*ٱلرَّحِيمِ/gi, " Bismillaahir-Rahmaanir-Raheem ");
+  s = s.replace(/صَلَّى\s*اللَّهُ\s*عَلَيْهِ\s*وَسَلَّمَ/gi, " (sallallaahu 'alayhi wa sallam) ");
+  s = s.replace(/رَضِيَ\s*اللَّهُ\s*عَنْهُ/gi, " (radiyallaahu 'anhu) ");
+  s = s.replace(/رَضِيَ\s*اللَّهُ\s*عَنْهَا/gi, " (radiyallaahu 'anhaa) ");
+  s = s.replace(/رَحِمَهُ\s*اللَّهُ/gi, " (rahimahullaah) ");
+  s = s.replace(/سُبْحَانَ\s*اللَّهِ/gi, " Subhaan-Allaah ");
+  s = s.replace(/الْحَمْدُ\s*لِلَّهِ/gi, " Al-hamdu lillaah ");
+  s = s.replace(/اللَّهُ\s*أَكْبَرُ/gi, " Allaahu Akbar ");
+  s = s.replace(/لَا\s*إِلَٰهَ\s*إِلَّا\s*اللَّهُ/gi, " Laa ilaaha illallaah ");
+  s = s.replace(/أَسْتَغْفِرُ\s*اللَّهَ/gi, " Astaghfirullaah ");
+  s = s.replace(/اللَّهِ|اللّٰه|ٱللَّهِ|اللَّهُ|اللَّهَ/gi, " Allaah ");
+
+  // Common particles & pronouns
+  s = s.replace(/(^|\s)هُوَ(\s|$|[.,!?])/gu, "$1huwa$2");
+  s = s.replace(/(^|\s)هِيَ(\s|$|[.,!?])/gu, "$1hiya$2");
+  s = s.replace(/(^|\s)فِي(\s|$|[.,!?])/gu, "$1fee$2");
+  s = s.replace(/(^|\s)مِنْ?(\s|$|[.,!?])/gu, "$1min$2");
+  s = s.replace(/(^|\s)عَنْ?(\s|$|[.,!?])/gu, "$1'an$2");
+  s = s.replace(/(^|\s)إِلَىٰ?(\s|$|[.,!?])/gu, "$1ilaa$2");
+  s = s.replace(/(^|\s)عَلَىٰ?(\s|$|[.,!?])/gu, "$1'alaa$2");
+
+  // Sun letters handling for 'Al-' (ت ث د ذ ر ز س ش ص ض ط ظ ل ن)
+  const sunLetterRegex = /(?:^|\s)(?:ٱل|ال|أل)([\u062a\u062b\u062f\u0630\u0631\u0632\u0633\u0634\u0635\u0636\u0637\u0638\u0644\u0646])\u0651/gu;
+  s = s.replace(sunLetterRegex, (m, c) => " a" + c + "-" + c);
+
+  // Normal Al- and prefixed prepositions
+  s = s.replace(/(?:^|\s)(?:ٱلْ?|الْ?)/gu, " al-");
+  s = s.replace(/(?:^|\s)بِ(?:ٱل|ال)ْ?/gu, " bil-");
+  s = s.replace(/(?:^|\s)وَ(?:ٱل|ال)ْ?/gu, " wal-");
+  s = s.replace(/(?:^|\s)فِي\s*(?:ٱل|ال)ْ?/gu, " fil-");
+
+  const consonantMap = {
+    "ء": "'", "أ": "", "إ": "", "ؤ": "'", "ئ": "'", "آ": "aa",
+    "ب": "b", "ت": "t", "ث": "th", "ج": "j", "ح": "h", "خ": "kh",
+    "د": "d", "ذ": "dh", "ر": "r", "ز": "z", "س": "s", "sh": "sh",
+    "ص": "s", "ض": "d", "ط": "t", "ظ": "z", "ع": "'", "غ": "gh",
+    "ف": "f", "ق": "q", "ك": "k", "ل": "l", "م": "m", "ن": "n",
+    "ه": "h", "ة": "h", "پ": "p", "چ": "ch", "ژ": "zh", "گ": "g"
+  };
+
+  const harakat = {
+    "\u064E": "a",   // Fatha
+    "\u064F": "u",   // Damma
+    "\u0650": "i",   // Kasra
+    "\u064B": "an",  // Fathatan
+    "\u064C": "un",  // Dammatan
+    "\u064D": "in",  // Kasratan
+    "\u0652": "",    // Sukun
+    "\u0670": "aa",  // Dagger Alif
+    "\u0653": "aa"   // Maddah
+  };
+
+  let out = "";
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    const prev = s[i - 1] || "";
+    const next = s[i + 1] || "";
+
+    // Shaddah (doubling previous consonant)
+    if (ch === "\u0651") {
+      let j = out.length - 1;
+      while (j >= 0 && !/[a-zA-Z]/.test(out[j])) j--;
+      if (j >= 0 && out[j].toLowerCase() !== 'h') {
+        out += out[j];
+      }
+      continue;
+    }
+
+    // Harakat
+    if (harakat[ch] !== undefined) {
+      out += harakat[ch];
+      continue;
+    }
+
+    // Consonants
+    if (consonantMap[ch] !== undefined) {
+      out += consonantMap[ch];
+      continue;
+    }
+
+    // Alif / Waaw / Yaa
+    if (ch === "ا" || ch === "ٱ") {
+      if (out.endsWith("a")) {
+        out += "a";
+      } else if (i === 0 || /\s/.test(prev) || out.endsWith("-") || out.endsWith("'")) {
+        out += (next === "\u0650") ? "i" : (next === "\u064F") ? "u" : "a";
+      } else {
+        out += "aa";
+      }
+      continue;
+    }
+
+    if (ch === "ى") {
+      out += "aa";
+      continue;
+    }
+
+    if (ch === "و") {
+      if (out.endsWith("u")) {
+        out = out.slice(0, -1) + "oo";
+      } else if (i === 0 || /\s/.test(prev)) {
+        out += "wa";
+      } else {
+        out += "w";
+      }
+      continue;
+    }
+
+    if (ch === "ي") {
+      if (out.endsWith("i")) {
+        out = out.slice(0, -1) + "ee";
+      } else {
+        out += "y";
+      }
+      continue;
+    }
+
+    out += ch;
+  }
+
+  return out
+    .replace(/\b[aA]al-/g, "al-")
+    .replace(/aa+/g, "aa")
+    .replace(/ee+/g, "ee")
+    .replace(/oo+/g, "oo")
+    .replace(/eeaa/g, "yaa")
+    .replace(/nnee/g, "niy")
+    .replace(/bil-n/g, "bin-n")
+    .replace(/aah\b/g, "ah")
+    .replace(/'+/g, "'")
+    .replace(/-+/g, "-")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([.,;:!?])/g, "$1")
+    .trim()
+    .replace(/^[a-z]/, c => c.toUpperCase());
+}
+
+if (typeof window !== "undefined") {
+  window.transliterateArabic = transliterateArabic;
+}
+
 // 5. INITIALIZATION & LIVE INPUT LISTENERS
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
@@ -1185,6 +1337,11 @@ function sanitizeScriptureOutput(obj) {
       .trim();
   }
 
+  // 5. Auto-populate Roman Transliteration if missing
+  if ((!obj.roman || !obj.roman.trim()) && obj.arabic) {
+    obj.roman = transliterateArabic(obj.arabic);
+  }
+
   return obj;
 }
 
@@ -1464,6 +1621,19 @@ function detectSurahInQuery(q) {
   if (lower.includes("kursi") || lower.includes("ayatul kursi") || lower.includes("ayat al kursi") || lower.includes("kursy")) {
     return "ayatul-kursi";
   }
+
+  // Check all 114 Surahs dynamically from the Global Registry
+  const allSurahs = (typeof getGlobalSurahs === "function") ? getGlobalSurahs() : (window.SukunAllSurahsIndex || []);
+  const cleanCompact = lower.replace(/\s+/g, "");
+  for (let i = 0; i < allSurahs.length; i++) {
+    const s = allSurahs[i];
+    const sName = (s.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (!sName) continue;
+    if (cleanCompact.includes("surah" + sName) || (lower.startsWith("surah ") && cleanCompact.includes(sName))) {
+      return `surah-${s.number}`;
+    }
+  }
+
   return null;
 }
 
@@ -2077,6 +2247,10 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
             </div>
           </div>
           <p class="ayah-arabic-text" id="ayahText_${a.ayahNumber}">${a.arabic}</p>
+          <div class="ayah-roman-bar">
+            <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+            <p class="ayah-roman-text">${transliterateArabic(a.arabic)}</p>
+          </div>
           <div class="ayah-urdu-text">${a.urdu}</div>
           <div class="ayah-english-text">${a.english}</div>
         </div>
@@ -2423,6 +2597,10 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
                 </div>
               </div>
               <p class="ayah-arabic-text" id="ayahText_${a.numberInSurah}">${a.text}</p>
+              <div class="ayah-roman-bar">
+                <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+                <p class="ayah-roman-text">${transliterateArabic(a.text)}</p>
+              </div>
               ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
               ${enText ? `<div class="ayah-english-text">${enText}</div>` : ''}
             </div>
@@ -2845,6 +3023,10 @@ async function loadHadithChapter(collectionId, sectionId) {
               </div>
             </div>
             <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.3;">${h.arabic}</p>
+            <div class="ayah-roman-bar">
+              <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+              <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
+            </div>
             ${h.urdu ? `<div class="ayah-urdu-text">${h.urdu}</div>` : ''}
             ${h.english ? `<div class="ayah-english-text">${h.english}</div>` : ''}
           </div>
@@ -2882,6 +3064,10 @@ async function loadHadithChapter(collectionId, sectionId) {
               <span style="font-size: 0.74rem; color: var(--gold-muted);">${h.reference}</span>
             </div>
             <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.2;">${h.arabic}</p>
+            <div class="ayah-roman-bar">
+              <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+              <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
+            </div>
             <div class="ayah-urdu-text">${h.urdu}</div>
             <div class="ayah-english-text">${h.english}</div>
           </div>
@@ -2956,6 +3142,10 @@ async function jumpToHadithNumber(collectionId) {
           </div>
         </div>
         <p class="ayah-arabic-text" id="hadithText_${num}" style="font-size: 1.5rem; line-height: 2.3;">${arabicText}</p>
+        <div class="ayah-roman-bar">
+          <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+          <p class="ayah-roman-text">${transliterateArabic(arabicText)}</p>
+        </div>
         ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
         ${engText ? `<div class="ayah-english-text">${engText}</div>` : ''}
       </div>
