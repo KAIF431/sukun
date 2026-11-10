@@ -13,7 +13,8 @@
 function getAllowedOrigin(request, env) {
   const PROD_ORIGIN = "https://kaif431.github.io";
   const reqOrigin = request.headers.get("Origin") || "";
-  if (reqOrigin.startsWith("http://localhost:") || reqOrigin.startsWith("http://127.0.0.1:") || reqOrigin === "https://kaif431.github.io") {
+  // Localhost is strictly blocked in production; only permitted when ENVIRONMENT is explicitly set to 'development'
+  if (env && env.ENVIRONMENT === "development" && (reqOrigin.startsWith("http://localhost:") || reqOrigin.startsWith("http://127.0.0.1:"))) {
     return reqOrigin;
   }
   return PROD_ORIGIN;
@@ -350,7 +351,7 @@ export default {
 
       const turnstileToken = request.headers.get("X-Turnstile-Token") || parsedBody.turnstileToken;
       if (turnstileToken) {
-        if (turnstileToken === "1x00000000000000000000AA" && (allowedOrigin.startsWith("http://localhost:") || allowedOrigin.startsWith("http://127.0.0.1:"))) {
+        if (turnstileToken === "1x00000000000000000000AA" && env && env.ENVIRONMENT === "development" && (allowedOrigin.startsWith("http://localhost:") || allowedOrigin.startsWith("http://127.0.0.1:"))) {
           isSessionValid = true;
           newSessionToken = await createSessionToken(sessionSecret);
         } else {
