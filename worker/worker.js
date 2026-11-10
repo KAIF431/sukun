@@ -45,7 +45,7 @@ function normalizeArabicNumerals(str) {
     .replace(/[٩۹]/g, '9');
 }
 
-// Disambiguates time (e.g. 10:30 am, meeting at 12:45) from Quran Ayah coordinates (1:1 to 114:6)
+// Disambiguates time (e.g. 10:30 am, meeting 12:45), ratios (16:9), and scores (3:1) from Quran Ayah coordinates (1:1 to 114:6)
 // Handles edge cases: ranges ("2:255-257"), extra spaces ("2 : 255"), Arabic-Indic digits, invalid bounds (2:300, 115:1), and Hadith citations
 function extractScriptureReferences(text) {
   const refs = [];
@@ -62,16 +62,20 @@ function extractScriptureReferences(text) {
     const startAyah = parseInt(m[3], 10);
     const endAyah = m[4] ? parseInt(m[4], 10) : null;
 
-    const startIdx = Math.max(0, m.index - 15);
-    const endIdx = Math.min(normalizedText.length, m.index + m[0].length + 15);
+    const startIdx = Math.max(0, m.index - 30);
+    const endIdx = Math.min(normalizedText.length, m.index + m[0].length + 30);
     const window = normalizedText.substring(startIdx, endIdx).toLowerCase();
 
-    const isTime = !hasScripturePrefix && (
-      /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm)\s+\d+\s*:\s*\d+/i.test(window) ||
-      /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|evening|night)\b/i.test(window)
+    const isNonScripture = !hasScripturePrefix && (
+      /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm|schedule|scheduled|starts?|ends?|time)\s*(?:is|at|for)?\s*\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|afternoon|evening|night|o'clock)\b/i.test(window) ||
+      /\b(?:aspect\s+ratio|aspect|ratio|resolution|dimension|scale|proportions?)\s*(?:of|is)?\s*\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:aspect\s+ratio|aspect|ratio|resolution|dimension|scale)/i.test(window) ||
+      /\b(?:score|won|lost|beat|result|lead|match|game|final)\s*(?:is|was|of)?\s*\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:score|lead|win|loss)/i.test(window)
     );
 
-    if (!isTime && surah >= 1 && surah <= 114 && startAyah >= 1 && startAyah <= 286) {
+    if (!isNonScripture && surah >= 1 && surah <= 114 && startAyah >= 1 && startAyah <= 286) {
       if (endAyah && endAyah >= startAyah && endAyah <= 286) {
         refs.push(`${surah}:${startAyah}-${endAyah}`);
       } else {
@@ -96,16 +100,16 @@ function extractScriptureReferences(text) {
 }
 
 // Sanitizes AI response text against unverified or hallucinated scripture citations
-// 1. Clock time (10:30 am, meeting at 12:45) is safely preserved.
+// 1. Colloquial numbers, time (10:30 am, meeting 12:45), ratios (aspect ratio 16:9), and scores (score 3:1) are safely preserved.
 // 2. Out-of-range / fabricated coordinates (2:300, 115:1) are BLOCKED and REDACTED immediately.
-// 3. In-range Quran / Hadith citations not present in allowedReferences are redacted to prevent hallucination.
+// 3. In-range Quran / Hadith citations not present in allowedReferences are replaced with [Reference removed: verified nahi].
 function sanitizeScriptureInReply(replyText, allowedReferences = []) {
   if (!replyText) return "";
 
   const normalized = normalizeArabicNumerals(replyText);
   let sanitized = replyText;
 
-  // Coordinate pattern: \d+:\d+(-\d+)?
+  // 1. Coordinate pattern: \d+:\d+(-\d+)?
   const coordPattern = /(?:\b(ayah|surah|quran|verse|aayat)\s+)?(?:\(|\b)(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?(?:\)|\b)/gi;
   let m;
   const matches = [];
@@ -124,17 +128,21 @@ function sanitizeScriptureInReply(replyText, allowedReferences = []) {
   // Iterate in reverse order so replacements do not misalign indices
   for (let i = matches.length - 1; i >= 0; i--) {
     const item = matches[i];
-    const startIdx = Math.max(0, item.index - 15);
-    const endIdx = Math.min(normalized.length, item.index + item.length + 15);
+    const startIdx = Math.max(0, item.index - 30);
+    const endIdx = Math.min(normalized.length, item.index + item.length + 30);
     const window = normalized.substring(startIdx, endIdx).toLowerCase();
 
-    const isClockTime = !item.hasPrefix && (
-      /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm)\s+\d+\s*:\s*\d+/i.test(window) ||
-      /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|evening|night)\b/i.test(window)
+    const isNonScripture = !item.hasPrefix && (
+      /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm|schedule|scheduled|starts?|ends?|time)\s*(?:is|at|for)?\s*\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|afternoon|evening|night|o'clock)\b/i.test(window) ||
+      /\b(?:aspect\s+ratio|aspect|ratio|resolution|dimension|scale|proportions?)\s*(?:of|is)?\s*\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:aspect\s+ratio|aspect|ratio|resolution|dimension|scale)/i.test(window) ||
+      /\b(?:score|won|lost|beat|result|lead|match|game|final)\s*(?:is|was|of)?\s*\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:score|lead|win|loss)/i.test(window)
     );
 
-    if (isClockTime) {
-      continue; // Legitimate clock time preserved
+    if (isNonScripture) {
+      continue; // Legitimate clock time, ratio, or score preserved
     }
 
     const isValidQuran = item.surah >= 1 && item.surah <= 114 && item.startAyah >= 1 && item.startAyah <= 286 &&
@@ -142,23 +150,38 @@ function sanitizeScriptureInReply(replyText, allowedReferences = []) {
 
     if (!isValidQuran) {
       // OUT-OF-RANGE / FABRICATED CITATION: BLOCK & REDACT
-      sanitized = sanitized.replace(item.fullMatch, "[Fabricated / Out-of-Range Citation Blocked]");
+      sanitized = sanitized.substring(0, item.index) + "[Fabricated / Out-of-Range Citation Blocked]" + sanitized.substring(item.index + item.length);
     } else {
       // IN-RANGE CITATION: Verify against allowedReferences
       const coordStr = `${item.surah}:${item.startAyah}${item.endAyah ? '-' + item.endAyah : ''}`;
       const isAllowed = allowedReferences.some(ar => String(ar).toLowerCase().includes(coordStr.toLowerCase()));
       if (!isAllowed) {
-        sanitized = sanitized.replace(item.fullMatch, "[Verified Scripture Citation Provided Above]");
+        sanitized = sanitized.substring(0, item.index) + "[Reference removed: verified nahi]" + sanitized.substring(item.index + item.length);
       }
     }
   }
 
-  // Hadith book citations
+  // 2. Hadith book citations (Sahih Bukhari, Muslim, Tirmidhi, Abu Dawood, etc.)
   const hadithPattern = /\b(?:Sahih\s+)?(?:Bukhari|Muslim|Tirmidhi|Abu Dawood|Ibn Majah|Nasai|بخاري|مسلم|ترمذي|أبو داود)\s*#?\s*([0-9]+)/gi;
+  const hadithMatches = [];
   while ((m = hadithPattern.exec(sanitized)) !== null) {
-    const isAllowed = allowedReferences.some(ar => String(ar).toLowerCase().includes(m[0].toLowerCase()));
+    hadithMatches.push({
+      fullMatch: m[0],
+      number: m[1],
+      index: m.index,
+      length: m[0].length
+    });
+  }
+
+  for (let i = hadithMatches.length - 1; i >= 0; i--) {
+    const item = hadithMatches[i];
+    const isAllowed = allowedReferences.some(ar => {
+      const arNorm = String(ar).toLowerCase().replace(/sahih\s+/g, '').replace(/[\s#]+/g, ' ').trim();
+      const matchNorm = item.fullMatch.toLowerCase().replace(/sahih\s+/g, '').replace(/[\s#]+/g, ' ').trim();
+      return arNorm.includes(matchNorm) || matchNorm.includes(arNorm);
+    });
     if (!isAllowed) {
-      sanitized = sanitized.replace(m[0], "[Verified Hadith Citation Provided Above]");
+      sanitized = sanitized.substring(0, item.index) + "[Reference removed: verified nahi]" + sanitized.substring(item.index + item.length);
     }
   }
 
