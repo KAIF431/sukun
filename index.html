@@ -8,6 +8,9 @@
   
   <!-- Master Stylesheet (Royal Midnight & 24k Gold Palette) -->
   <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Cloudflare Turnstile Verification API -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -51,10 +54,6 @@
         <button onclick="openModal('saved')" class="nav-btn" title="Saved Sanctuary Duas">
           <span>Saved</span>
           <span id="savedCounter" class="badge-count">0</span>
-        </button>
-
-        <button id="navAuthBtn" onclick="openAuthModal()" class="nav-btn">
-          <span id="navAuthText">Sign In</span>
         </button>
 
         <!-- Mobile Menu Toggle Button (Hamburger) -->
@@ -109,13 +108,6 @@
           <div class="nav-item-text">
             <span class="nav-item-title">Daily Masnoon Dua</span>
             <span class="nav-item-sub">Prophetic Morning & Evening Remembrances</span>
-          </div>
-        </a>
-        <a href="admin.html" class="mobile-nav-link mobile-nav-admin" onclick="closeMobileMenu()">
-          <span class="nav-item-icon">⚙️</span>
-          <div class="nav-item-text">
-            <span class="nav-item-title">Master Admin Portal</span>
-            <span class="nav-item-sub">Latency Benchmark & Scripture Database</span>
           </div>
         </a>
       </nav>
@@ -206,6 +198,11 @@
           <span class="search-hint-pill">💡 <strong>Roman Urdu Search:</strong> Type or speak 'safar ki dua', 'bimari', 'karz', 'surah yaseen' in Roman Urdu or English!</span>
           <span class="privacy-note">✦ 100% Authentic Quran &amp; Sahih Hadith References</span>
         </div>
+        <p class="search-privacy-shield" style="font-size: 0.8rem; color: var(--gold-light); margin: -4px 0 6px 2px; text-align: left; opacity: 0.9; line-height: 1.5;">🔒 <strong>Privacy Note:</strong> AI se poochne par aapka sawal Google ke AI ko bheja jata hai, aur free tier me Google use apne products behtar karne ke liye use kar sakta hai. Apni zaati ma'lumat na likhein.</p>
+        <p class="search-crisis-permanent-line" style="font-size: 0.85rem; color: #fca5a5; margin: 0 0 14px 2px; text-align: left; opacity: 0.95; line-height: 1.5;">🤝 <strong>Pareshan hain?</strong> Tele-MANAS <a href="tel:14416" style="color: #fff; text-decoration: underline; font-weight: bold;">14416</a> (24x7)</p>
+
+        <!-- Cloudflare Turnstile Human Verification Shield -->
+        <div id="turnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAF7VYPGNCj2rvvdN" data-theme="dark" data-size="flexible" style="margin: 0 auto 14px; max-width: 320px;"></div>
 
         <!-- 4 QUICK-ACCESS SANCTUARY SHORTCUTS (Elder-Friendly, Clean & Spacious) -->
         <div class="sanctuary-shortcuts-row">
@@ -482,7 +479,6 @@
         <ul class="footer-links">
           <li><a href="mailto:kaifofficial4@gmail.com" style="color: var(--gold-bright);">kaifofficial4@gmail.com</a></li>
           <li><a href="javascript:void(0)" onclick="openModal('contact')">Suggest a Dua / Feedback</a></li>
-          <li><a href="admin.html" id="footerAdminLink" class="admin-link">Master Admin Portal →</a></li>
         </ul>
       </div>
     </div>
@@ -641,103 +637,9 @@
     </div>
   </aside>
 
-  <!-- AUTHENTICATION MODAL (Real Email + Password System) -->
-  <div id="authModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-      <button onclick="closeAuthModal()" class="modal-close" title="Close">✕</button>
-
-      <!-- AUTH FORM (When NOT Logged In) -->
-      <div id="authFormsContainer">
-        <!-- Tab Navigation -->
-        <div class="auth-tab-buttons">
-          <button id="tabBtnSignIn" onclick="switchAuthTab('login')" class="auth-tab-btn active">Sign In</button>
-          <button id="tabBtnSignUp" onclick="switchAuthTab('register')" class="auth-tab-btn">Create Account</button>
-        </div>
-
-        <!-- 1. SIGN IN FORM -->
-        <form id="signInForm" onsubmit="event.preventDefault(); handleAuthLogin();">
-          <div class="auth-input-group">
-            <label class="auth-label">Registered Email</label>
-            <input type="email" id="loginEmail" class="auth-input" placeholder="e.g. name@gmail.com" required autocomplete="username">
-          </div>
-
-          <div class="auth-input-group">
-            <label class="auth-label">Password</label>
-            <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your password..." required autocomplete="current-password">
-          </div>
-
-          <div id="loginError" class="auth-error"></div>
-
-          <button type="submit" class="primary-btn" style="width: 100%; margin-top: 10px;">
-            SIGN IN TO SANCTUARY
-          </button>
-
-          <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 16px;">
-            New to Sukun? <a href="javascript:void(0)" onclick="switchAuthTab('register')" style="color: var(--gold-bright); text-decoration: underline;">Create an account</a>
-          </p>
-        </form>
-
-        <!-- 2. CREATE ACCOUNT (SIGN UP) FORM -->
-        <form id="signUpForm" onsubmit="event.preventDefault(); handleAuthRegister();" style="display: none;">
-          <div class="auth-input-group">
-            <label class="auth-label">Your Email Address</label>
-            <input type="email" id="regEmail" class="auth-input" placeholder="e.g. name@gmail.com" required autocomplete="username">
-          </div>
-
-          <div class="auth-input-group">
-            <label class="auth-label">Create Password (Min. 6 characters)</label>
-            <input type="password" id="regPassword" class="auth-input" placeholder="Create a secure password..." required autocomplete="new-password">
-          </div>
-
-          <div class="auth-input-group">
-            <label class="auth-label">Confirm Password</label>
-            <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Confirm your password..." required autocomplete="new-password">
-          </div>
-
-          <div id="registerError" class="auth-error"></div>
-
-          <button type="submit" class="primary-btn" style="width: 100%; margin-top: 10px;">
-            CREATE SANCTUARY ACCOUNT
-          </button>
-
-          <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 16px;">
-            Already have an account? <a href="javascript:void(0)" onclick="switchAuthTab('login')" style="color: var(--gold-bright); text-decoration: underline;">Sign In here</a>
-          </p>
-        </form>
-      </div>
-
-      <!-- 3. USER PROFILE (When Logged In) -->
-      <div id="authProfileStep" style="display: none;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.55rem; font-style: italic; color: var(--gold-bright); margin-bottom: 16px;">Account Sanctuary</h3>
-        
-        <div class="profile-details-card" style="padding: 22px; border-radius: 8px; border: 1px solid var(--border-gold); margin-bottom: 22px;">
-          <div style="font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-primary); margin-bottom: 6px;">Active Account:</div>
-          <div id="profileUserEmail" style="color: var(--gold-bright); font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;"></div>
-          
-          <div style="display: flex; gap: 24px; font-size: 0.85rem; color: var(--text-muted);">
-            <div>Role: <strong id="profileUserRole" style="color: var(--text-cream);">User</strong></div>
-            <div>Saved Duas: <strong id="profileSavedCount" style="color: var(--gold-bright);">0</strong></div>
-          </div>
-        </div>
-
-        <div id="profileAdminAction" style="display: none; margin-bottom: 16px;">
-          <a href="admin.html" class="primary-btn" style="display: block; text-align: center; text-decoration: none; padding: 12px;">
-            OPEN MASTER ADMIN PORTAL
-          </a>
-        </div>
-
-        <button onclick="handleLogout()" class="primary-btn" style="width: 100%; background: #220e10; border: 1px solid #7f1d1d; color: #fca5a5;">
-          SIGN OUT
-        </button>
-      </div>
-
-    </div>
-  </div>
-
   <!-- Core Scripts -->
   <script src="assets/js/surah-registry.js?v=3.3"></script>
   <script src="assets/js/surahs.js?v=3.3"></script>
-  <script src="assets/js/auth.js?v=3.3"></script>
   <script src="assets/js/main.js?v=3.3"></script>
 </body>
 </html>

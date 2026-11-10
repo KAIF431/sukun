@@ -9,3 +9,8 @@ $RECYCLE.BIN/
 test_*.js
 *.tmp
 *.log
+
+# Cloudflare & Node dependencies
+.wrangler/
+node_modules/
+.env*
