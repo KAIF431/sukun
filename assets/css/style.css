@@ -3535,3 +3535,54 @@ body.light-theme .hasanat-meter-val {
     padding: 6px 4px;
   }
 }
+
+/* Master Hadith Book Explorer Tabs & Dropdowns */
+.hadith-books-nav-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.hadith-book-tab {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 8px 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hadith-book-tab:hover {
+  background: rgba(212, 168, 83, 0.1);
+  color: var(--gold-bright);
+}
+
+.hadith-book-tab.active {
+  background: var(--gold-primary);
+  border-color: var(--gold-primary);
+  color: #0b111e;
+}
+
+body.light-theme .hadith-book-tab {
+  background: #fbf7ee;
+  color: #1a1612;
+}
+
+body.light-theme .hadith-book-tab.active {
+  background: #b8860b;
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .hadith-books-nav-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

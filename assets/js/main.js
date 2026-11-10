@@ -2618,48 +2618,374 @@ const AuthenticHadithRegistry = {
   }
 };
 
-function openHadithModal(collectionId) {
-  const collection = AuthenticHadithRegistry[collectionId] || AuthenticHadithRegistry["bukhari"];
+const HADITH_API_BASE = "https://raw.githubusercontent.com/fawazahmed0/hadith-api/1/editions/";
+
+const HadithCollectionMeta = {
+  "bukhari": {
+    id: "bukhari",
+    slug: "bukhari",
+    name: "Sahih al-Bukhari",
+    arabic: "صحيح البخاري",
+    author: "Imam Muhammad al-Bukhari (رحمه الله)",
+    totalHadiths: 7563,
+    status: "Highest Authenticity (الأصح بعد القرآن)"
+  },
+  "muslim": {
+    id: "muslim",
+    slug: "muslim",
+    name: "Sahih Muslim",
+    arabic: "صحيح مسلم",
+    author: "Imam Muslim ibn al-Hajjaj (رحمه الله)",
+    totalHadiths: 7500,
+    status: "Sahih (Authentic)"
+  },
+  "tirmidhi": {
+    id: "tirmidhi",
+    slug: "tirmidhi",
+    name: "Jami' at-Tirmidhi",
+    arabic: "جامع الترمذي",
+    author: "Imam Abu 'Isa at-Tirmidhi (رحمه الله)",
+    totalHadiths: 3956,
+    status: "Sunan & Fiqh Classification"
+  },
+  "abudawood": {
+    id: "abudawood",
+    slug: "abudawud",
+    name: "Sunan Abi Dawood",
+    arabic: "سنن أبي داود",
+    author: "Imam Abu Dawood as-Sijistani (رحمه الله)",
+    totalHadiths: 5274,
+    status: "Core Sunan Collection"
+  }
+};
+
+let currentHadithBook = "bukhari";
+let currentHadithSection = 1;
+
+function openHadithModal(collectionId = "bukhari", sectionId = 1) {
+  if (collectionId === "abudawud") collectionId = "abudawood";
+  currentHadithBook = collectionId;
+  currentHadithSection = parseInt(sectionId, 10) || 1;
+
+  const meta = HadithCollectionMeta[collectionId] || HadithCollectionMeta["bukhari"];
   const modal = document.getElementById("globalModal");
   const title = document.getElementById("modalTitle");
   const body = document.getElementById("modalBody");
 
+  const modalContent = document.querySelector("#globalModal .modal-content");
+  if (modalContent) modalContent.classList.add("quran-reader-modal");
+
+  const allSectionsMap = (typeof SukunHadithSectionsIndex !== 'undefined') ? SukunHadithSectionsIndex : (window.SukunHadithSectionsIndex || {});
+  const bookSections = allSectionsMap[meta.slug] || allSectionsMap[collectionId] || {};
+
   title.innerHTML = `
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; width: 100%;">
-      <span>${collection.name} (${collection.arabic})</span>
+      <span>${meta.name} (${meta.arabic})</span>
       <span style="font-size: 0.76rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-bright); font-family: var(--font-sans); font-weight: 700; background: rgba(212, 175, 55, 0.12); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border-gold);">
-        Authentic Prophetic Traditions
+        ${meta.totalHadiths.toLocaleString()} Hadiths • ${meta.status}
       </span>
     </div>
   `;
 
+  // Build Chapter <option> elements
+  const sectionEntries = Object.entries(bookSections).filter(([id, name]) => id !== "0" && name && name.trim());
+  const optionsHtml = sectionEntries.map(([id, name]) => {
+    const isSelected = (parseInt(id, 10) === currentHadithSection) ? 'selected' : '';
+    return `<option value="${id}" ${isSelected}>Book ${id}: ${escapeHtml(name)}</option>`;
+  }).join('');
+
   body.innerHTML = `
-    <div style="margin-bottom: 20px; padding: 14px 18px; background: rgba(212,168,83,0.08); border-left: 3px solid var(--gold-bright); border-radius: 6px;">
-      <span style="font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 4px;">
-        ✦ Scholar: ${collection.author}
-      </span>
-      <p style="color: var(--text-cream); font-size: 0.9rem; margin: 0; line-height: 1.6;">
-        Rigorous, verified traditions transmitted directly with continuous Sahih chains back to the Messenger of Allah ﷺ.
-      </p>
+    <!-- Top 4 Hadith Book Switcher Tabs -->
+    <div class="hadith-books-nav-row">
+      <button onclick="openHadithModal('bukhari', 1)" class="hadith-book-tab ${collectionId === 'bukhari' ? 'active' : ''}">
+        <span>Sahih al-Bukhari</span>
+      </button>
+      <button onclick="openHadithModal('muslim', 1)" class="hadith-book-tab ${collectionId === 'muslim' ? 'active' : ''}">
+        <span>Sahih Muslim</span>
+      </button>
+      <button onclick="openHadithModal('tirmidhi', 1)" class="hadith-book-tab ${collectionId === 'tirmidhi' ? 'active' : ''}">
+        <span>Jami' at-Tirmidhi</span>
+      </button>
+      <button onclick="openHadithModal('abudawood', 1)" class="hadith-book-tab ${collectionId === 'abudawood' ? 'active' : ''}">
+        <span>Sunan Abi Dawood</span>
+      </button>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 18px;">
-      ${collection.hadiths.map(h => `
-        <div class="quran-ayah-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span class="ayah-badge">Hadith #${h.num}</span>
-            <span style="font-size: 0.74rem; color: var(--gold-muted);">${h.reference}</span>
-          </div>
-          <p class="ayah-arabic-text" style="font-size: 1.5rem; line-height: 2.2;">${h.arabic}</p>
-          <div class="ayah-urdu-text">${h.urdu}</div>
-          <div class="ayah-english-text">${h.english}</div>
+    <!-- Chapter Selector & Jump to Hadith Number Controls -->
+    <div style="background: rgba(212, 168, 83, 0.08); border: 1px solid var(--border-gold); border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;">
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+        
+        <!-- Chapter Dropdown -->
+        <div style="flex: 1; min-width: 250px;">
+          <label style="display: block; font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; margin-bottom: 6px;">
+            📖 Select Book / Chapter (کتاب):
+          </label>
+          <select id="hadithChapterSelect" onchange="loadHadithChapter('${collectionId}', this.value)" style="width: 100%; background: var(--bg-card); color: var(--text-cream); border: 1px solid var(--border-gold); border-radius: 6px; padding: 9px 12px; font-size: 0.88rem; outline: none; cursor: pointer;">
+            ${optionsHtml}
+          </select>
         </div>
-      `).join('')}
+
+        <!-- Jump to Hadith Number Input -->
+        <div style="display: flex; gap: 8px; align-items: flex-end;">
+          <div>
+            <label style="display: block; font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; margin-bottom: 6px;">
+              🔍 Go to Hadith #:
+            </label>
+            <input 
+              type="number" 
+              id="hadithJumpInput" 
+              placeholder="1 to ${meta.totalHadiths}" 
+              min="1" 
+              max="${meta.totalHadiths}" 
+              style="width: 130px; background: var(--bg-card); color: var(--text-cream); border: 1px solid var(--border-gold); border-radius: 6px; padding: 9px 12px; font-size: 0.88rem; outline: none;"
+              onkeydown="if(event.key === 'Enter') jumpToHadithNumber('${collectionId}')"
+            />
+          </div>
+          <button onclick="jumpToHadithNumber('${collectionId}')" class="primary-btn" style="padding: 9px 16px; font-size: 0.82rem; white-space: nowrap;">
+            Open ➔
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Active Feed Container -->
+    <div id="hadithFeedContainer" style="min-height: 250px;">
+      <!-- Populated via loadHadithChapter -->
     </div>
   `;
 
   modal.style.display = "flex";
   document.body.style.overflow = "hidden";
+
+  loadHadithChapter(collectionId, currentHadithSection);
+}
+
+async function loadHadithChapter(collectionId, sectionId) {
+  currentHadithBook = collectionId;
+  currentHadithSection = parseInt(sectionId, 10) || 1;
+
+  const meta = HadithCollectionMeta[collectionId] || HadithCollectionMeta["bukhari"];
+  const slug = meta.slug;
+  const feed = document.getElementById("hadithFeedContainer");
+  if (!feed) return;
+
+  const allSectionsMap = (typeof SukunHadithSectionsIndex !== 'undefined') ? SukunHadithSectionsIndex : (window.SukunHadithSectionsIndex || {});
+  const bookSections = allSectionsMap[slug] || {};
+  const chapterName = bookSections[sectionId] || `Chapter ${sectionId}`;
+
+  feed.innerHTML = `
+    <div style="text-align: center; padding: 40px 20px;">
+      <div class="ai-loading-spinner" style="margin: 0 auto 14px;"></div>
+      <p style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--gold-bright); font-style: italic;">
+        Consulting sacred repository for ${meta.name}...
+      </p>
+      <p style="color: var(--text-muted); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;">
+        Loading Chapter ${sectionId}: ${chapterName}
+      </p>
+    </div>
+  `;
+
+  try {
+    const [araRes, urdRes, engRes] = await Promise.all([
+      fetch(`${HADITH_API_BASE}ara-${slug}/sections/${sectionId}.json`).then(r => r.ok ? r.json() : null),
+      fetch(`${HADITH_API_BASE}urd-${slug}/sections/${sectionId}.json`).then(r => r.ok ? r.json() : null),
+      fetch(`${HADITH_API_BASE}eng-${slug}/sections/${sectionId}.json`).then(r => r.ok ? r.json() : null)
+    ]);
+
+    if (!araRes || !araRes.hadiths || araRes.hadiths.length === 0) {
+      throw new Error("No Hadiths returned from repository");
+    }
+
+    const urdMap = new Map();
+    if (urdRes && urdRes.hadiths) {
+      urdRes.hadiths.forEach(h => urdMap.set(h.hadithnumber, h.text));
+    }
+
+    const engMap = new Map();
+    if (engRes && engRes.hadiths) {
+      engRes.hadiths.forEach(h => engMap.set(h.hadithnumber, h.text));
+    }
+
+    const hadithItems = araRes.hadiths.map(h => ({
+      num: h.hadithnumber,
+      arabic: h.text,
+      urdu: urdMap.get(h.hadithnumber) || '',
+      english: engMap.get(h.hadithnumber) || ''
+    }));
+
+    feed.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-gold); flex-wrap: wrap; gap: 8px;">
+        <div>
+          <span style="font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700;">
+            ✦ Book ${sectionId}: ${escapeHtml(chapterName)}
+          </span>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+            Total ${hadithItems.length} authentic traditions in this chapter
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          ${sectionId > 1 ? `<button onclick="loadHadithChapter('${collectionId}', ${sectionId - 1})" class="action-btn" style="padding: 4px 10px; font-size: 0.74rem;">⬅ Prev Chapter</button>` : ''}
+          <button onclick="loadHadithChapter('${collectionId}', ${sectionId + 1})" class="action-btn" style="padding: 4px 10px; font-size: 0.74rem;">Next Chapter ➔</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        ${hadithItems.map(h => `
+          <div class="quran-ayah-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+              <span class="ayah-badge">${meta.name} • Hadith #${h.num}</span>
+              <div style="display: flex; gap: 6px;">
+                <button onclick="playHadithAudio('hadithText_${h.num}')" class="ayah-audio-play-btn" title="Listen to narration">
+                  <span>🔊 Listen</span>
+                </button>
+                <button onclick="copySingleAyahText('hadithText_${h.num}')" class="action-btn" style="padding: 4px 10px; font-size: 0.7rem;">
+                  Copy
+                </button>
+              </div>
+            </div>
+            <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.3;">${h.arabic}</p>
+            ${h.urdu ? `<div class="ayah-urdu-text">${h.urdu}</div>` : ''}
+            ${h.english ? `<div class="ayah-english-text">${h.english}</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Bottom Next / Prev Navigation -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--border-gold);">
+        ${sectionId > 1 ? `<button onclick="loadHadithChapter('${collectionId}', ${sectionId - 1})" class="primary-btn" style="padding: 8px 18px; font-size: 0.82rem;">⬅ Previous Chapter</button>` : '<div></div>'}
+        <button onclick="loadHadithChapter('${collectionId}', ${sectionId + 1})" class="primary-btn" style="padding: 8px 18px; font-size: 0.82rem;">Next Chapter ➔</button>
+      </div>
+    `;
+
+    // Sync select dropdown
+    const select = document.getElementById("hadithChapterSelect");
+    if (select) select.value = sectionId.toString();
+
+  } catch (err) {
+    console.warn("Hadith chapter load error:", err);
+    const fallbackCollection = AuthenticHadithRegistry[collectionId] || AuthenticHadithRegistry["bukhari"];
+    feed.innerHTML = `
+      <div style="padding: 20px; background: rgba(212, 168, 83, 0.08); border-radius: 8px; margin-bottom: 18px; text-align: center;">
+        <p style="color: var(--text-cream); font-size: 0.95rem; margin: 0 0 10px;">
+          Showing core authentic traditions from ${meta.name}:
+        </p>
+        <button onclick="loadHadithChapter('${collectionId}', ${sectionId})" class="action-btn" style="padding: 6px 14px; font-size: 0.78rem;">
+          🔄 Retry Loading Full Chapter
+        </button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        ${fallbackCollection.hadiths.map(h => `
+          <div class="quran-ayah-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span class="ayah-badge">${meta.name} • Hadith #${h.num}</span>
+              <span style="font-size: 0.74rem; color: var(--gold-muted);">${h.reference}</span>
+            </div>
+            <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.2;">${h.arabic}</p>
+            <div class="ayah-urdu-text">${h.urdu}</div>
+            <div class="ayah-english-text">${h.english}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+}
+
+async function jumpToHadithNumber(collectionId) {
+  const input = document.getElementById("hadithJumpInput");
+  if (!input) return;
+  const num = parseInt(input.value, 10);
+  if (!num || num < 1) {
+    showToast("Please enter a valid Hadith number.");
+    return;
+  }
+
+  const meta = HadithCollectionMeta[collectionId] || HadithCollectionMeta["bukhari"];
+  const slug = meta.slug;
+  const feed = document.getElementById("hadithFeedContainer");
+  if (!feed) return;
+
+  feed.innerHTML = `
+    <div style="text-align: center; padding: 40px 20px;">
+      <div class="ai-loading-spinner" style="margin: 0 auto 14px;"></div>
+      <p style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--gold-bright); font-style: italic;">
+        Retrieving Hadith #${num} from ${meta.name}...
+      </p>
+    </div>
+  `;
+
+  try {
+    const [araRes, urdRes, engRes] = await Promise.all([
+      fetch(`${HADITH_API_BASE}ara-${slug}/${num}.json`).then(r => r.ok ? r.json() : null),
+      fetch(`${HADITH_API_BASE}urd-${slug}/${num}.json`).then(r => r.ok ? r.json() : null),
+      fetch(`${HADITH_API_BASE}eng-${slug}/${num}.json`).then(r => r.ok ? r.json() : null)
+    ]);
+
+    if (!araRes || !araRes.hadiths || !araRes.hadiths[0]) {
+      throw new Error("Hadith not found");
+    }
+
+    const arabicText = araRes.hadiths[0].text;
+    const urduText = (urdRes && urdRes.hadiths && urdRes.hadiths[0]) ? urdRes.hadiths[0].text : '';
+    const engText = (engRes && engRes.hadiths && engRes.hadiths[0]) ? engRes.hadiths[0].text : '';
+    const chapterName = araRes.metadata ? (Object.values(araRes.metadata.section)[0] || '') : '';
+
+    feed.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-gold); flex-wrap: wrap; gap: 8px;">
+        <div>
+          <span style="font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700;">
+            ✦ Hadith #${num} • ${meta.name}
+          </span>
+          ${chapterName ? `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Chapter: ${escapeHtml(chapterName)}</div>` : ''}
+        </div>
+        <button onclick="loadHadithChapter('${collectionId}', 1)" class="action-btn" style="padding: 4px 12px; font-size: 0.74rem;">
+          View Chapters ➔
+        </button>
+      </div>
+
+      <div class="quran-ayah-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <span class="ayah-badge">${meta.name} • Hadith #${num}</span>
+          <div style="display: flex; gap: 6px;">
+            <button onclick="playHadithAudio('hadithText_${num}')" class="ayah-audio-play-btn" title="Listen narration">
+              <span>🔊 Listen</span>
+            </button>
+            <button onclick="copySingleAyahText('hadithText_${num}')" class="action-btn" style="padding: 4px 10px; font-size: 0.7rem;">
+              Copy
+            </button>
+          </div>
+        </div>
+        <p class="ayah-arabic-text" id="hadithText_${num}" style="font-size: 1.5rem; line-height: 2.3;">${arabicText}</p>
+        ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
+        ${engText ? `<div class="ayah-english-text">${engText}</div>` : ''}
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        ${num > 1 ? `<button onclick="document.getElementById('hadithJumpInput').value = ${num - 1}; jumpToHadithNumber('${collectionId}')" class="primary-btn" style="padding: 8px 16px; font-size: 0.8rem;">⬅ Hadith #${num - 1}</button>` : '<div></div>'}
+        <button onclick="document.getElementById('hadithJumpInput').value = ${num + 1}; jumpToHadithNumber('${collectionId}')" class="primary-btn" style="padding: 8px 16px; font-size: 0.8rem;">Hadith #${num + 1} ➔</button>
+      </div>
+    `;
+
+    showToast(`Loaded ${meta.name} Hadith #${num}`);
+  } catch (err) {
+    showToast(`Could not find Hadith #${num} in ${meta.name}.`);
+    loadHadithChapter(collectionId, 1);
+  }
+}
+
+function playHadithAudio(elemId) {
+  const elem = document.getElementById(elemId);
+  if (!elem) return;
+  if (!('speechSynthesis' in window)) {
+    showToast("Audio is not supported by your browser.");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(elem.innerText);
+  utterance.lang = "ar-SA";
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
+  showToast("Playing authentic Hadith recitation...");
 }
 
 // ==========================================================================
