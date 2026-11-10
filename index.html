@@ -127,7 +127,16 @@
 
     <!-- 1. COMPACT MINIMALIST HERO & TOP SEARCH HUB -->
     <section id="find-solution" class="section-block top-sanctuary-hub">
-      <div class="compact-hero-header">
+      <div class="compact-hero-header reveal-on-scroll">
+        <!-- Floating Celestial Noor Particles -->
+        <div class="noor-particles-container" aria-hidden="true">
+          <span class="noor-particle np-1"></span>
+          <span class="noor-particle np-2"></span>
+          <span class="noor-particle np-3"></span>
+          <span class="noor-particle np-4"></span>
+          <span class="noor-particle np-5"></span>
+          <span class="noor-particle np-6"></span>
+        </div>
         <div class="hero-subtitle">ISLAMIC SPIRITUAL SANCTUARY</div>
         <h1 class="compact-hero-title">
           Sanctuary For <span>The Soul</span>
@@ -138,7 +147,7 @@
       </div>
 
       <!-- CENTERPIECE SEARCH & VOICE HUB -->
-      <div class="search-container clean-search-hub">
+      <div class="search-container clean-search-hub reveal-on-scroll">
         <div class="section-label" style="text-align: center; margin-bottom: 14px; font-size: 0.82rem; letter-spacing: 2px;">
           ✦ SEARCH AUTHENTIC DUAS &amp; QURANIC SURAHS
         </div>
@@ -353,7 +362,7 @@
     </section>
 
     <!-- 2. SECTION: DAILY MASNOON DUA -->
-    <section id="daily-dua" class="section-block">
+    <section id="daily-dua" class="section-block reveal-on-scroll">
       <div class="section-label">Daily Masnoon Dua</div>
 
       <div class="daily-dua-card">
@@ -491,7 +500,13 @@
   <!-- GLOBAL READER & CONTACT MODAL -->
   <div id="globalModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
-      <button onclick="closeModal()" class="modal-close" title="Close">✕</button>
+      <div class="modal-nav-header-row">
+        <button id="modalBackBtn" onclick="navigateModalBack()" class="modal-back-btn" title="Back to Library">
+          <span style="font-size: 1.05rem; line-height: 1;">⬅</span>
+          <span id="modalBackBtnText">Back to Library (لائبریری)</span>
+        </button>
+        <button onclick="closeModal()" class="modal-close" title="Close to Home Page">✕</button>
+      </div>
       <h3 id="modalTitle" style="font-family: var(--font-serif); font-size: 1.55rem; font-style: italic; color: var(--gold-bright); margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border-gold);">Title</h3>
       <div id="modalBody"></div>
     </div>

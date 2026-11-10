@@ -3836,3 +3836,238 @@ body.light-theme .translation-hinglish-card {
 body.light-theme .translation-hinglish {
   color: #1e293b;
 }
+
+/* ================= 17. MODAL NAVIGATION & BACK CONTROLS ================= */
+.modal-nav-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.modal-nav-header-row .modal-close {
+  position: static !important;
+  top: auto;
+  right: auto;
+  font-size: 1.35rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+}
+
+.modal-nav-header-row .modal-close:hover {
+  color: var(--gold-bright);
+}
+
+.modal-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid var(--border-gold);
+  color: var(--gold-bright);
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  font-family: var(--font-sans);
+}
+
+.modal-back-btn:hover {
+  background: var(--gold-primary);
+  color: #0b111e;
+  transform: translateX(-3px);
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
+}
+
+body.light-theme .modal-back-btn {
+  background: rgba(163, 114, 24, 0.1);
+  border-color: rgba(163, 114, 24, 0.35);
+  color: #b45309;
+}
+
+body.light-theme .modal-back-btn:hover {
+  background: #b45309;
+  color: #ffffff;
+}
+
+/* ================= 18. MAIN PAGE SPIRITUAL & INTERACTIVE ANIMATIONS ================= */
+/* 1. Noor Aura Particles drifting upwards in Hero */
+.compact-hero-header {
+  position: relative;
+  overflow: visible;
+}
+
+.noor-particles-container {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  bottom: -20px;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.noor-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.85) 0%, rgba(212, 175, 55, 0.2) 50%, rgba(212, 175, 55, 0) 70%);
+  filter: blur(1.5px);
+  animation: floatNoor 12s infinite ease-in-out;
+  opacity: 0.55;
+}
+
+.np-1 { width: 8px; height: 8px; left: 12%; bottom: 8%; animation-delay: 0s; animation-duration: 9s; }
+.np-2 { width: 14px; height: 14px; left: 32%; bottom: 12%; animation-delay: 3s; animation-duration: 13s; }
+.np-3 { width: 6px; height: 6px; left: 55%; bottom: 5%; animation-delay: 1.5s; animation-duration: 10s; }
+.np-4 { width: 12px; height: 12px; left: 78%; bottom: 15%; animation-delay: 4.5s; animation-duration: 12s; }
+.np-5 { width: 10px; height: 10px; left: 45%; bottom: 10%; animation-delay: 2s; animation-duration: 14s; }
+.np-6 { width: 7px; height: 7px; left: 88%; bottom: 6%; animation-delay: 5s; animation-duration: 8.5s; }
+
+@keyframes floatNoor {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  25% { opacity: 0.75; }
+  50% { transform: translateY(-75px) scale(1.25); opacity: 0.9; }
+  75% { opacity: 0.45; }
+  100% { transform: translateY(-150px) scale(0.6); opacity: 0; }
+}
+
+/* 2. Hero Title Golden Shimmer Glow */
+.compact-hero-title span {
+  background: linear-gradient(135deg, #fef08a 0%, #d4af37 40%, #ffffff 50%, #d4af37 60%, #fef08a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 250% auto;
+  animation: goldShimmerText 7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes goldShimmerText {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 3. Search Hub Celestial Ambient Breathing Glow */
+.clean-search-hub {
+  animation: searchHubBreathe 6s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+@keyframes searchHubBreathe {
+  0%, 100% {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45), 0 0 16px rgba(212, 175, 55, 0.12);
+    border-color: rgba(212, 175, 55, 0.25);
+  }
+  50% {
+    box-shadow: 0 16px 52px rgba(0, 0, 0, 0.55), 0 0 30px rgba(212, 175, 55, 0.28);
+    border-color: rgba(212, 175, 55, 0.45);
+  }
+}
+
+body.light-theme .clean-search-hub {
+  animation: searchHubBreatheLight 6s ease-in-out infinite;
+}
+
+@keyframes searchHubBreatheLight {
+  0%, 100% {
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08), 0 0 16px rgba(180, 83, 9, 0.1);
+  }
+  50% {
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12), 0 0 24px rgba(180, 83, 9, 0.2);
+  }
+}
+
+/* 4. Shortcuts Row Lift & Icon Bounce */
+.shortcut-pill {
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.shortcut-pill:hover {
+  transform: translateY(-4px) scale(1.03) !important;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3) !important;
+  border-color: var(--gold-bright) !important;
+}
+
+.shortcut-pill:hover .shortcut-icon {
+  transform: scale(1.25) rotate(-6deg);
+}
+
+.shortcut-icon {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+}
+
+/* 5. Topic Pills Interactive Glide */
+.topic-pill {
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.topic-pill:hover {
+  transform: translateY(-3px) scale(1.025) !important;
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.25) !important;
+  border-color: var(--gold-bright) !important;
+}
+
+/* 6. Daily Masnoon Dua Card Shimmer */
+.daily-dua-card {
+  animation: cardAuraPulse 8s ease-in-out infinite;
+}
+
+@keyframes cardAuraPulse {
+  0%, 100% {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 16px rgba(212, 175, 55, 0.08);
+  }
+  50% {
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.5), 0 0 28px rgba(212, 175, 55, 0.24);
+  }
+}
+
+/* 7. Primary Action Button Sheen Sweep */
+.primary-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -70%;
+  width: 45%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  transition: all 0.65s ease;
+  pointer-events: none;
+}
+
+.primary-btn:hover::after {
+  left: 135%;
+}
+
+/* 8. Scroll-Driven Reveal Animations */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

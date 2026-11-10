@@ -2288,12 +2288,77 @@ function updateResultBookmarkUI() {
 }
 
 // 11. MODAL CONTROLS & VIEWS
+let currentModalContext = null;
+let modalHistoryActive = false;
+
+function pushModalHistoryState(ctx) {
+  currentModalContext = ctx;
+  if (!modalHistoryActive) {
+    try {
+      window.history.pushState({ sukunModalOpen: true, ctx: ctx }, '');
+      modalHistoryActive = true;
+    } catch (e) {}
+  }
+}
+
+function updateModalBackButton(ctx) {
+  const backBtn = document.getElementById("modalBackBtn");
+  const backText = document.getElementById("modalBackBtnText");
+  if (!backBtn) return;
+  backBtn.style.display = "inline-flex";
+
+  if (ctx === 'hadith') {
+    if (backText) backText.textContent = "Back to Hadith Books (کتب حدیث)";
+    backBtn.title = "Back to Authentic Hadith Collections";
+  } else if (ctx === 'surah') {
+    if (backText) backText.textContent = "Back to 114 Surahs (فہرست سُوَر)";
+    backBtn.title = "Back to 114 Quranic Surahs";
+  } else if (ctx === 'parah') {
+    if (backText) backText.textContent = "Back to 30 Parahs (پارہ فہرست)";
+    backBtn.title = "Back to 30 Holy Parahs (Juz)";
+  } else if (ctx === 'saved') {
+    if (backText) backText.textContent = "Back to Sanctuary (واپس)";
+    backBtn.title = "Close saved Duas";
+  } else if (ctx === 'waqia') {
+    if (backText) backText.textContent = "Back to Search Result (نتیجہ)";
+    backBtn.title = "Back to Search Result";
+  } else {
+    if (backText) backText.textContent = "Back to Library (لائبریری)";
+    backBtn.title = "Back to Library Drawer";
+  }
+}
+
+function navigateModalBack(fromPopState = false) {
+  const ctx = currentModalContext;
+  closeModal();
+
+  if (ctx === 'hadith') {
+    openQuranDrawer('hadith');
+  } else if (ctx === 'surah') {
+    openQuranDrawer('surahs');
+  } else if (ctx === 'parah') {
+    openQuranDrawer('parahs');
+  }
+
+  if (!fromPopState && modalHistoryActive) {
+    modalHistoryActive = false;
+    try {
+      window.history.back();
+    } catch (e) {}
+  } else {
+    modalHistoryActive = false;
+  }
+}
+
 function openModal(type) {
   const modal = document.getElementById("globalModal");
   const title = document.getElementById("modalTitle");
   const body = document.getElementById("modalBody");
 
   if (type === 'waqia' && currentSearchResult) {
+    currentModalContext = 'waqia';
+    updateModalBackButton('waqia');
+    pushModalHistoryState('waqia');
     title.innerText = currentSearchResult.title + " • Hadith Background & Story";
     body.innerHTML = `
       <div style="margin-bottom: 24px;">
@@ -2310,6 +2375,9 @@ function openModal(type) {
       </div>
     `;
   } else if (type === 'saved') {
+    currentModalContext = 'saved';
+    updateModalBackButton('saved');
+    pushModalHistoryState('saved');
     title.innerText = "Your Saved Sanctuary Duas";
     if (savedDuas.length === 0) {
       body.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 48px 0;">No Duas saved yet. Click 'Bookmark' on any Dua to preserve it here.</p>`;
@@ -2327,6 +2395,9 @@ function openModal(type) {
       `).join('');
     }
   } else if (type.startsWith('surah-') || type === 'ayatul-kursi') {
+    currentModalContext = 'surah';
+    updateModalBackButton('surah');
+    pushModalHistoryState('surah');
     const db = window.SukunQuranDatabase || (typeof SukunQuranDatabase !== 'undefined' ? SukunQuranDatabase : {});
     if (db[type]) {
       renderCompleteQuranSurah(type, title, body);
@@ -2342,6 +2413,9 @@ function openModal(type) {
     openHadithModal(collId);
     return;
   } else if (type === 'contact') {
+    currentModalContext = 'contact';
+    updateModalBackButton('contact');
+    pushModalHistoryState('contact');
     title.innerText = "Contact Sukun • Suggest a Dua";
     body.innerHTML = `
       <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; margin-bottom: 20px;">
@@ -2379,6 +2453,8 @@ function closeModal() {
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   hideFloatingHasanatWidget();
   document.body.style.overflow = "auto";
+  currentModalContext = null;
+  modalHistoryActive = false;
 }
 
 // ================= 11. QURANIC TILAWAT SANCTUARY READER =================
@@ -2981,6 +3057,10 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
 
 // 30 Parahs (Juz) Modal
 function openParahModal(juzNumber) {
+  currentModalContext = 'parah';
+  updateModalBackButton('parah');
+  pushModalHistoryState('parah');
+
   const allParahs = getGlobalParahs();
   const parah = allParahs.find(p => p.juzNumber === juzNumber) || allParahs[0];
   const modal = document.getElementById("globalModal");
@@ -3200,6 +3280,10 @@ function openHadithModal(collectionId = "bukhari", sectionId = 1) {
   if (collectionId === "abudawud") collectionId = "abudawood";
   currentHadithBook = collectionId;
   currentHadithSection = parseInt(sectionId, 10) || 1;
+
+  currentModalContext = 'hadith';
+  updateModalBackButton('hadith');
+  pushModalHistoryState('hadith');
 
   const meta = HadithCollectionMeta[collectionId] || HadithCollectionMeta["bukhari"];
   const modal = document.getElementById("globalModal");
@@ -3616,6 +3700,11 @@ function openQuranDrawer(tab = 'surahs') {
   if (overlay) overlay.classList.add("active");
   document.body.style.overflow = "hidden";
   switchDrawerTab(tab);
+  try {
+    if (!window.history.state || !window.history.state.sukunDrawerOpen) {
+      window.history.pushState({ sukunDrawerOpen: true, tab: tab }, '');
+    }
+  } catch (e) {}
 }
 
 function closeQuranDrawer() {
@@ -3981,8 +4070,49 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Browser & Mobile Hardware Back Button Navigation Handler
+window.addEventListener("popstate", (e) => {
+  const modal = document.getElementById("globalModal");
+  const drawer = document.getElementById("quranDrawer");
+  const tasbih = document.getElementById("tasbihModal");
+  const auth = document.getElementById("authModal");
+
+  if (modal && modal.style.display !== "none") {
+    navigateModalBack(true);
+  } else if (drawer && drawer.classList.contains("open")) {
+    closeQuranDrawer();
+  } else if (tasbih && tasbih.style.display !== "none") {
+    closeTasbihModal();
+  } else if (auth && auth.style.display !== "none") {
+    closeAuthModal();
+  }
+});
+
+// Initialize Scroll-driven Reveal Observer for Main Page Animations
+function initScrollRevealObserver() {
+  const revealElements = document.querySelectorAll(".reveal-on-scroll");
+  if (!revealElements.length) return;
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -20px 0px" });
+
+    revealElements.forEach(el => observer.observe(el));
+  } else {
+    revealElements.forEach(el => el.classList.add("is-visible"));
+  }
+}
+
 // Initialize on DOM load
 document.addEventListener("DOMContentLoaded", () => {
   renderChatMessages();
+  initScrollRevealObserver();
 });
+
 
