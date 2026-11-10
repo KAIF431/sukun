@@ -3684,6 +3684,7 @@ body.light-theme .hadith-book-tab.active {
   display: none !important;
 }
 
+.roman-matlab-card,
 .hinglish-matlab-card {
   background: rgba(212, 175, 55, 0.07);
   border-left: 3px solid var(--gold-bright);
@@ -3692,6 +3693,7 @@ body.light-theme .hadith-book-tab.active {
   margin: 10px 0 12px;
 }
 
+.roman-matlab-tag,
 .hinglish-matlab-tag {
   font-size: 0.68rem;
   letter-spacing: 1.5px;
@@ -3703,6 +3705,7 @@ body.light-theme .hadith-book-tab.active {
   font-family: var(--font-sans);
 }
 
+.roman-matlab-text,
 .hinglish-matlab-text {
   color: var(--text-cream);
   font-size: 0.96rem;
@@ -3790,15 +3793,18 @@ body.light-theme .lang-pill.active {
   color: #ffffff !important;
 }
 
+body.light-theme .roman-matlab-card,
 body.light-theme .hinglish-matlab-card {
   background: rgba(163, 114, 24, 0.08);
   border-left: 3px solid #b45309;
 }
 
+body.light-theme .roman-matlab-tag,
 body.light-theme .hinglish-matlab-tag {
   color: #b45309;
 }
 
+body.light-theme .roman-matlab-text,
 body.light-theme .hinglish-matlab-text {
   color: #1e293b;
 }

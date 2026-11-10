@@ -1015,39 +1015,74 @@ function transliterateUrduToHinglish(urduText) {
 // ==========================================================================
 // TRANSLATION LANGUAGE SELECTOR CONTROLLER
 // Controls active translation view across Hadith & Quran readers
-// Default: 'hinglish' (Hinglish Matlab) - keeping cards compact & Hadith # prominent
+// Default: 'roman' (Roman Urdu Matlab) - keeping cards compact & Hadith # prominent
 // ==========================================================================
-let activeReaderLang = 'hinglish'; // 'hinglish', 'urdu', 'english', 'all'
+let activeReaderLang = 'roman'; // 'roman', 'urdu', 'english', 'all'
 
 function setReaderTranslationLang(lang) {
+  if (lang === 'hinglish') lang = 'roman';
   activeReaderLang = lang;
 
-  ['hinglish', 'urdu', 'english', 'all'].forEach(l => {
-    const btn = document.getElementById(`langBtn_${l}`);
-    if (btn) {
-      if (l === lang) btn.classList.add('active');
-      else btn.classList.remove('active');
-    }
+  const keyMap = [
+    { key: 'roman', ids: ['langBtn_roman', 'langBtn_hinglish'] },
+    { key: 'urdu', ids: ['langBtn_urdu'] },
+    { key: 'english', ids: ['langBtn_english'] },
+    { key: 'all', ids: ['langBtn_all'] }
+  ];
+
+  keyMap.forEach(item => {
+    item.ids.forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        if (item.key === lang) btn.classList.add('active');
+        else btn.classList.remove('active');
+      }
+    });
   });
 
-  const hinglishBlocks = document.querySelectorAll('.block-hinglish');
+  const romanBlocks = document.querySelectorAll('.block-roman, .block-hinglish');
   const urduBlocks = document.querySelectorAll('.block-urdu');
   const englishBlocks = document.querySelectorAll('.block-english');
 
-  hinglishBlocks.forEach(el => {
-    if (lang === 'hinglish' || lang === 'all') el.classList.remove('hidden');
-    else el.classList.add('hidden');
+  romanBlocks.forEach(el => {
+    if (lang === 'roman' || lang === 'all') {
+      el.classList.remove('hidden');
+      el.style.display = 'block';
+    } else {
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    }
   });
 
   urduBlocks.forEach(el => {
-    if (lang === 'urdu' || lang === 'all') el.classList.remove('hidden');
-    else el.classList.add('hidden');
+    if (lang === 'urdu' || lang === 'all') {
+      el.classList.remove('hidden');
+      el.style.display = 'block';
+    } else {
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    }
   });
 
   englishBlocks.forEach(el => {
-    if (lang === 'english' || lang === 'all') el.classList.remove('hidden');
-    else el.classList.add('hidden');
+    if (lang === 'english' || lang === 'all') {
+      el.classList.remove('hidden');
+      el.style.display = 'block';
+    } else {
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    }
   });
+
+  const labels = {
+    'roman': '🌟 Roman Urdu (Aasan Matlab) Active',
+    'urdu': '📖 اردو ترجمہ (Urdu Translation) Active',
+    'english': '🇬🇧 English Translation Active',
+    'all': '✦ Sabhi Tarjume (All Translations) Active'
+  };
+  if (typeof showToast === 'function' && labels[lang]) {
+    showToast(labels[lang]);
+  }
 }
 
 // ==========================================================================
@@ -2539,8 +2574,8 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
     <div class="reader-lang-bar">
       <span class="reader-lang-label">✦ Tarjuma / Translation:</span>
       <div class="reader-lang-pills">
-        <button onclick="setReaderTranslationLang('hinglish')" id="langBtn_hinglish" class="lang-pill ${activeReaderLang === 'hinglish' ? 'active' : ''}">
-          🌟 Hinglish (Matlab)
+        <button onclick="setReaderTranslationLang('roman')" id="langBtn_roman" class="lang-pill ${activeReaderLang === 'roman' ? 'active' : ''}">
+          🌟 Roman Urdu (Matlab)
         </button>
         <button onclick="setReaderTranslationLang('urdu')" id="langBtn_urdu" class="lang-pill ${activeReaderLang === 'urdu' ? 'active' : ''}">
           اردو (Urdu)
@@ -2588,21 +2623,21 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
             <p class="ayah-roman-text">${transliterateArabic(a.arabic)}</p>
           </div>
 
-          <!-- 1. Hinglish Matlab Block (Default) -->
-          <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
-            <div class="hinglish-matlab-card">
-              <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
-              <p class="hinglish-matlab-text">${a.hinglish || transliterateUrduToHinglish(a.urdu)}</p>
+          <!-- 1. Roman Urdu Matlab Block (Default) -->
+          <div class="translation-block block-roman block-hinglish ${activeReaderLang === 'roman' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'roman' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+            <div class="hinglish-matlab-card roman-matlab-card">
+              <span class="hinglish-matlab-tag roman-matlab-tag">🌟 Roman Urdu (Aasan Matlab):</span>
+              <p class="hinglish-matlab-text roman-matlab-text">${a.hinglish || transliterateUrduToHinglish(a.urdu)}</p>
             </div>
           </div>
 
           <!-- 2. Urdu Script Block -->
-          <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
+          <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
             <div class="ayah-urdu-text">${a.urdu}</div>
           </div>
 
           <!-- 3. English Translation Block -->
-          <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
+          <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'english' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
             <div class="ayah-english-text">${a.english}</div>
           </div>
         </div>
@@ -2945,8 +2980,8 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
     <div class="reader-lang-bar">
       <span class="reader-lang-label">✦ Tarjuma / Translation:</span>
       <div class="reader-lang-pills">
-        <button onclick="setReaderTranslationLang('hinglish')" id="langBtn_hinglish" class="lang-pill ${activeReaderLang === 'hinglish' ? 'active' : ''}">
-          🌟 Hinglish (Matlab)
+        <button onclick="setReaderTranslationLang('roman')" id="langBtn_roman" class="lang-pill ${activeReaderLang === 'roman' ? 'active' : ''}">
+          🌟 Roman Urdu (Matlab)
         </button>
         <button onclick="setReaderTranslationLang('urdu')" id="langBtn_urdu" class="lang-pill ${activeReaderLang === 'urdu' ? 'active' : ''}">
           اردو (Urdu)
@@ -3016,21 +3051,21 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
                 <p class="ayah-roman-text">${transliterateArabic(a.text)}</p>
               </div>
 
-              <!-- 1. Hinglish Matlab Block (Default) -->
-              <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
-                <div class="hinglish-matlab-card">
-                  <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
-                  <p class="hinglish-matlab-text">${transliterateUrduToHinglish(urduText)}</p>
+              <!-- 1. Roman Urdu Matlab Block (Default) -->
+              <div class="translation-block block-roman block-hinglish ${activeReaderLang === 'roman' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'roman' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+                <div class="hinglish-matlab-card roman-matlab-card">
+                  <span class="hinglish-matlab-tag roman-matlab-tag">🌟 Roman Urdu (Aasan Matlab):</span>
+                  <p class="hinglish-matlab-text roman-matlab-text">${transliterateUrduToHinglish(urduText)}</p>
                 </div>
               </div>
 
               <!-- 2. Urdu Script Block -->
-              <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
                 ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
               </div>
 
               <!-- 3. English Translation Block -->
-              <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'english' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
                 ${enText ? `<div class="ayah-english-text">${enText}</div>` : ''}
               </div>
             </div>
@@ -3371,8 +3406,8 @@ function openHadithModal(collectionId = "bukhari", sectionId = 1) {
     <div class="reader-lang-bar">
       <span class="reader-lang-label">✦ Tarjuma / Translation:</span>
       <div class="reader-lang-pills">
-        <button onclick="setReaderTranslationLang('hinglish')" id="langBtn_hinglish" class="lang-pill ${activeReaderLang === 'hinglish' ? 'active' : ''}">
-          🌟 Hinglish (Matlab)
+        <button onclick="setReaderTranslationLang('roman')" id="langBtn_roman" class="lang-pill ${activeReaderLang === 'roman' ? 'active' : ''}">
+          🌟 Roman Urdu (Matlab)
         </button>
         <button onclick="setReaderTranslationLang('urdu')" id="langBtn_urdu" class="lang-pill ${activeReaderLang === 'urdu' ? 'active' : ''}">
           اردو (Urdu)
@@ -3481,28 +3516,40 @@ async function loadHadithChapter(collectionId, sectionId) {
                 </button>
               </div>
             </div>
-            <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.3;">${h.arabic}</p>
-            <div class="ayah-roman-bar">
-              <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
-              <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
-            </div>
+            <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.3; margin-bottom: 12px;">${h.arabic}</p>
 
-            <!-- 1. Hinglish Matlab Block (Default) -->
-            <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
-              <div class="hinglish-matlab-card">
-                <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
-                <p class="hinglish-matlab-text">${transliterateUrduToHinglish(h.urdu)}</p>
+            <!-- 1. Roman Urdu Matlab Block (Default) - IMMEDIATELY below Arabic for instant readability -->
+            <div class="translation-block block-roman block-hinglish ${activeReaderLang === 'roman' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'roman' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+              <div class="hinglish-matlab-card roman-matlab-card">
+                <span class="hinglish-matlab-tag roman-matlab-tag">🌟 Roman Urdu (Aasan Matlab):</span>
+                <p class="hinglish-matlab-text roman-matlab-text">${transliterateUrduToHinglish(h.urdu)}</p>
               </div>
             </div>
 
             <!-- 2. Urdu Script Block -->
-            <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
-              ${h.urdu ? `<div class="ayah-urdu-text">${h.urdu}</div>` : ''}
+            <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+              ${h.urdu ? `
+                <div class="ayah-urdu-text" style="background: rgba(212, 175, 55, 0.05); padding: 12px 14px; border-radius: 6px; border-right: 3px solid var(--gold-primary); margin: 10px 0;">
+                  <span style="font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 6px; font-family: var(--font-sans); direction: ltr; text-align: left;">اردو ترجمہ (Urdu):</span>
+                  ${h.urdu}
+                </div>
+              ` : ''}
             </div>
 
             <!-- 3. English Translation Block -->
-            <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
-              ${h.english ? `<div class="ayah-english-text">${h.english}</div>` : ''}
+            <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'english' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+              ${h.english ? `
+                <div class="ayah-english-text" style="background: rgba(255, 255, 255, 0.03); padding: 12px 14px; border-radius: 6px; border-left: 3px solid var(--border-gold); margin: 10px 0;">
+                  <span style="font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 6px; font-family: var(--font-sans);">English Translation:</span>
+                  ${h.english}
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Talaffuz (Arabic Pronunciation) below translations -->
+            <div class="ayah-roman-bar" style="margin-top: 12px;">
+              <span class="ayah-roman-tag">Talaffuz (Arabic Pronunciation)</span>
+              <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
             </div>
           </div>
         `).join('')}
@@ -3538,28 +3585,40 @@ async function loadHadithChapter(collectionId, sectionId) {
               <span class="ayah-badge">${meta.name} • Hadith #${h.num}</span>
               <span style="font-size: 0.74rem; color: var(--gold-muted);">${h.reference}</span>
             </div>
-            <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.2;">${h.arabic}</p>
-            <div class="ayah-roman-bar">
-              <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
-              <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
-            </div>
+            <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.2; margin-bottom: 12px;">${h.arabic}</p>
 
-            <!-- 1. Hinglish Matlab Block (Default) -->
-            <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
-              <div class="hinglish-matlab-card">
-                <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
-                <p class="hinglish-matlab-text">${transliterateUrduToHinglish(h.urdu)}</p>
+            <!-- 1. Roman Urdu Matlab Block (Default) - IMMEDIATELY below Arabic for instant readability -->
+            <div class="translation-block block-roman block-hinglish ${activeReaderLang === 'roman' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'roman' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+              <div class="hinglish-matlab-card roman-matlab-card">
+                <span class="hinglish-matlab-tag roman-matlab-tag">🌟 Roman Urdu (Aasan Matlab):</span>
+                <p class="hinglish-matlab-text roman-matlab-text">${transliterateUrduToHinglish(h.urdu)}</p>
               </div>
             </div>
 
             <!-- 2. Urdu Script Block -->
-            <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
-              <div class="ayah-urdu-text">${h.urdu}</div>
+            <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+              ${h.urdu ? `
+                <div class="ayah-urdu-text" style="background: rgba(212, 175, 55, 0.05); padding: 12px 14px; border-radius: 6px; border-right: 3px solid var(--gold-primary); margin: 10px 0;">
+                  <span style="font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 6px; font-family: var(--font-sans); direction: ltr; text-align: left;">اردو ترجمہ (Urdu):</span>
+                  ${h.urdu}
+                </div>
+              ` : ''}
             </div>
 
             <!-- 3. English Translation Block -->
-            <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
-              <div class="ayah-english-text">${h.english}</div>
+            <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'english' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+              ${h.english ? `
+                <div class="ayah-english-text" style="background: rgba(255, 255, 255, 0.03); padding: 12px 14px; border-radius: 6px; border-left: 3px solid var(--border-gold); margin: 10px 0;">
+                  <span style="font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 6px; font-family: var(--font-sans);">English Translation:</span>
+                  ${h.english}
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Talaffuz (Arabic Pronunciation) below translations -->
+            <div class="ayah-roman-bar" style="margin-top: 12px;">
+              <span class="ayah-roman-tag">Talaffuz (Arabic Pronunciation)</span>
+              <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
             </div>
           </div>
         `).join('')}
@@ -3632,28 +3691,40 @@ async function jumpToHadithNumber(collectionId) {
             </button>
           </div>
         </div>
-        <p class="ayah-arabic-text" id="hadithText_${num}" style="font-size: 1.5rem; line-height: 2.3;">${arabicText}</p>
-        <div class="ayah-roman-bar">
-          <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
-          <p class="ayah-roman-text">${transliterateArabic(arabicText)}</p>
-        </div>
+        <p class="ayah-arabic-text" id="hadithText_${num}" style="font-size: 1.5rem; line-height: 2.3; margin-bottom: 12px;">${arabicText}</p>
 
-        <!-- 1. Hinglish Matlab Block (Default) -->
-        <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
-          <div class="hinglish-matlab-card">
-            <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
-            <p class="hinglish-matlab-text">${transliterateUrduToHinglish(urduText)}</p>
+        <!-- 1. Roman Urdu Matlab Block (Default) - IMMEDIATELY below Arabic for instant readability -->
+        <div class="translation-block block-roman block-hinglish ${activeReaderLang === 'roman' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'roman' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+          <div class="hinglish-matlab-card roman-matlab-card">
+            <span class="hinglish-matlab-tag roman-matlab-tag">🌟 Roman Urdu (Aasan Matlab):</span>
+            <p class="hinglish-matlab-text roman-matlab-text">${transliterateUrduToHinglish(urduText)}</p>
           </div>
         </div>
 
         <!-- 2. Urdu Script Block -->
-        <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
-          ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
+        <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+          ${urduText ? `
+            <div class="ayah-urdu-text" style="background: rgba(212, 175, 55, 0.05); padding: 12px 14px; border-radius: 6px; border-right: 3px solid var(--gold-primary); margin: 10px 0;">
+              <span style="font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 6px; font-family: var(--font-sans); direction: ltr; text-align: left;">اردو ترجمہ (Urdu):</span>
+              ${urduText}
+            </div>
+          ` : ''}
         </div>
 
         <!-- 3. English Translation Block -->
-        <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
-          ${engText ? `<div class="ayah-english-text">${engText}</div>` : ''}
+        <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}" style="${activeReaderLang === 'english' || activeReaderLang === 'all' ? 'display:block;' : 'display:none;'}">
+          ${engText ? `
+            <div class="ayah-english-text" style="background: rgba(255, 255, 255, 0.03); padding: 12px 14px; border-radius: 6px; border-left: 3px solid var(--border-gold); margin: 10px 0;">
+              <span style="font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-bright); font-weight: 700; display: block; margin-bottom: 6px; font-family: var(--font-sans);">English Translation:</span>
+              ${engText}
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Talaffuz (Arabic Pronunciation) below translations -->
+        <div class="ayah-roman-bar" style="margin-top: 12px;">
+          <span class="ayah-roman-tag">Talaffuz (Arabic Pronunciation)</span>
+          <p class="ayah-roman-text">${transliterateArabic(arabicText)}</p>
         </div>
       </div>
 
