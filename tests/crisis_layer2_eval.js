@@ -106,7 +106,7 @@ function callGemini(model, text, apiKey) {
     return;
   }
 
-  const models = ["gemini-3.7-flash", "gemini-3.5-flash-lite"];
+  const models = ["gemini-3.5-flash-lite"];
   for (const model of models) {
     console.log(`\n--- EVALUATING MODEL: ${model} ---`);
     let triggeredCount = 0;

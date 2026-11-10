@@ -1500,7 +1500,7 @@ function findBestDuaMatch(queryText) {
 
 // 6.2 SUKUN BACKEND AI GATEWAY & SECURE DISPATCHER
 let currentSearchToken = 0;
-var SUKUN_WORKER_ENDPOINT = window.SUKUN_WORKER_ENDPOINT || "";
+var SUKUN_WORKER_ENDPOINT = window.SUKUN_WORKER_ENDPOINT || "https://sukun-gateway.kaifofficial4.workers.dev";
 
 // Pre-AI Crisis Interceptor Regex (Dual layer: Explicit vs Religious Context)
 const EXPLICIT_CRISIS_REGEX = /(?:^|[\s،۔!?\p{P}])(?:suicide|kill\s+myself|end\s+my\s+life|want\s+to\s+die|feel\s+like\s+dying|self\s*harm|(?:apne\s+aap|khud)\s+ko\s+(?:nuksan|harm)|(?:zindagi|khud\s+ko)\s+khatam(?:\s+karna|\s+kar\s+lu|\s+kar\s+dun)|marna\s+chahta(?:\s+h(?:u|un|oon))?|marna\s+chahti(?:\s+h(?:u|un|oon))?|mar\s+jana\s+chahta(?:\s+h(?:u|un|oon))?|mar\s+jana\s+chahti(?:\s+h(?:u|un|oon))?|marne\s+ka\s+(?:dil|mann)|mar\s*ja(?:u|un|aun|on|unga|ungi)|marne\s+(?:wale|par|ki\s+dua)|maut\s+(?:aane|chahiye|maangne|mangne|ki\s+dua)|khud\s*kush[iy]|khud\s*khus[iy]|jaan\s+de\s+(?:du|dunga|dungi)|jeene\s+ka\s+(?:man[n]?|koi\s+maqsad)\s+nahi|zeher\s+khane|phansi\s+lagane|kaash\s+subah\s+aankh\s+na\s+khule|so\s+ja(?:u|un|aun|on)\s+(?:aur\s+)?kabhi\s+na\s+uth(?:u|un|aun|oon)|(?:sab\s*pe|sabke\s+liye|sab\s+ke\s+liye)?\s*bojh\s+h(?:u|un|oon)|sab\s+khatam\s+ho\s+jaye|life\s+is\s+meaningless|ab\s+aur\s+nahi\s+ho\s+sakta|خودکشی|مرنا\s+چاہتا|زندگی\s+ختم|مجھے\s+مرنا\s+ہے)(?:$|[\s،۔!?\p{P}])/iu;
@@ -1698,22 +1698,47 @@ async function fetchScriptureFromAI(queryText) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 12000);
 
+    const headers = { "Content-Type": "application/json" };
+    const sessionToken = sessionStorage.getItem("sukun_session_token");
+    if (sessionToken) {
+      headers["Authorization"] = `Bearer ${sessionToken}`;
+    }
+
+    let turnstileToken = "";
+    if (typeof window.turnstile !== "undefined" && typeof window.turnstile.getResponse === "function") {
+      turnstileToken = window.turnstile.getResponse() || "";
+    }
+
+    const payload = {
+      message: queryText,
+      turnstileToken: turnstileToken
+    };
+
+    if (turnstileToken) {
+      headers["X-Turnstile-Token"] = turnstileToken;
+    }
+
     const res = await fetch(`${SUKUN_WORKER_ENDPOINT}/api/chat`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message: queryText }),
+      headers: headers,
+      body: JSON.stringify(payload),
       signal: controller.signal
     });
     clearTimeout(timeoutId);
 
     if (!res.ok) {
       console.warn("Worker AI Gateway status:", res.status);
+      if (typeof window.turnstile !== "undefined" && typeof window.turnstile.reset === "function") {
+        try { window.turnstile.reset(); } catch (e) {}
+      }
       return null;
     }
 
     const rawData = await res.json();
+    if (rawData.sessionToken) {
+      try { sessionStorage.setItem("sukun_session_token", rawData.sessionToken); } catch (e) {}
+    }
+
     const sanitized = sanitizeAIResponse(rawData);
 
     if (sanitized && sanitized.arabic && sanitized.reference) {
