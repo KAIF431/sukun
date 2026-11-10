@@ -3626,3 +3626,213 @@ body.light-theme .hadith-book-tab.active {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ================= 16. TRANSLATION LANGUAGE SWITCHER & HINGLISH STYLES ================= */
+.reader-lang-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(212, 175, 55, 0.07);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.reader-lang-label {
+  font-size: 0.74rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.reader-lang-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lang-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-gold);
+  border-radius: 999px;
+  color: var(--text-muted);
+  padding: 5px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-pill:hover {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--gold-light);
+}
+
+.lang-pill.active {
+  background: var(--gold-primary) !important;
+  color: #0b111e !important;
+  font-weight: 700;
+  border-color: var(--gold-bright) !important;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+}
+
+.translation-block.hidden {
+  display: none !important;
+}
+
+.hinglish-matlab-card {
+  background: rgba(212, 175, 55, 0.07);
+  border-left: 3px solid var(--gold-bright);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin: 10px 0 12px;
+}
+
+.hinglish-matlab-tag {
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-sans);
+}
+
+.hinglish-matlab-text {
+  color: var(--text-cream);
+  font-size: 0.96rem;
+  line-height: 1.7;
+  margin: 0;
+  font-style: normal;
+}
+
+.floating-hasanat-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  background: linear-gradient(135deg, rgba(20, 27, 45, 0.95), rgba(11, 17, 30, 0.95));
+  border: 1.5px solid var(--gold-bright);
+  border-radius: 999px;
+  padding: 8px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 14px rgba(212, 175, 55, 0.3);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.floating-hasanat-widget.pulse-active {
+  animation: hasanatPulse 0.4s ease;
+}
+
+@keyframes hasanatPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); box-shadow: 0 0 20px rgba(212, 175, 55, 0.7); }
+  100% { transform: scale(1); }
+}
+
+.floating-hasanat-icon {
+  font-size: 1.35rem;
+}
+
+.floating-hasanat-label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-muted);
+  font-weight: 700;
+}
+
+.floating-hasanat-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+  font-family: var(--font-sans);
+}
+
+.drawer-hasanat-pill {
+  font-size: 0.72rem;
+  color: var(--gold-bright);
+  background: rgba(212, 175, 55, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-weight: 600;
+  display: inline-block;
+}
+
+body.light-theme .reader-lang-bar {
+  background: rgba(163, 114, 24, 0.08);
+  border-color: rgba(163, 114, 24, 0.25);
+}
+
+body.light-theme .reader-lang-label {
+  color: #b45309;
+}
+
+body.light-theme .lang-pill {
+  background: #ffffff;
+  border-color: rgba(163, 114, 24, 0.25);
+  color: #475569;
+}
+
+body.light-theme .lang-pill.active {
+  background: #b45309 !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .hinglish-matlab-card {
+  background: rgba(163, 114, 24, 0.08);
+  border-left: 3px solid #b45309;
+}
+
+body.light-theme .hinglish-matlab-tag {
+  color: #b45309;
+}
+
+body.light-theme .hinglish-matlab-text {
+  color: #1e293b;
+}
+
+body.light-theme .floating-hasanat-widget {
+  background: #ffffff;
+  border-color: #b45309;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 14px rgba(180, 83, 9, 0.25);
+}
+
+body.light-theme .floating-hasanat-val {
+  color: #b45309;
+}
+
+.translation-hinglish-card {
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.translation-hinglish {
+  color: var(--text-cream);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  margin: 0;
+}
+
+body.light-theme .translation-hinglish-card {
+  background: rgba(163, 114, 24, 0.06);
+  border-color: rgba(163, 114, 24, 0.25);
+}
+
+body.light-theme .translation-hinglish {
+  color: #1e293b;
+}

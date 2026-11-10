@@ -873,6 +873,232 @@ if (typeof window !== "undefined") {
   window.transliterateArabic = transliterateArabic;
 }
 
+// ==========================================================================
+// URDU TO HINGLISH (ROMAN URDU) MATLAB ENGINE
+// Translates/transliterates authentic Urdu commentaries and translations
+// into natural, readable, elder-friendly Hinglish (Matlab)
+// ==========================================================================
+const SukunUrduDictionary = {
+  "اللہ": "Allah", "اللّٰہ": "Allah", "رسول": "Rasool", "نبی": "Nabi", "محمد": "Muhammad",
+  "صلی": "sallallahu", "علیہ": "alayhi", "وسلم": "wa sallam", "رضی": "radiyallahu", "عنہ": "anhu",
+  "عنہا": "anha", "عنہم": "anhum", "رحمہ": "rahimahullah", "قرآن": "Qur'an", "حدیث": "hadith",
+  "آیت": "ayat", "سورۃ": "Surah", "سورہ": "Surah", "کتاب": "kitab", "باب": "baab", "رب": "Rabb",
+
+  "کا": "ka", "کے": "ke", "کی": "ki", "کو": "ko", "سے": "se", "پر": "par", "میں": "mein",
+  "نے": "ne", "اور": "aur", "ہے": "hai", "ہیں": "hain", "تھا": "tha", "تھی": "thi", "تھے": "the",
+  "ہو": "ho", "ہوا": "hua", "ہوئی": "hui", "ہوئے": "hue", "ہونا": "hona", "ہوتی": "hoti", "ہوتا": "hota", "ہوتے": "hote",
+  "نہ": "na", "نہیں": "nahi", "بھی": "bhi", "یہ": "yeh", "وہ": "woh", "اس": "us", "ان": "un",
+  "جس": "jis", "جن": "jin", "کس": "kis", "کیا": "kya", "کچھ": "kuch", "تو": "to", "جب": "jab",
+  "تب": "tab", "اب": "ab", "سب": "sab", "ہر": "har", "ایک": "ek", "دو": "do", "تین": "teen", "چار": "chaar",
+  "جو": "jo", "وہی": "wahi", "یہی": "yahi", "لیے": "liye", "لیئے": "liye", "تک": "tak", "پاس": "paas",
+  "تم": "tum", "ہم": "hum", "آپ": "aap", "کوئی": "koi", "وقت": "waqt",
+  "اپنے": "apne", "अपनी": "apni", "اپنی": "apni", "اپنا": "apna", "اپنوں": "apnon",
+
+  "اعمال": "a'maal", "عمل": "amal", "دارومدار": "daromadar", "نیت": "niyyat", "نیتوں": "niyyaton",
+  "انسان": "insaan", "لوگ": "log", "لوگوں": "logon", "مومن": "momin", "مسلمان": "musalman",
+  "بندہ": "bandah", "بندے": "bande", "بندوں": "bandon", "بھائی": "bhai", "بہن": "behan",
+  "پسند": "pasand", "محبت": "mohabbat", "نفرت": "nafrat", "خیر": "khair", "شر": "shar",
+  "نیکی": "neki", "نیکیاں": "nekiyan", "گناہ": "gunah", "ثواب": "sawab", "عذاب": "azaab",
+  "جنت": "jannat", "جہنم": "jahannam", "دوزخ": "dozakh", "قیامت": "qayamat", "دن": "din", "رات": "raat",
+  "دنیا": "dunya", "آخرت": "aakhirat", "زمین": "zameen", "آسمان": "aasmaan", "چاند": "chaand", "سورج": "sooraj",
+
+  "بہترین": "behtareen", "بہتر": "behtar", "شخص": "shakhs", "سیکھا": "seekha", "سکھایا": "sikhaya",
+  "دوسروں": "doosron", "دوسرا": "doosra", "دوسری": "doosri", "دوسرے": "doosre",
+  "سکتا": "sakta", "سکتی": "sakti", "سکتے": "sakte", "سکا": "saka",
+  "کرے": "kare", "کرتا": "karta", "کرتی": "karti", "کرتے": "karte", "کر": "kar", "کرنا": "karna",
+  "پڑھتا": "padhta", "پڑھی": "padhi", "پڑھے": "padhe", "پڑھنا": "padhna", "سنے": "sune", "سننا": "sunna",
+  "کہا": "kaha", "فرمایا": "farmaya", "ارشاد": "irshad", "بتایا": "bataya", "پوچھا": "pouchha",
+  "پاکیزگی": "pakeezgi", "پاک": "paak", "نصف": "nisf", "آدھا": "aadha", "ایمان": "imaan",
+  "الحمد": "Alhamdulillah", "لله": "lillah", "میزان": "meezaan", "ترازو": "tarazu", "بھر": "bhar", "دیتا": "deta", "دیتی": "deti",
+
+  "تکلیف": "takleef", "تکلیفوں": "takleefon", "پریشانی": "pareshani", "مصیبت": "museebat", "دور": "door", "فرمائے": "farmaye", "فرمائےگا": "farmayega",
+  "رحم": "rahm", "کرنے": "karne", "والوں": "walon", "والا": "wala", "والی": "wali", "والے": "wale",
+  "رحمت": "rahmat", "رحمن": "Rahman", "رحیم": "Raheem", "عبادت": "ibaadat", "دعا": "dua",
+  "صدقہ": "sadqah", "خیرات": "khairat", "مسکرانا": "muskurana", "مسکراہٹ": "muskurahat",
+  "چہرہ": "chehra", "چہرے": "chehre", "سامنے": "saamne", "روبرو": "roobaroo",
+
+  "قسم": "qasam", "حکمت": "hikmat", "بھرا": "bhara", "بےشک": "beshak", "یقیناً": "yaqeenan",
+  "پیغمبروں": "paighambaron", "رسولوں": "rasoolon", "سیدھے": "seedhe", "سیدھا": "seedha", "راستے": "raaste", "راستہ": "raasta",
+  "ہدایت": "hidayat", "گمراہی": "gumrahi", "مغفرت": "maghfirat", "توبہ": "taubah", "معاف": "maaf",
+  "حفاظت": "hifazat", "بچاؤ": "bachao", "نجات": "nijaat", "شفا": "shifa", "صحت": "sehat", "بیماری": "beemari",
+  "رزق": "rizq", "برکت": "barakah", "دولت": "daulat", "مال": "maal", "فقر": "faqr", "غربت": "ghurbat",
+  "قرض": "karz", "ادائیگی": "adaigi", "آسانی": "aasani", "مشکل": "mushkil", "تنگی": "tangi",
+  "صبر": "sabr", "شکر": "shukr", "خوف": "khauf", "ڈر": "darr", "امن": "aman", "سکون": "sukoon",
+  "دل": "dil", "جان": "jaan", "روح": "rooh", "آنکھ": "aankh", "کان": "kaan", "ہاتھ": "haath", "پاؤں": "paon",
+
+  "صبح": "subah", "شام": "shaam", "نماز": "namaz", "فجر": "fajr", "ظہر": "zohr", "عصر": "asr",
+  "مغرب": "maghrib", "عشاء": "isha", "سجدہ": "sajdah", "رکوع": "rukoo", "تسبیح": "tasbih",
+  "طہارت": "taharat", "وضو": "wudhu", "غسل": "ghusl", "روزہ": "roza", "افطار": "iftaar", "سحری": "sehri",
+  "حج": "hajj", "عمرہ": "umrah", "طواف": "tawaaf", "قربانی": "qurbani", "جہاد": "jihaad",
+  "بہرحال": "baharhaal", "ہمیشہ": "hamesha", "کبھی": "kabhi", "پھر": "phir", "پہلے": "pehle", "بعد": "baad"
+};
+
+const SukunUrduCharMap = {
+  "ا": "a", "آ": "aa", "ب": "b", "پ": "p", "ت": "t", "ٹ": "t", "ث": "s",
+  "ج": "j", "چ": "ch", "ح": "h", "خ": "kh", "د": "d", "ڈ": "d", "ذ": "z",
+  "ر": "r", "ڑ": "r", "ز": "z", "ژ": "zh", "س": "s", "ش": "sh", "ص": "s",
+  "ض": "z", "ط": "t", "ظ": "z", "ع": "'", "غ": "gh", "ف": "f", "ق": "q",
+  "ک": "k", "گ": "g", "ل": "l", "م": "m", "ن": "n", "ں": "n", "و": "o",
+  "ہ": "h", "ۂ": "h", "ۃ": "t", "ھ": "h", "ء": "'", "ی": "ee", "ے": "e", "ئ": "e"
+};
+
+function transliterateUrduToHinglish(urduText) {
+  if (!urduText || typeof urduText !== "string") return "";
+
+  let text = urduText
+    .replace(/۔/g, ". ")
+    .replace(/،/g, ", ")
+    .replace(/؛/g, "; ")
+    .replace(/؟/g, "? ")
+    .replace(/[«»"']/g, "")
+    .replace(/الحمد لله/gi, "Alhamdulillah")
+    .replace(/ﷺ/g, " (sallallahu 'alayhi wa sallam)")
+    .replace(/ؑ/g, " (alayhis salam)")
+    .replace(/ؓ/g, " (radiyallahu 'anhu)")
+    .replace(/ؒ/g, " (rahimahullah)");
+
+  const tokens = text.split(/(\s+|[.,;!?()]+)/);
+
+  const convertedTokens = tokens.map(token => {
+    if (!token || !token.trim() || /^[.,;!?()]+$/.test(token)) {
+      return token;
+    }
+
+    const cleanWord = token.replace(/[\u064B-\u065F\u0670]/g, "").trim();
+
+    if (SukunUrduDictionary[cleanWord]) {
+      return SukunUrduDictionary[cleanWord];
+    }
+
+    for (const [w, roman] of Object.entries(SukunUrduDictionary)) {
+      if (cleanWord.endsWith(w) && cleanWord.length > w.length) {
+        const prefix = cleanWord.slice(0, cleanWord.length - w.length);
+        if (SukunUrduDictionary[prefix]) {
+          return SukunUrduDictionary[prefix] + " " + roman;
+        }
+      }
+    }
+
+    let out = "";
+    for (let i = 0; i < cleanWord.length; i++) {
+      const ch = cleanWord[i];
+      if (SukunUrduCharMap[ch] !== undefined) {
+        if (ch === "و") {
+          if (i === 0) out += "w";
+          else if (i === cleanWord.length - 1) out += "o";
+          else out += "oo";
+        } else if (ch === "ی") {
+          if (i === 0) out += "y";
+          else out += "ee";
+        } else if (ch === "ے") {
+          out += "e";
+        } else {
+          out += SukunUrduCharMap[ch];
+        }
+      } else {
+        out += ch;
+      }
+    }
+
+    return out;
+  });
+
+  let result = convertedTokens.join("")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([.,;!?])/g, "$1")
+    .trim();
+
+  result = result.replace(/(^\s*|[.!?]\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase());
+  return result;
+}
+
+// ==========================================================================
+// TRANSLATION LANGUAGE SELECTOR CONTROLLER
+// Controls active translation view across Hadith & Quran readers
+// Default: 'hinglish' (Hinglish Matlab) - keeping cards compact & Hadith # prominent
+// ==========================================================================
+let activeReaderLang = 'hinglish'; // 'hinglish', 'urdu', 'english', 'all'
+
+function setReaderTranslationLang(lang) {
+  activeReaderLang = lang;
+
+  ['hinglish', 'urdu', 'english', 'all'].forEach(l => {
+    const btn = document.getElementById(`langBtn_${l}`);
+    if (btn) {
+      if (l === lang) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+  });
+
+  const hinglishBlocks = document.querySelectorAll('.block-hinglish');
+  const urduBlocks = document.querySelectorAll('.block-urdu');
+  const englishBlocks = document.querySelectorAll('.block-english');
+
+  hinglishBlocks.forEach(el => {
+    if (lang === 'hinglish' || lang === 'all') el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+
+  urduBlocks.forEach(el => {
+    if (lang === 'urdu' || lang === 'all') el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+
+  englishBlocks.forEach(el => {
+    if (lang === 'english' || lang === 'all') el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+}
+
+// ==========================================================================
+// FLOATING HASANAT (NEKI) WIDGET CONTROLLER
+// Stays visible on the side of the screen as user recites Surah / Ayahs
+// ==========================================================================
+function showFloatingHasanatWidget(recitedVal = 0) {
+  let widget = document.getElementById("floatingHasanatWidget");
+  if (!widget) {
+    widget = document.createElement("div");
+    widget.id = "floatingHasanatWidget";
+    widget.className = "floating-hasanat-widget";
+    widget.title = "Live Hasanat Recitation Counter";
+    widget.innerHTML = `
+      <span class="floating-hasanat-icon">✨</span>
+      <div>
+        <span class="floating-hasanat-label">Recited Hasanat</span>
+        <span class="floating-hasanat-val" id="floatingHasanatNumber">+${recitedVal.toLocaleString()}</span>
+      </div>
+    `;
+    document.body.appendChild(widget);
+  } else {
+    widget.style.display = "flex";
+    const num = document.getElementById("floatingHasanatNumber");
+    if (num) num.innerText = "+" + recitedVal.toLocaleString();
+  }
+}
+
+function updateFloatingHasanat(recitedVal) {
+  const num = document.getElementById("floatingHasanatNumber");
+  if (num) num.innerText = "+" + recitedVal.toLocaleString();
+  const widget = document.getElementById("floatingHasanatWidget");
+  if (widget) {
+    widget.classList.add("pulse-active");
+    setTimeout(() => widget.classList.remove("pulse-active"), 400);
+  }
+}
+
+function hideFloatingHasanatWidget() {
+  const widget = document.getElementById("floatingHasanatWidget");
+  if (widget) widget.style.display = "none";
+}
+
+if (typeof window !== "undefined") {
+  window.transliterateUrduToHinglish = transliterateUrduToHinglish;
+  window.setReaderTranslationLang = setReaderTranslationLang;
+  window.showFloatingHasanatWidget = showFloatingHasanatWidget;
+  window.updateFloatingHasanat = updateFloatingHasanat;
+  window.hideFloatingHasanatWidget = hideFloatingHasanatWidget;
+}
+
 // 5. INITIALIZATION & LIVE INPUT LISTENERS
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
@@ -1134,6 +1360,10 @@ function renderDailyDua() {
   if (arabicElem) arabicElem.innerText = currentDailyDua.arabic;
   const romanElem = document.getElementById("dailyDuaRoman");
   if (romanElem) romanElem.innerText = currentDailyDua.roman;
+  const hinglishElem = document.getElementById("dailyDuaHinglish");
+  if (hinglishElem) {
+    hinglishElem.innerText = currentDailyDua.matlab || currentDailyDua.translationHinglish || transliterateUrduToHinglish(currentDailyDua.translationUrdu) || currentDailyDua.translationEnglish;
+  }
   const urduElem = document.getElementById("dailyDuaUrdu");
   if (urduElem) urduElem.innerText = currentDailyDua.translationUrdu;
   const engElem = document.getElementById("dailyDuaEnglish");
@@ -1797,6 +2027,11 @@ function displaySearchResult(item, shouldScroll = true) {
   const romanElem = document.getElementById("resultRoman");
   if (romanElem) romanElem.innerText = item.roman;
 
+  const hinglishElem = document.getElementById("resultHinglish");
+  if (hinglishElem) {
+    hinglishElem.innerText = item.matlab || item.translationHinglish || transliterateUrduToHinglish(item.translationUrdu) || item.translationEnglish;
+  }
+
   const urduElem = document.getElementById("resultUrdu");
   if (urduElem) urduElem.innerText = item.translationUrdu;
 
@@ -2137,6 +2372,12 @@ function closeModal() {
   // Stop audio if playing
   const audioElem = modal ? modal.querySelector("audio") : null;
   if (audioElem) audioElem.pause();
+  if (currentAyahAudioObj) {
+    currentAyahAudioObj.pause();
+    currentAyahAudioObj = null;
+  }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  hideFloatingHasanatWidget();
   document.body.style.overflow = "auto";
 }
 
@@ -2218,6 +2459,25 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
       <span style="margin-left: auto; font-size: 0.78rem; color: var(--gold-muted); align-self: center;">Total Verses: <strong>${surah.ayahs.length}</strong></span>
     </div>
 
+    <!-- Translation Language Selector Tabs -->
+    <div class="reader-lang-bar">
+      <span class="reader-lang-label">✦ Tarjuma / Translation:</span>
+      <div class="reader-lang-pills">
+        <button onclick="setReaderTranslationLang('hinglish')" id="langBtn_hinglish" class="lang-pill ${activeReaderLang === 'hinglish' ? 'active' : ''}">
+          🌟 Hinglish (Matlab)
+        </button>
+        <button onclick="setReaderTranslationLang('urdu')" id="langBtn_urdu" class="lang-pill ${activeReaderLang === 'urdu' ? 'active' : ''}">
+          اردو (Urdu)
+        </button>
+        <button onclick="setReaderTranslationLang('english')" id="langBtn_english" class="lang-pill ${activeReaderLang === 'english' ? 'active' : ''}">
+          English
+        </button>
+        <button onclick="setReaderTranslationLang('all')" id="langBtn_all" class="lang-pill ${activeReaderLang === 'all' ? 'active' : ''}">
+          Sab Dikhao (All)
+        </button>
+      </div>
+    </div>
+
     <!-- Bismillah Calligraphy (Except Surah 9) -->
     ${surah.number !== 9 && surah.number !== 1 ? `
       <div class="bismillah-header" style="text-align: center; font-family: var(--font-arabic); font-size: 2.1rem; color: var(--gold-bright); margin: 15px 0 25px;">
@@ -2233,7 +2493,7 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
         <div class="quran-ayah-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span class="ayah-badge">Ayah ${a.ayahNumber}</span>
+              <span class="ayah-badge" style="font-size: 0.85rem; font-weight: 700;">Ayah ${a.ayahNumber}</span>
               <span class="ayah-hasanat-badge">✨ +${ayahHasanat.toLocaleString()} Hasanat</span>
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
@@ -2248,11 +2508,27 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
           </div>
           <p class="ayah-arabic-text" id="ayahText_${a.ayahNumber}">${a.arabic}</p>
           <div class="ayah-roman-bar">
-            <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+            <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
             <p class="ayah-roman-text">${transliterateArabic(a.arabic)}</p>
           </div>
-          <div class="ayah-urdu-text">${a.urdu}</div>
-          <div class="ayah-english-text">${a.english}</div>
+
+          <!-- 1. Hinglish Matlab Block (Default) -->
+          <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
+            <div class="hinglish-matlab-card">
+              <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
+              <p class="hinglish-matlab-text">${a.hinglish || transliterateUrduToHinglish(a.urdu)}</p>
+            </div>
+          </div>
+
+          <!-- 2. Urdu Script Block -->
+          <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
+            <div class="ayah-urdu-text">${a.urdu}</div>
+          </div>
+
+          <!-- 3. English Translation Block -->
+          <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
+            <div class="ayah-english-text">${a.english}</div>
+          </div>
         </div>
       `;
       }).join('')}
@@ -2268,6 +2544,8 @@ function renderCompleteQuranSurah(surahKey, titleElem, bodyElem) {
       </div>
     </div>
   `;
+
+  showFloatingHasanatWidget(currentSessionHasanat);
 }
 
 function switchSurahView(view) {
@@ -2445,6 +2723,7 @@ function markAyahRead(num, hasanat) {
   if (valElem) {
     valElem.innerText = "+" + currentSessionHasanat.toLocaleString();
   }
+  updateFloatingHasanat(currentSessionHasanat);
   const btn = document.getElementById("readBtn_" + num);
   if (btn) {
     btn.innerHTML = "<span>✓ Recited</span>";
@@ -2454,24 +2733,64 @@ function markAyahRead(num, hasanat) {
   showToast(`MashaAllah! +${hasanat.toLocaleString()} Hasanat added (Ayah ${num})`);
 }
 
+let currentAyahAudioObj = null;
+
 function playSingleAyahAudio(surahNum, ayahNum, hasanat) {
-  if (!('speechSynthesis' in window)) {
+  if (currentAyahAudioObj) {
+    currentAyahAudioObj.pause();
+    currentAyahAudioObj = null;
+  }
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+
+  const sPad = String(surahNum).padStart(3, '0');
+  const aPad = String(ayahNum).padStart(3, '0');
+  const audioUrl = `https://everyayah.com/data/Alafasy_128kbps/${sPad}${aPad}.mp3`;
+
+  const audio = new Audio(audioUrl);
+  currentAyahAudioObj = audio;
+
+  showToast(`Playing Ayah ${ayahNum} studio recitation (Alafasy)...`);
+
+  audio.onended = () => {
     markAyahRead(ayahNum, hasanat);
-    return;
-  }
-  window.speechSynthesis.cancel();
-  const elem = document.getElementById("ayahText_" + ayahNum);
-  if (elem) {
-    const text = elem.innerText;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ar-SA";
-    utterance.rate = 0.85;
-    utterance.onend = () => {
+  };
+
+  audio.onerror = () => {
+    // Fallback to SpeechSynthesis if offline or network error
+    if ('speechSynthesis' in window) {
+      const elem = document.getElementById("ayahText_" + ayahNum);
+      if (elem) {
+        const utterance = new SpeechSynthesisUtterance(elem.innerText);
+        utterance.lang = "ar-SA";
+        utterance.rate = 0.85;
+        const voices = window.speechSynthesis.getVoices();
+        const arVoice = voices.find(v => v.lang.startsWith("ar"));
+        if (arVoice) utterance.voice = arVoice;
+        utterance.onend = () => markAyahRead(ayahNum, hasanat);
+        window.speechSynthesis.speak(utterance);
+      }
+    } else {
       markAyahRead(ayahNum, hasanat);
-    };
-    window.speechSynthesis.speak(utterance);
-    showToast(`Playing Ayah ${ayahNum} recitation...`);
-  }
+    }
+  };
+
+  audio.play().catch(() => {
+    if ('speechSynthesis' in window) {
+      const elem = document.getElementById("ayahText_" + ayahNum);
+      if (elem) {
+        const utterance = new SpeechSynthesisUtterance(elem.innerText);
+        utterance.lang = "ar-SA";
+        utterance.rate = 0.85;
+        const voices = window.speechSynthesis.getVoices();
+        const arVoice = voices.find(v => v.lang.startsWith("ar"));
+        if (arVoice) utterance.voice = arVoice;
+        utterance.onend = () => markAyahRead(ayahNum, hasanat);
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  });
 }
 
 function copySingleAyahText(num) {
@@ -2546,6 +2865,25 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
       </div>
     ` : ''}
 
+    <!-- Translation Language Selector Tabs -->
+    <div class="reader-lang-bar">
+      <span class="reader-lang-label">✦ Tarjuma / Translation:</span>
+      <div class="reader-lang-pills">
+        <button onclick="setReaderTranslationLang('hinglish')" id="langBtn_hinglish" class="lang-pill ${activeReaderLang === 'hinglish' ? 'active' : ''}">
+          🌟 Hinglish (Matlab)
+        </button>
+        <button onclick="setReaderTranslationLang('urdu')" id="langBtn_urdu" class="lang-pill ${activeReaderLang === 'urdu' ? 'active' : ''}">
+          اردو (Urdu)
+        </button>
+        <button onclick="setReaderTranslationLang('english')" id="langBtn_english" class="lang-pill ${activeReaderLang === 'english' ? 'active' : ''}">
+          English
+        </button>
+        <button onclick="setReaderTranslationLang('all')" id="langBtn_all" class="lang-pill ${activeReaderLang === 'all' ? 'active' : ''}">
+          Sab Dikhao (All)
+        </button>
+      </div>
+    </div>
+
     <div id="dynamicAyahsContainer" style="display: flex; flex-direction: column; gap: 14px;">
       <div style="text-align: center; padding: 30px 16px;">
         <div class="ai-loading-spinner" style="margin: 0 auto 12px;"></div>
@@ -2583,7 +2921,7 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
             <div class="quran-ayah-card">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <span class="ayah-badge">Ayah ${a.numberInSurah}</span>
+                  <span class="ayah-badge" style="font-size: 0.85rem; font-weight: 700;">Ayah ${a.numberInSurah}</span>
                   <span class="ayah-hasanat-badge">✨ +${ayahHasanat.toLocaleString()} Hasanat</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
@@ -2598,11 +2936,27 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
               </div>
               <p class="ayah-arabic-text" id="ayahText_${a.numberInSurah}">${a.text}</p>
               <div class="ayah-roman-bar">
-                <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+                <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
                 <p class="ayah-roman-text">${transliterateArabic(a.text)}</p>
               </div>
-              ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
-              ${enText ? `<div class="ayah-english-text">${enText}</div>` : ''}
+
+              <!-- 1. Hinglish Matlab Block (Default) -->
+              <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
+                <div class="hinglish-matlab-card">
+                  <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
+                  <p class="hinglish-matlab-text">${transliterateUrduToHinglish(urduText)}</p>
+                </div>
+              </div>
+
+              <!-- 2. Urdu Script Block -->
+              <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
+                ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
+              </div>
+
+              <!-- 3. English Translation Block -->
+              <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
+                ${enText ? `<div class="ayah-english-text">${enText}</div>` : ''}
+              </div>
             </div>
           `;
         }).join('');
@@ -2621,6 +2975,8 @@ async function renderDynamicSurah(surahKey, titleElem, bodyElem) {
       `;
     }
   }
+
+  showFloatingHasanatWidget(currentSessionHasanat);
 }
 
 // 30 Parahs (Juz) Modal
@@ -2927,6 +3283,25 @@ function openHadithModal(collectionId = "bukhari", sectionId = 1) {
       </div>
     </div>
 
+    <!-- Translation Language Selector Tabs -->
+    <div class="reader-lang-bar">
+      <span class="reader-lang-label">✦ Tarjuma / Translation:</span>
+      <div class="reader-lang-pills">
+        <button onclick="setReaderTranslationLang('hinglish')" id="langBtn_hinglish" class="lang-pill ${activeReaderLang === 'hinglish' ? 'active' : ''}">
+          🌟 Hinglish (Matlab)
+        </button>
+        <button onclick="setReaderTranslationLang('urdu')" id="langBtn_urdu" class="lang-pill ${activeReaderLang === 'urdu' ? 'active' : ''}">
+          اردو (Urdu)
+        </button>
+        <button onclick="setReaderTranslationLang('english')" id="langBtn_english" class="lang-pill ${activeReaderLang === 'english' ? 'active' : ''}">
+          English
+        </button>
+        <button onclick="setReaderTranslationLang('all')" id="langBtn_all" class="lang-pill ${activeReaderLang === 'all' ? 'active' : ''}">
+          Sab Dikhao (All)
+        </button>
+      </div>
+    </div>
+
     <!-- Active Feed Container -->
     <div id="hadithFeedContainer" style="min-height: 250px;">
       <!-- Populated via loadHadithChapter -->
@@ -3024,11 +3399,27 @@ async function loadHadithChapter(collectionId, sectionId) {
             </div>
             <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.3;">${h.arabic}</p>
             <div class="ayah-roman-bar">
-              <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+              <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
               <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
             </div>
-            ${h.urdu ? `<div class="ayah-urdu-text">${h.urdu}</div>` : ''}
-            ${h.english ? `<div class="ayah-english-text">${h.english}</div>` : ''}
+
+            <!-- 1. Hinglish Matlab Block (Default) -->
+            <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              <div class="hinglish-matlab-card">
+                <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
+                <p class="hinglish-matlab-text">${transliterateUrduToHinglish(h.urdu)}</p>
+              </div>
+            </div>
+
+            <!-- 2. Urdu Script Block -->
+            <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              ${h.urdu ? `<div class="ayah-urdu-text">${h.urdu}</div>` : ''}
+            </div>
+
+            <!-- 3. English Translation Block -->
+            <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              ${h.english ? `<div class="ayah-english-text">${h.english}</div>` : ''}
+            </div>
           </div>
         `).join('')}
       </div>
@@ -3065,11 +3456,27 @@ async function loadHadithChapter(collectionId, sectionId) {
             </div>
             <p class="ayah-arabic-text" id="hadithText_${h.num}" style="font-size: 1.45rem; line-height: 2.2;">${h.arabic}</p>
             <div class="ayah-roman-bar">
-              <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+              <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
               <p class="ayah-roman-text">${transliterateArabic(h.arabic)}</p>
             </div>
-            <div class="ayah-urdu-text">${h.urdu}</div>
-            <div class="ayah-english-text">${h.english}</div>
+
+            <!-- 1. Hinglish Matlab Block (Default) -->
+            <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              <div class="hinglish-matlab-card">
+                <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
+                <p class="hinglish-matlab-text">${transliterateUrduToHinglish(h.urdu)}</p>
+              </div>
+            </div>
+
+            <!-- 2. Urdu Script Block -->
+            <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              <div class="ayah-urdu-text">${h.urdu}</div>
+            </div>
+
+            <!-- 3. English Translation Block -->
+            <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
+              <div class="ayah-english-text">${h.english}</div>
+            </div>
           </div>
         `).join('')}
       </div>
@@ -3143,11 +3550,27 @@ async function jumpToHadithNumber(collectionId) {
         </div>
         <p class="ayah-arabic-text" id="hadithText_${num}" style="font-size: 1.5rem; line-height: 2.3;">${arabicText}</p>
         <div class="ayah-roman-bar">
-          <span class="ayah-roman-tag">Roman (Talaffuz)</span>
+          <span class="ayah-roman-tag">Talaffuz (Pronunciation)</span>
           <p class="ayah-roman-text">${transliterateArabic(arabicText)}</p>
         </div>
-        ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
-        ${engText ? `<div class="ayah-english-text">${engText}</div>` : ''}
+
+        <!-- 1. Hinglish Matlab Block (Default) -->
+        <div class="translation-block block-hinglish ${activeReaderLang === 'hinglish' || activeReaderLang === 'all' ? '' : 'hidden'}">
+          <div class="hinglish-matlab-card">
+            <span class="hinglish-matlab-tag">Hinglish Matlab:</span>
+            <p class="hinglish-matlab-text">${transliterateUrduToHinglish(urduText)}</p>
+          </div>
+        </div>
+
+        <!-- 2. Urdu Script Block -->
+        <div class="translation-block block-urdu ${activeReaderLang === 'urdu' || activeReaderLang === 'all' ? '' : 'hidden'}">
+          ${urduText ? `<div class="ayah-urdu-text">${urduText}</div>` : ''}
+        </div>
+
+        <!-- 3. English Translation Block -->
+        <div class="translation-block block-english ${activeReaderLang === 'english' || activeReaderLang === 'all' ? '' : 'hidden'}">
+          ${engText ? `<div class="ayah-english-text">${engText}</div>` : ''}
+        </div>
       </div>
 
       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
@@ -3174,6 +3597,11 @@ function playHadithAudio(elemId) {
   const utterance = new SpeechSynthesisUtterance(elem.innerText);
   utterance.lang = "ar-SA";
   utterance.rate = 0.85;
+
+  const voices = window.speechSynthesis.getVoices();
+  const arVoice = voices.find(v => v.lang.startsWith("ar"));
+  if (arVoice) utterance.voice = arVoice;
+
   window.speechSynthesis.speak(utterance);
   showToast("Playing authentic Hadith recitation...");
 }
@@ -3293,7 +3721,7 @@ function renderDrawerSurahs(filterQuery = '') {
           <div class="drawer-item-num">${s.number}</div>
           <div class="drawer-item-text">
             <h4 class="drawer-item-name">${s.name}</h4>
-            <div class="drawer-item-sub">${s.meaning} • ${s.ayahs} Ayahs • ~${hasanatApprox.toLocaleString()} Hasanat</div>
+            <div class="drawer-item-sub">${s.meaning} • ${s.ayahs} Ayahs &nbsp;<span class="drawer-hasanat-pill">✨ ~${hasanatApprox.toLocaleString()} Hasanat</span></div>
           </div>
         </div>
         <div class="drawer-item-actions">
