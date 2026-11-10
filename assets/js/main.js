@@ -510,9 +510,9 @@ const MasterKnowledge = [
     roman: "Allahumma innee as'aluka hubbaka, wa hubba man yuhibbuka, wal-'amalal-ladhee yuballighunee hubbak.",
     translationUrdu: "اے اللہ! میں تجھ سے تیری محبت مانگتا ہوں، اور ہر اس شخص کی محبت جو تجھ سے محبت کرتا ہے، اور ایسے عمل کی محبت جو مجھے تیری محبت تک پہنچا دے۔",
     translationEnglish: "O Allah, I ask You for Your divine love, the pure love of those who love You, and the righteous deeds that will lead me to attain Your love.",
-    reference: "Jami' at-Tirmidhi (3490) • Grade: Hasan Gharib (Imam at-Tirmidhi & Darussalam) / Da'if (Shaykh al-Albani, Da'if al-Jami' 4477) • https://sunnah.com/tirmidhi:3490",
+    reference: "Jami' at-Tirmidhi (3490) • Grade: Hasan (Darussalam) • Imam at-Tirmidhi: Hasan Gharib [https://sunnah.com/tirmidhi:3490]",
     waqia: "Prophet Dawud (A.S) used to supplicate with these profound words, recognizing that all true and enduring love originates with Allah, and anchoring our hearts in divine love brings eternal tranquility.",
-    lesson: "Hukm/Grading: Imam at-Tirmidhi graded it 'Hasan Gharib' and Darussalam graded it 'Hasan', whereas Shaykh al-Albani graded its sanad as 'Da'if' in Da'if al-Jami' (4477) due to narrator Abdullah ibn Rabi'ah. The supplication's meaning is virtuous for seeking pure love of Allah."
+    lesson: "Grading on Sunnah.com: Hasan (Darussalam) and Hasan Gharib (Imam at-Tirmidhi). Anchors the seeker's heart in the divine love of the Creator."
   },
   {
     id: "dua-knowledge",
@@ -1503,7 +1503,7 @@ let currentSearchToken = 0;
 var SUKUN_WORKER_ENDPOINT = window.SUKUN_WORKER_ENDPOINT || "";
 
 // Pre-AI Crisis Interceptor Regex (Dual layer: Explicit vs Religious Context)
-const EXPLICIT_CRISIS_REGEX = /(?:^|[\s،۔!?\p{P}])(?:suicide|kill\s+myself|end\s+my\s+life|want\s+to\s+die|feel\s+like\s+dying|self\s*harm|(?:apne\s+aap|khud)\s+ko\s+(?:nuksan|harm)|(?:zindagi|khud\s+ko)\s+khatam(?:\s+karna|\s+kar\s+lu|\s+kar\s+dun)|marna\s+chahta|marna\s+chahti|marne\s+ka\s+(?:dil|mann)|mar\s*ja(?:u|un|aun|unga|ungi)|marne\s+(?:wale|par)|maut\s+(?:aane|chahiye|ki\s+dua)|khud\s*kush[iy]|khud\s*khus[iy]|jaan\s+de\s+(?:du|dunga|dungi)|jeene\s+ka\s+(?:man[n]?|koi\s+maqsad)\s+nahi|zeher\s+khane|phansi\s+lagane|kaash\s+subah\s+aankh\s+na\s+khule|sab\s+pe\s+bojh\s+hu|sab\s+khatam\s+ho\s+jaye|خودکشی|مرنا\s+چاہتا|زندگی\s+ختم|مجھے\s+مرنا\s+ہے)(?:$|[\s،۔!?\p{P}])/iu;
+const EXPLICIT_CRISIS_REGEX = /(?:^|[\s،۔!?\p{P}])(?:suicide|kill\s+myself|end\s+my\s+life|want\s+to\s+die|feel\s+like\s+dying|self\s*harm|(?:apne\s+aap|khud)\s+ko\s+(?:nuksan|harm)|(?:zindagi|khud\s+ko)\s+khatam(?:\s+karna|\s+kar\s+lu|\s+kar\s+dun)|marna\s+chahta(?:\s+h(?:u|un|oon))?|marna\s+chahti(?:\s+h(?:u|un|oon))?|marne\s+ka\s+(?:dil|mann)|mar\s*ja(?:u|un|aun|on|unga|ungi)|marne\s+(?:wale|par|ki\s+dua)|maut\s+(?:aane|chahiye|maangne|mangne|ki\s+dua)|khud\s*kush[iy]|khud\s*khus[iy]|jaan\s+de\s+(?:du|dunga|dungi)|jeene\s+ka\s+(?:man[n]?|koi\s+maqsad)\s+nahi|zeher\s+khane|phansi\s+lagane|kaash\s+subah\s+aankh\s+na\s+khule|so\s+ja(?:u|un|aun|on)\s+(?:aur\s+)?kabhi\s+na\s+uth(?:u|un|aun|oon)|(?:sab\s*pe|sabke\s+liye|sab\s+ke\s+liye)?\s*bojh\s+h(?:u|un|oon)|sab\s+khatam\s+ho\s+jaye|خودکشی|مرنا\s+چاہتا|زندگی\s+ختم|مجھے\s+مرنا\s+ہے)(?:$|[\s،۔!?\p{P}])/iu;
 const RELIGIOUS_INTENT_REGEX = /(?:dua|wazifa|kaffara|janaza|hukm|fiqh|masla|hadith|ayah|ayat|padhte|parhte|sunnah|marne\s+wale|mayyat|grave|qabar)/iu;
 
 function evaluateCrisisIntent(text) {

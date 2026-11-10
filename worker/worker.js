@@ -46,30 +46,37 @@ function normalizeArabicNumerals(str) {
 }
 
 // Disambiguates time (e.g. 10:30 am, meeting at 12:45) from Quran Ayah coordinates (1:1 to 114:6)
-// Handles edge cases: extra spaces around colon ("2 : 255"), Arabic-Indic digits, and Hadith citations
+// Handles edge cases: ranges ("2:255-257"), extra spaces ("2 : 255"), Arabic-Indic digits, invalid bounds (2:300, 115:1), and Hadith citations
 function extractScriptureReferences(text) {
   const refs = [];
   if (!text) return refs;
 
   const normalizedText = normalizeArabicNumerals(text);
 
-  // 1. Ayah coordinates (Surah 1-114, Ayah 1-286) with optional whitespace around colon
-  const ayahPattern = /(?:\b(?:ayah|surah|quran|verse|aayat)\s+)?(?:\(|\b)([1-9]|[1-9]\d|10\d|11[0-4])\s*:\s*([1-9]|[1-9]\d|[12]\d{2})(?:\)|\b)/gi;
+  // 1. Ayah coordinates (Surah 1-114, Ayah 1-286) with optional whitespace and ranges
+  const ayahPattern = /(?:\b(ayah|surah|quran|verse|aayat)\s+)?(?:\(|\b)([1-9]|[1-9]\d|10\d|11[0-4])\s*:\s*([1-9]|[1-9]\d|[12]\d{2})(?:\s*-\s*([1-9]|[1-9]\d|[12]\d{2}))?(?:\)|\b)/gi;
   let m;
   while ((m = ayahPattern.exec(normalizedText)) !== null) {
-    const fullMatch = m[0];
-    const surah = parseInt(m[1], 10);
-    const ayah = parseInt(m[2], 10);
+    const hasScripturePrefix = Boolean(m[1]);
+    const surah = parseInt(m[2], 10);
+    const startAyah = parseInt(m[3], 10);
+    const endAyah = m[4] ? parseInt(m[4], 10) : null;
 
     const startIdx = Math.max(0, m.index - 15);
-    const endIdx = Math.min(normalizedText.length, m.index + fullMatch.length + 15);
+    const endIdx = Math.min(normalizedText.length, m.index + m[0].length + 15);
     const window = normalizedText.substring(startIdx, endIdx).toLowerCase();
 
-    const isTime = /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm)\s+\d+\s*:\s*\d+/i.test(window) ||
-                   /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|evening|night)\b/i.test(window);
+    const isTime = !hasScripturePrefix && (
+      /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm)\s+\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|evening|night)\b/i.test(window)
+    );
 
-    if (!isTime && surah >= 1 && surah <= 114 && ayah >= 1 && ayah <= 286) {
-      refs.push(`${surah}:${ayah}`);
+    if (!isTime && surah >= 1 && surah <= 114 && startAyah >= 1 && startAyah <= 286) {
+      if (endAyah && endAyah >= startAyah && endAyah <= 286) {
+        refs.push(`${surah}:${startAyah}-${endAyah}`);
+      } else {
+        refs.push(`${surah}:${startAyah}`);
+      }
     }
   }
 
