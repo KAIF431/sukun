@@ -7,6 +7,25 @@
    ========================================================================== */
 
 // 1. COMPREHENSIVE AUTHENTIC ISLAMIC KNOWLEDGE BASE (35+ Dimensions)
+// One-time security cleanup: Purge fake client-side authentication, mock passwords and legacy BYO keys
+(function purgeLegacyAuth() {
+  const legacyKeys = [
+    "sukun_auth_session",
+    "sukun_registered_users",
+    "sukun_admin_master_password",
+    "sukun_custom_duas",
+    "sukun_gemini_api_key",
+    "sukun_openai_api_key",
+    "sukun_claude_api_key",
+    "sukun_openrouter_api_key"
+  ];
+  legacyKeys.forEach(k => {
+    try {
+      if (localStorage.getItem(k) !== null) localStorage.removeItem(k);
+    } catch (e) {}
+  });
+})();
+
 const MasterKnowledge = [
   // --- DAILY ROUTINE & SUNNAH DUAS ---
   {
@@ -141,12 +160,12 @@ const MasterKnowledge = [
     category: "Daily Sunnah & Night Protection",
     phrases: ["sone ki dua", "sone se pehle", "before sleeping", "sleep dua", "bedtime dua", "neend ki dua", "neend nahi aa rahi"],
     keywords: ["sone", "sona", "neend", "sleep", "sleeping", "bed", "bedtime", "night", "raat", "amootu", "ahya"],
-    arabic: "اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا",
-    roman: "Allahumma bismika amootu wa ahyaa.",
+    arabic: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+    roman: "Bismika Allahumma amootu wa ahyaa.",
     translationUrdu: "اے اللہ! تیرے ہی نام کے ساتھ میں مرتا (سوتا) ہوں اور جیتا (جاگتا) ہوں۔",
-    translationEnglish: "O Allah, in Your Name do I die and do I live.",
-    reference: "Sahih al-Bukhari (6324) • Sahih Muslim (2711)",
-    waqia: "Before sleeping, the Prophet ﷺ dusted his bedding three times, lay on his right side, placed his right palm under his cheek, and committed his soul to Allah with these timeless words.",
+    translationEnglish: "In Your Name, O Allah, do I die and do I live.",
+    reference: "Sahih al-Bukhari (6324, 6312) • Sahih Muslim (2711 / Book 48, Hadith 80)",
+    waqia: "Narrated by Hudhayfah (RA) in Sahih al-Bukhari (6324: 'Bismika Allahumma amootu wa ahya', and 6312: 'Bismika amootu wa ahya'). Also narrated by Al-Bara' bin 'Azib (RA) in Sahih Muslim (2711) with the wording: 'Allahumma bismika ahya wa amoot'. Both Bukhari and Muslim record the sleeping and waking supplications together.",
     lesson: "Sleep is the minor transition of the soul. Entrusting your life to Allah grants restful sleep and peaceful dreams."
   },
   {
@@ -155,12 +174,12 @@ const MasterKnowledge = [
     category: "Daily Sunnah",
     phrases: ["so kar uthne", "uthne ki dua", "waking up", "morning wake up", "subah uthna", "after sleep"],
     keywords: ["uthne", "uthna", "so kar", "wake", "waking", "morning", "subah", "ahyaana", "resurrection"],
-    arabic: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+    arabic: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
     roman: "Al-hamdu lillaahil-ladhee ahyaanaa ba'da maa amaatanaa wa ilaihin-nushoor.",
     translationUrdu: "تمام تعریفیں اللہ کے لیے ہیں جس نے ہمیں مارنے کے بعد دوبارہ زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔",
     translationEnglish: "All praise is for Allah who gave us life after having caused us to die, and unto Him is the resurrection.",
-    reference: "Sahih al-Bukhari (6312) • Sahih Muslim (2711)",
-    waqia: "Upon opening his eyes, the Messenger of Allah ﷺ would rub the remaining sleep from his eyes with his hands and recite this thanksgiving for the gift of a new day.",
+    reference: "Sahih al-Bukhari (6312, 6324) • Sahih Muslim (2711 / Book 48, Hadith 80)",
+    waqia: "Narrated by Hudhayfah (RA) in Sahih al-Bukhari (6312, 6324) and Al-Bara' bin 'Azib (RA) in Sahih Muslim (2711). Upon waking, the Messenger of Allah ﷺ thanked Allah for restoring life.",
     lesson: "Ignites morning vitality, gratitude, and conscious awareness of our ultimate return to Allah."
   },
   {
@@ -299,16 +318,16 @@ const MasterKnowledge = [
   },
   {
     id: "dua-roza-rakhna",
-    title: "Intention for Fasting / Sehri (Roza Rakhne Ki Niyat)",
-    category: "Fasting & Ramadan",
+    title: "Intention for Fasting (Roza Rakhne Ki Niyat)",
+    category: "Fiqh & Traditional Niyyah",
     phrases: ["roza rakhne ki", "sehri ki dua", "roza ki niyat", "fasting intention", "suhoor dua"],
     keywords: ["roza", "roze", "sehri", "suhoor", "niyat", "intention", "ramadan", "ramzan"],
     arabic: "وَبِصَوْمِ غَدٍ نَّوَيْتُ مِنْ شَهْرِ رَمَضَانَ",
     roman: "Wa bi-sawmi ghadin nawaytu min shahri ramadaan.",
     translationUrdu: "اور میں نے ماہِ رمضان کے کل کے روزے کی نیت کی۔",
     translationEnglish: "And I intend to keep tomorrow's fast of the blessed month of Ramadan.",
-    reference: "Fiqh as-Sunnah • Traditional Masnoon Niyyah",
-    waqia: "The Prophet ﷺ emphasized eating Suhoor (Sehri), saying: 'Take Suhoor, for indeed there is Barakah in Suhoor.'",
+    reference: "Traditional Fiqh Intention (Note: Lafzi dua kisi marfu' Hadith me nahi hai; Roze ka asool dil ka irada hai - Sahih al-Bukhari 1)",
+    waqia: "The Prophet ﷺ emphasized eating Suhoor (Sehri), saying: 'Take Suhoor, for indeed there is Barakah in Suhoor.' Intention resides in the heart.",
     lesson: "Solidifies the heart's intention to fast for the sake of Allah alone."
   },
   {
@@ -370,25 +389,11 @@ const MasterKnowledge = [
     lesson: "True Islamic fortitude is demonstrated not by physical strength or retribution in anger, but by restraining oneself and seeking refuge in Allah."
   },
   {
-    id: "dua-dil-toota",
-    title: "Dua-e-Ta'if (Solace for a Grieving, Broken Heart)",
-    category: "Heartbreak & Solace",
-    phrases: ["dil toota", "dil tuta", "heartbreak dua", "broken heart", "gham ki dua", "tanhaai ki dua", "depression dua"],
-    keywords: ["dil", "tuta", "toota", "dil tuta", "dil toota", "broken", "heartbreak", "heartbroken", "heart", "breakup", "dhoka", "cheated", "betrayal", "tanha", "tanhaai", "lonely", "alone", "udas", "udasi", "sad", "sadness", "crying", "rona", "aansu", "gham", "grief", "pain", "painful", "sorrow", "solace", "rejection", "taif", "chhod diya", "dukhi", "depressed", "depression", "hopeless"],
-    arabic: "اللَّهُمَّ إِلَيْكَ أَشْكُو ضَعْفَ قُوَّتِي، وَقِلَّةَ حِيلَتِي، وَهَوَانِي عَلَى النَّاسِ",
-    roman: "Allahumma ilaika ashkoo da'fa quwwatee, wa qillata heelatee, wa hawaanee 'alan-naas...",
-    translationUrdu: "اے اللہ! میں تیرے ہی حضور اپنی کمزوری، اپنی بے بسی اور لوگوں کے سامنے اپنی بے قدری کی فریاد کرتا ہوں۔",
-    translationEnglish: "O Allah! Unto You alone do I complain of my helplessness, the paucity of my resources, and my humiliation before mankind.",
-    reference: "Al-Mu'jam al-Kabeer (at-Tabarani) • Zad al-Ma'ad (Ibn al-Qayyim)",
-    waqia: "When the chiefs and youth of Ta'if pelted the Messenger of Allah ﷺ with stones until blood stained his blessed sandals, the Angel of the Mountains arrived offering to crush the city between two peaks. The Prophet ﷺ refused retribution, turned to Allah in prayer, and recited this poignant supplication of surrender and devotion.",
-    lesson: "When the entire world turns away, the heart that pours its sorrow into sujood finds infinite honor and comfort before the Creator."
-  },
-  {
     id: "dua-ghabrahat",
-    title: "Dua-e-Yunus (Ayat-e-Kareema for Relief from Extreme Distress)",
+    title: "Dua-e-Yunus (Ayat-e-Kareema for Relief from Distress, Heartbreak & Anxiety)",
     category: "Anxiety & Relief",
-    phrases: ["ayat e kareema", "dua e yunus", "ghabrahat ki dua", "extreme anxiety", "musibat se nijat", "panic attack"],
-    keywords: ["ghabrahat", "ghabrahut", "ghabra", "panic", "anxiety", "anxious", "restless", "bechaini", "bechain", "mushkil", "hardship", "trouble", "phas", "phas gaya", "trap", "trapped", "tension", "stress", "suffocation", "dam ghutna", "problem", "overthinking", "dimag kharab", "yunus", "difficulty", "darkness", "andhera", "stuck", "helpless", "musibat"],
+    phrases: ["ayat e kareema", "dua e yunus", "ghabrahat ki dua", "extreme anxiety", "musibat se nijat", "panic attack", "dil toota", "broken heart", "gham ki dua"],
+    keywords: ["ghabrahat", "ghabrahut", "ghabra", "panic", "anxiety", "anxious", "restless", "bechaini", "bechain", "mushkil", "hardship", "trouble", "phas", "phas gaya", "trap", "trapped", "tension", "stress", "suffocation", "dam ghutna", "problem", "overthinking", "dimag kharab", "yunus", "difficulty", "darkness", "andhera", "stuck", "helpless", "musibat", "dil", "tuta", "toota", "dil tuta", "dil toota", "broken", "heartbreak", "heartbroken", "heart", "breakup", "dhoka", "cheated", "betrayal", "tanha", "tanhaai", "lonely", "alone", "udas", "udasi", "sad", "sadness", "crying", "rona", "aansu", "gham", "grief", "pain", "painful", "sorrow", "solace", "rejection", "chhod diya", "dukhi", "depressed", "depression", "hopeless"],
     arabic: "لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ",
     roman: "Laa ilaaha illaa Anta, subhaanaka innee kuntu minaz-zaalimeen.",
     translationUrdu: "تیرے سوا کوئی معبود نہیں، تو پاک ہے، بے شک میں ہی قصورواروں میں سے تھا۔",
@@ -497,17 +502,17 @@ const MasterKnowledge = [
   },
   {
     id: "dua-ishq-mohabbat",
-    title: "Seeking Halal Love, Pure Affection & Blessed Union (Ishq & Mohabbat)",
-    category: "Love, Affection & Marriage",
-    phrases: ["ishq ho gaya", "ishq ho gaya hai", "ishq ho gaya hau", "ishq ki dua", "mohabbat ki dua", "pyar ho gaya", "pyar ki dua", "love dua", "halal love", "pasand ki dua", "shadi ki dua", "kisi ko pane ki dua", "mohabbat me sukoon"],
-    keywords: ["ishq", "mohabbat", "pyar", "love", "hubb", "dil", "pasand", "shadi", "nikah", "affection", "relationship", "crush", "chahat"],
+    title: "Seeking Divine Love of Allah (Allah Ki Mohabbat Ki Dua)",
+    category: "Divine Love & Seeking Allah's Pleasure",
+    phrases: ["ishq ki dua", "mohabbat ki dua", "allah ki mohabbat", "divine love", "hubb", "mohabbat me sukoon"],
+    keywords: ["ishq", "mohabbat", "hubb", "divine love", "allah ki mohabbat", "affection", "relationship", "chahat"],
     arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ حُبَّكَ، وَحُبَّ مَنْ يُحِبُّكَ، وَالْعَمَلَ الَّذِي يُبَلِّغُنِي حُبَّكَ",
     roman: "Allahumma innee as'aluka hubbaka, wa hubba man yuhibbuka, wal-'amalal-ladhee yuballighunee hubbak.",
     translationUrdu: "اے اللہ! میں تجھ سے تیری محبت مانگتا ہوں، اور ہر اس شخص کی محبت جو تجھ سے محبت کرتا ہے، اور ایسے عمل کی محبت جو مجھے تیری محبت تک پہنچا دے۔",
     translationEnglish: "O Allah, I ask You for Your divine love, the pure love of those who love You, and the righteous deeds that will lead me to attain Your love.",
-    reference: "Jami' at-Tirmidhi (3490) • Hasan Sahih",
-    waqia: "Prophet Dawud (A.S) used to supplicate with these profound words, recognizing that all true and enduring love originates with Allah, and anchoring human affection in divine blessing brings tranquility and honors sacred bonds.",
-    lesson: "Whenever feelings of love or affection touch your heart, surrender them to Allah with halal intention (Nikah), asking Him to place honor, barakah, and mutual peace into the relationship."
+    reference: "Jami' at-Tirmidhi (3490) • Grade: Hasan (https://sunnah.com/tirmidhi:3490)",
+    waqia: "Prophet Dawud (A.S) used to supplicate with these profound words, recognizing that all true and enduring love originates with Allah, and anchoring our hearts in divine love brings eternal tranquility.",
+    lesson: "Anchors the heart in the love of the Creator. Recite to attain spiritual peace and pure intentions in all worldly interactions."
   },
   {
     id: "dua-knowledge",
@@ -525,17 +530,17 @@ const MasterKnowledge = [
   },
   {
     id: "dua-nazar-evil",
-    title: "Fortress Against Evil Eye (Nazar) & Spiritual Envy (Hasad)",
+    title: "Prophetic Protection Against Evil Eye (Nazar) & Malice",
     category: "Protection & Evil Eye",
-    phrases: ["nazar ki dua", "buri nazar", "evil eye", "hasad ki dua", "jadu se hifazat", "kala jadu"],
-    keywords: ["nazar", "buri nazar", "evil eye", "magic", "jadu", "kala jadu", "hasad", "jealousy", "envy", "tok", "lag gayi", "hifazat", "protection", "poison", "harm", "dushman", "safety"],
-    arabic: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
-    roman: "A'oodhu bi-kalimaatillaahit-taammaati min sharri maa khalaq.",
-    translationUrdu: "میں اللہ کے تمام کامل کلمات کی پناہ مانگتا ہوں اس کی تمام مخلوق کے شر سے۔",
-    translationEnglish: "I seek refuge in the perfect words of Allah from the evil of that which He has created.",
-    reference: "Sahih Muslim (2708)",
-    waqia: "The Prophet ﷺ said that whoever stops at a station or place and recites these words, nothing will harm him until he departs from that place.",
-    lesson: "A potent shield against toxic jealousy, envying glances, and spiritual malice."
+    phrases: ["nazar ki dua", "buri nazar", "evil eye", "hasad ki dua", "jadu se hifazat", "kala jadu", "nazar se bachne"],
+    keywords: ["nazar", "buri nazar", "evil eye", "hasad", "jealousy", "envy", "tok", "lag gayi", "hifazat", "protection", "safety"],
+    arabic: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّةِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ",
+    roman: "A'oodhu bi-kalimaatillaahit-taammati min kulli shaytaanin wa haammah, wa min kulli 'aynin laammah.",
+    translationUrdu: "میں اللہ کے تمام کامل کلمات کی پناہ مانگتا ہوں ہر شیطان، ہر زہریلے جانور اور ہر نقصان دہ نظرِ بد سے۔",
+    translationEnglish: "I seek refuge in the perfect words of Allah from every devil, every poisonous pest, and every evil, blameworthy eye.",
+    reference: "Sahih al-Bukhari (3371) • Grade: Sahih (https://sunnah.com/bukhari:3371)",
+    waqia: "Narrated by Ibn Abbas (RA): The Prophet ﷺ used to seek refuge for Al-Hasan and Al-Husain reciting this timeless prayer, saying: 'Your forefather (Abraham) used to seek refuge for Ishmael and Isaac with these words.'",
+    lesson: "The primary authentic Sunnah protection against evil eye, envy, and harmful influences."
   },
   {
     id: "dua-both-worlds",
@@ -1493,9 +1498,75 @@ function findBestDuaMatch(queryText) {
   return { match: bestMatch, score: highestScore };
 }
 
-// 6.2 MASTER MULTI-AI PARALLEL ENSEMBLE & ISLAMIC ARBITER ENGINE
+// 6.2 SUKUN BACKEND AI GATEWAY & SECURE DISPATCHER
 let currentSearchToken = 0;
-var DEFAULT_GEMINI_KEY = window.DEFAULT_GEMINI_KEY || (typeof atob === "function" ? atob("QVEuQWI4Uk42SU10MXhFeFdseVdaczN4VzhVLTMwVzBmaXBoeWt1Q01uYkZid2VJMmFIZEE=") : "");
+var SUKUN_WORKER_ENDPOINT = window.SUKUN_WORKER_ENDPOINT || "";
+
+// Pre-AI Crisis Interceptor Regex (Dual layer: Explicit vs Religious Context)
+const EXPLICIT_CRISIS_REGEX = /(?:^|[\s،۔!?\p{P}])(?:suicide|kill\s+myself|end\s+my\s+life|want\s+to\s+die|feel\s+like\s+dying|self\s*harm|(?:apne\s+aap|khud)\s+ko\s+(?:nuksan|harm)|(?:zindagi|khud\s+ko)\s+khatam(?:\s+karna|\s+kar\s+lu|\s+kar\s+dun)|marna\s+chahta|marna\s+chahti|marne\s+ka\s+(?:dil|mann)|mar\s*ja(?:u|un|aun|unga|ungi)|marne\s+(?:wale|par)|maut\s+(?:aane|chahiye|ki\s+dua)|khud\s*kush[iy]|khud\s*khus[iy]|jaan\s+de\s+(?:du|dunga|dungi)|jeene\s+ka\s+(?:man[n]?|koi\s+maqsad)\s+nahi|zeher\s+khane|phansi\s+lagane|kaash\s+subah\s+aankh\s+na\s+khule|sab\s+pe\s+bojh\s+hu|sab\s+khatam\s+ho\s+jaye|خودکشی|مرنا\s+چاہتا|زندگی\s+ختم|مجھے\s+مرنا\s+ہے)(?:$|[\s،۔!?\p{P}])/iu;
+const RELIGIOUS_INTENT_REGEX = /(?:dua|wazifa|kaffara|janaza|hukm|fiqh|masla|hadith|ayah|ayat|padhte|parhte|sunnah|marne\s+wale|mayyat|grave|qabar)/iu;
+
+function evaluateCrisisIntent(text) {
+  if (!text) return { isExplicit: false, isReligious: false };
+  const isExplicit = EXPLICIT_CRISIS_REGEX.test(text);
+  const isReligious = RELIGIOUS_INTENT_REGEX.test(text);
+  return { isExplicit, isReligious };
+}
+
+function getCrisisHelpCardHtml(isSoftCard) {
+  const bypassButton = isSoftCard ? `
+    <div style="margin-top: 14px; text-align: center;">
+      <button onclick="dismissCrisisAndShowDua()" class="action-btn" style="background: rgba(212,175,55,0.15); border: 1px solid var(--gold-bright); color: var(--gold-bright); padding: 8px 16px; border-radius: 20px; font-size: 0.82rem; cursor: pointer;">
+        📖 Main sirf bimari ya pareshani ki Masnoon Dua dhoond raha tha
+      </button>
+    </div>` : '';
+
+  return `
+    <div class="crisis-support-card" style="background: rgba(35, 14, 20, 0.95); border: 1px solid #ef4444; border-radius: 14px; padding: 20px; margin: 16px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: left;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <span style="font-size: 1.5rem;">🤝</span>
+        <h4 style="color: #fca5a5; margin: 0; font-size: 1.05rem;">Hum aapke sath hain (Compassionate Support)</h4>
+      </div>
+      <p style="color: #fee2e2; font-size: 0.92rem; line-height: 1.6; margin-bottom: 12px;">
+        Hum samajh sakte hain ke aap is waqt kitne shadeed dard aur dukh se guzar rahe hain, aur aapka ye dard waqai bohot ahem hai. Aap akele nahi hain. Barah-e-karam kisi qareebi dost, azeez ya in muft aur confidential helplines se foran rabta karein:
+      </p>
+      <ul style="color: #fecaca; font-size: 0.88rem; line-height: 1.7; padding-left: 20px; margin: 0 0 12px 0;">
+        <li><strong>Tele-MANAS (Govt of India):</strong> <a href="tel:14416" style="color: #fff; text-decoration: underline;">14416</a> ya <a href="tel:18008914416" style="color: #fff; text-decoration: underline;">1800-891-4416</a> (24x7 Toll-Free)</li>
+        <li><strong>KIRAN Helpline:</strong> <a href="tel:18005990019" style="color: #fff; text-decoration: underline;">1800-599-0019</a> (Govt of India Toll-Free)</li>
+        <li><strong>Vandrevala Foundation:</strong> <a href="tel:+919999666555" style="color: #fff; text-decoration: underline;">+91 9999 666 555</a> (24x7 Free Counseling)</li>
+        <li><strong>AASRA:</strong> <a href="tel:+919820466726" style="color: #fff; text-decoration: underline;">+91 98204 66726</a></li>
+        <li><strong>International / Overseas:</strong> Visit <a href="https://findahelpline.com" target="_blank" rel="noopener" style="color: #93c5fd; text-decoration: underline;">findahelpline.com</a> ya <a href="https://www.befrienders.org" target="_blank" rel="noopener" style="color: #93c5fd; text-decoration: underline;">befrienders.org</a></li>
+      </ul>
+      <div style="background: rgba(0,0,0,0.3); border-left: 3px solid #ef4444; padding: 8px 12px; font-size: 0.84rem; color: #fca5a5;">
+        🚨 <strong>Emergency:</strong> Agar aapko ya kisi ko is waqt foran khatra hai, to bina jhijhak apne local emergency number (India: <strong>112</strong>) par call karein.
+      </div>
+      ${bypassButton}
+    </div>`;
+}
+
+function getAiOfflineFriendlyBanner() {
+  return `
+    <div style="background: rgba(18, 31, 66, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 16px 20px; margin: 16px 0; text-align: left;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <span style="font-size: 1.2rem;">🌸</span>
+        <h4 style="color: var(--gold-bright); margin: 0; font-size: 0.96rem;">AI Rahnuma is waqt aaram par hai</h4>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0 0 10px 0;">
+        AI assistance filhal available nahi hai, lekin aapka roohani safar bilkul nahi rukega! <strong>Mukammal 30 Parah Quran, Verified Masnoon Duas aur Digital Tasbih</strong> poori tarah fa'al (active) hain.
+      </p>
+      <div style="font-size: 0.84rem; color: var(--gold-light);">
+        ✦ Neeche aapke sawal se milti-julti authentic Dua pesh hai:
+      </div>
+    </div>`;
+}
+
+window.dismissCrisisAndShowDua = function() {
+  const container = document.getElementById("searchResultContainer");
+  const defaultDua = MasterKnowledge.find(d => d.id === "dua-ghabrahat") || MasterKnowledge[0];
+  if (container) {
+    displaySearchResult(defaultDua, true);
+  }
+};
 
 const SYSTEM_INSTRUCTION_SCRIPTURE = `You are Sukun AI — an advanced, intelligent, scholarly, and dignified Islamic Spiritual AI Engine for 'SUKUN (سُكُون) — Sanctuary for the Soul'.
 A seeker is asking for authentic spiritual guidance or supplications (Dua/Quranic Ayat/Sahih Hadith) for their life situation or emotional condition.
@@ -1610,222 +1681,12 @@ function sanitizeScriptureOutput(obj) {
   return obj;
 }
 
-// Provider 1: Google Gemini (High Speed & Direct Scripture Recall)
-async function fetchCandidateFromGemini(queryText, apiKey) {
-  if (!apiKey) return null;
-  const modelsToTry = [
-    "gemini-3.5-flash-lite", 
-    "gemini-3.5-flash",
-    "gemini-flash-latest"
-  ];
-  const payload = {
-    contents: [{ role: "user", parts: [{ text: `Seeker's question/state: "${queryText}"\nProvide an authentic Islamic response with verified Quranic verse or Sahih Hadith dua strictly following the JSON schema.` }] }],
-    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION_SCRIPTURE }] },
-    generationConfig: { 
-      responseMimeType: "application/json", 
-      temperature: 0.15,
-      maxOutputTokens: 1024
-    }
-  };
-
-  for (const model of modelsToTry) {
-    try {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) continue;
-      const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) {
-        let cleanText = text.trim();
-        if (cleanText.startsWith("```json")) {
-          cleanText = cleanText.replace(/^```json\s*/, "").replace(/```$/, "").trim();
-        } else if (cleanText.startsWith("```")) {
-          cleanText = cleanText.replace(/^```\s*/, "").replace(/```$/, "").trim();
-        }
-        const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          parsed._aiProvider = "Gemini";
-          return sanitizeScriptureOutput(parsed);
-        }
-      }
-    } catch (e) { continue; }
+// SUKUN Backend AI Gateway Dispatcher (Cloudflare Worker Only)
+// Direct browser API calls to LLM providers are strictly forbidden.
+async function fetchScriptureFromAI(queryText) {
+  if (!SUKUN_WORKER_ENDPOINT) {
+    return null;
   }
-  return null;
-}
-
-// Provider 2: OpenAI ChatGPT (Linguistic Empathy & Nuance)
-async function fetchCandidateFromOpenAI(queryText, apiKey) {
-  if (!apiKey) return null;
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6500);
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey.trim()}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: SYSTEM_INSTRUCTION_SCRIPTURE },
-          { role: "user", content: `Seeker's feeling/query: "${queryText}"\nProvide the most authentic Quranic prayer or Sahih Hadith for this exact situation.` }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.2
-      }),
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) return null;
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content;
-    if (text) {
-      const parsed = JSON.parse(text);
-      parsed._aiProvider = "ChatGPT";
-      return sanitizeScriptureOutput(parsed);
-    }
-  } catch (e) { return null; }
-  return null;
-}
-
-// Provider 3: Anthropic Claude (Poetic Urdu & Deep Respect)
-async function fetchCandidateFromClaude(queryText, apiKey) {
-  if (!apiKey) return null;
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6500);
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey.trim(),
-        "anthropic-version": "2023-06-01",
-        "dangerously-allow-browser": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-haiku-latest",
-        max_tokens: 1024,
-        system: SYSTEM_INSTRUCTION_SCRIPTURE,
-        messages: [
-          { role: "user", content: `Seeker's feeling/query: "${queryText}"\nProvide the most authentic Quranic prayer or Sahih Hadith for this situation. Strictly output JSON.` }
-        ]
-      }),
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) return null;
-    const data = await res.json();
-    const text = data.content?.[0]?.text;
-    if (text) {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        parsed._aiProvider = "Claude";
-        return sanitizeScriptureOutput(parsed);
-      }
-    }
-  } catch (e) { return null; }
-  return null;
-}
-
-// Provider 4: OpenRouter Universal Gateway
-async function fetchCandidateFromOpenRouter(queryText, apiKey) {
-  if (!apiKey) return null;
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6500);
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey.trim()}`,
-        "HTTP-Referer": "https://sukun.sanctuary",
-        "X-Title": "Sukun Islamic AI"
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.0-flash-001",
-        messages: [
-          { role: "system", content: SYSTEM_INSTRUCTION_SCRIPTURE },
-          { role: "user", content: `Seeker's feeling/query: "${queryText}"\nProvide authentic Quranic prayer or Sahih Hadith in JSON format.` }
-        ],
-        response_format: { type: "json_object" }
-      }),
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) return null;
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content;
-    if (text) {
-      const parsed = JSON.parse(text);
-      parsed._aiProvider = "OpenRouter";
-      return sanitizeScriptureOutput(parsed);
-    }
-  } catch (e) { return null; }
-  return null;
-}
-
-// Proprietary Islamic Arbiter: Evaluates candidate answers and auto-selects the #1 winner
-function arbitrateBestAIResponse(candidates, queryText) {
-  if (!candidates || candidates.length === 0) return null;
-  if (candidates.length === 1) return candidates[0];
-
-  const authenticSources = [
-    "bukhari", "muslim", "tirmidhi", "dawood", "nasa'i", "nasai", 
-    "ibn majah", "surah", "quran", "ayat", "qur'an", "musnad", "hisn"
-  ];
-
-  let best = candidates[0];
-  let maxScore = -1;
-
-  candidates.forEach(cand => {
-    let score = 0;
-    const ref = (cand.reference || "").toLowerCase();
-
-    // 1. Citation Authenticity (+40 pts)
-    authenticSources.forEach(src => {
-      if (ref.includes(src)) score += 15;
-    });
-    if (/\d+/.test(ref)) score += 10;
-
-    // 2. Arabic Tashkeel & Diacritics Quality (+30 pts)
-    const arabic = cand.arabic || "";
-    if (/[\u0600-\u06FF]/.test(arabic)) score += 10;
-    if (/[\u064B-\u0652]/.test(arabic)) score += 15; // Fathah, Dammah, Kasrah, Sukoon, Shaddah
-    if (arabic.length >= 20) score += 5;
-
-    // 3. Poetic Urdu & English Translation (+30 pts)
-    const urdu = cand.translationUrdu || "";
-    if (/[\u0600-\u06FF]/.test(urdu) && urdu.length >= 25) score += 15;
-    if (cand.translationEnglish && cand.translationEnglish.length >= 25) score += 10;
-    if (cand.waqia && cand.waqia.length >= 30) score += 5;
-
-    cand._arbiterScore = score;
-    if (score > maxScore) {
-      maxScore = score;
-      best = cand;
-    }
-  });
-
-  return best;
-}
-
-// Master Multi-AI Query Dispatcher
-async function fetchSecretScriptureFromAI(queryText) {
-  const gKey = localStorage.getItem("sukun_gemini_api_key") || DEFAULT_GEMINI_KEY;
-  const oKey = localStorage.getItem("sukun_openai_api_key");
-  const cKey = localStorage.getItem("sukun_claude_api_key");
-  const rKey = localStorage.getItem("sukun_openrouter_api_key");
 
   const cacheKey = "sukun_ai_cache_" + encodeURIComponent(queryText.trim().toLowerCase());
   try {
@@ -1833,32 +1694,37 @@ async function fetchSecretScriptureFromAI(queryText) {
     if (cached) return JSON.parse(cached);
   } catch (e) {}
 
-  // Gather promises for all active configured providers
-  const promises = [];
-  if (gKey) promises.push(fetchCandidateFromGemini(queryText, gKey));
-  if (oKey) promises.push(fetchCandidateFromOpenAI(queryText, oKey));
-  if (cKey) promises.push(fetchCandidateFromClaude(queryText, cKey));
-  if (rKey) promises.push(fetchCandidateFromOpenRouter(queryText, rKey));
-
-  if (promises.length === 0) return null;
-
   try {
-    const results = await Promise.allSettled(promises);
-    const validCandidates = results
-      .filter(r => r.status === "fulfilled" && r.value && r.value.arabic && r.value.reference)
-      .map(r => r.value);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-    if (validCandidates.length === 0) return null;
+    const res = await fetch(`${SUKUN_WORKER_ENDPOINT}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: queryText }),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
 
-    // Run through Islamic Arbiter to select the 10/10 best answer
-    const winner = arbitrateBestAIResponse(validCandidates, queryText);
+    if (!res.ok) {
+      console.warn("Worker AI Gateway status:", res.status);
+      return null;
+    }
 
-    try {
-      sessionStorage.setItem(cacheKey, JSON.stringify(winner));
-    } catch (e) {}
+    const rawData = await res.json();
+    const sanitized = sanitizeAIResponse(rawData);
 
-    return winner;
-  } catch (e) {
+    if (sanitized && sanitized.arabic && sanitized.reference) {
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify(sanitized));
+      } catch (e) {}
+      return sanitized;
+    }
+    return null;
+  } catch (err) {
+    console.warn("Worker AI Gateway unreachable / offline:", err);
     return null;
   }
 }
@@ -1925,16 +1791,25 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     return;
   }
 
+  // 1.5 Immediate Crisis Interceptor (Pre-Search & Pre-AI Zero Call Guarantee)
+  const crisisCheck = evaluateCrisisIntent(query);
+  if (crisisCheck.isExplicit) {
+    if (box) box.style.display = "block";
+    if (loader) loader.style.display = "none";
+    if (content) {
+      content.style.display = "block";
+      content.innerHTML = getCrisisHelpCardHtml(crisisCheck.isReligious);
+    }
+    if (shouldScroll && box) {
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    return;
+  }
+
   const thisToken = ++currentSearchToken;
 
-  // 2. Multi-AI Ensemble trigger (Gemini + ChatGPT + Claude + OpenRouter)
-  const hasAi = Boolean(
-    localStorage.getItem("sukun_gemini_api_key") || 
-    DEFAULT_GEMINI_KEY || 
-    localStorage.getItem("sukun_openai_api_key") || 
-    localStorage.getItem("sukun_claude_api_key") || 
-    localStorage.getItem("sukun_openrouter_api_key")
-  );
+  // 2. Cloudflare Worker AI Gateway trigger
+  const hasAi = Boolean(SUKUN_WORKER_ENDPOINT);
 
   const localResult = findBestDuaMatch(query);
 
@@ -1957,7 +1832,7 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     }
 
     try {
-      const aiDua = await fetchSecretScriptureFromAI(query);
+      const aiDua = await fetchScriptureFromAI(query);
       if (thisToken !== currentSearchToken) return;
 
       if (aiDua && aiDua.arabic && aiDua.reference) {
@@ -2710,102 +2585,6 @@ function submitContactForm() {
   }
   closeModal();
   showToast("Your inquiry has been logged. Thank you for your sincere feedback!");
-}
-
-// 12. AUTHENTICATION MODAL LOGIC (Real Email & Password System)
-function openAuthModal() {
-  const modal = document.getElementById("authModal");
-  const user = SukunAuth.getCurrentUser();
-
-  if (user) {
-    document.getElementById("authFormsContainer").style.display = "none";
-    document.getElementById("authProfileStep").style.display = "block";
-    document.getElementById("profileUserEmail").innerText = user.email;
-    document.getElementById("profileUserRole").innerText = user.role;
-    document.getElementById("profileSavedCount").innerText = savedDuas.length;
-
-    const adminAction = document.getElementById("profileAdminAction");
-    if (adminAction) {
-      adminAction.style.display = (user.email.toLowerCase() === "kaifofficial4@gmail.com") ? "block" : "none";
-    }
-  } else {
-    document.getElementById("authFormsContainer").style.display = "block";
-    document.getElementById("authProfileStep").style.display = "none";
-    switchAuthTab('login');
-  }
-
-  modal.style.display = "flex";
-  document.body.style.overflow = "hidden";
-}
-
-function closeAuthModal() {
-  const modal = document.getElementById("authModal");
-  if (modal) modal.style.display = "none";
-  document.body.style.overflow = "auto";
-}
-
-function switchAuthTab(tab) {
-  const signInForm = document.getElementById("signInForm");
-  const signUpForm = document.getElementById("signUpForm");
-  const btnIn = document.getElementById("tabBtnSignIn");
-  const btnUp = document.getElementById("tabBtnSignUp");
-  const loginErr = document.getElementById("loginError");
-  const regErr = document.getElementById("registerError");
-
-  if (loginErr) loginErr.style.display = "none";
-  if (regErr) regErr.style.display = "none";
-
-  if (tab === 'register') {
-    signInForm.style.display = "none";
-    signUpForm.style.display = "block";
-    btnIn.classList.remove("active");
-    btnUp.classList.add("active");
-  } else {
-    signInForm.style.display = "block";
-    signUpForm.style.display = "none";
-    btnIn.classList.add("active");
-    btnUp.classList.remove("active");
-  }
-}
-
-function handleAuthLogin() {
-  const emailInput = document.getElementById("loginEmail");
-  const passInput = document.getElementById("loginPassword");
-  const errElem = document.getElementById("loginError");
-
-  errElem.style.display = "none";
-
-  try {
-    const user = SukunAuth.login(emailInput.value, passInput.value);
-    closeAuthModal();
-    showToast(`Welcome back to the sanctuary, ${user.email}!`);
-  } catch (err) {
-    errElem.innerText = err.message;
-    errElem.style.display = "block";
-  }
-}
-
-function handleAuthRegister() {
-  const emailInput = document.getElementById("regEmail");
-  const passInput = document.getElementById("regPassword");
-  const confInput = document.getElementById("regConfirmPassword");
-  const errElem = document.getElementById("registerError");
-
-  errElem.style.display = "none";
-
-  try {
-    const user = SukunAuth.register(emailInput.value, passInput.value, confInput.value);
-    closeAuthModal();
-    showToast(`Sanctuary account created successfully for ${user.email}!`);
-  } catch (err) {
-    errElem.innerText = err.message;
-    errElem.style.display = "block";
-  }
-}
-
-function handleLogout() {
-  SukunAuth.logout();
-  closeAuthModal();
 }
 
 // 13. TOAST NOTIFICATION UTILITY
@@ -4083,6 +3862,13 @@ async function sendFollowUpMessage() {
 
   appendChatMessage('user', userText);
 
+  // Pre-Chat Crisis Interceptor
+  const crisisCheck = evaluateCrisisIntent(userText);
+  if (crisisCheck.isExplicit) {
+    appendChatMessage('model', getCrisisHelpCardHtml(crisisCheck.isReligious));
+    return;
+  }
+
   const container = document.getElementById("chatMessagesList");
   const typingId = "typingIndicator_" + Date.now();
   if (container) {
@@ -4095,7 +3881,7 @@ async function sendFollowUpMessage() {
   }
 
   try {
-    const aiResponse = await fetchSecretScriptureFromAI(userText);
+    const aiResponse = await fetchScriptureFromAI(userText);
     const typingElem = document.getElementById(typingId);
     if (typingElem) typingElem.remove();
 
@@ -4104,13 +3890,21 @@ async function sendFollowUpMessage() {
       appendChatMessage('model', counselText);
       displaySearchResult(aiResponse, false);
     } else {
-      appendChatMessage('model', "SubhanAllah. May Allah ease your affairs and grant tranquility to your heart. Please reflect upon the Dua and Ayah presented below.");
+      appendChatMessage('model', getAiOfflineFriendlyBanner());
+      const localFallback = findBestDuaMatch(userText);
+      if (localFallback && localFallback.match) {
+        displaySearchResult(localFallback.match, false);
+      }
     }
   } catch (err) {
     console.warn("Follow-up error:", err);
     const typingElem = document.getElementById(typingId);
     if (typingElem) typingElem.remove();
-    appendChatMessage('model', "May Allah grant you ease. Please review the sacred scripture below for comfort and guidance.");
+    appendChatMessage('model', getAiOfflineFriendlyBanner());
+    const localFallback = findBestDuaMatch(userText);
+    if (localFallback && localFallback.match) {
+      displaySearchResult(localFallback.match, false);
+    }
   }
 }
 
@@ -4128,7 +3922,6 @@ function escapeHtml(text) {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     closeModal();
-    closeAuthModal();
     closeTasbihModal();
     closeQuranDrawer();
   }
@@ -4146,7 +3939,6 @@ window.addEventListener("popstate", (e) => {
   const modal = document.getElementById("globalModal");
   const drawer = document.getElementById("quranDrawer");
   const tasbih = document.getElementById("tasbihModal");
-  const auth = document.getElementById("authModal");
 
   if (modal && modal.style.display !== "none") {
     navigateModalBack(true);
@@ -4154,8 +3946,6 @@ window.addEventListener("popstate", (e) => {
     closeQuranDrawer();
   } else if (tasbih && tasbih.style.display !== "none") {
     closeTasbihModal();
-  } else if (auth && auth.style.display !== "none") {
-    closeAuthModal();
   }
 });
 
