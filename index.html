@@ -194,15 +194,26 @@
           <span id="voiceStatusMsg">🎙️ Listening... Speak your Dua or Surah name now...</span>
         </div>
 
-        <div class="search-hint-row" style="margin: 10px 0 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <span class="search-hint-pill">💡 <strong>Roman Urdu Search:</strong> Type or speak 'safar ki dua', 'bimari', 'karz', 'surah yaseen' in Roman Urdu or English!</span>
-          <span class="privacy-note">✦ 100% Authentic Quran &amp; Sahih Hadith References</span>
+        <!-- Unified Sanctuary Search Bar Notes (Clean & Elegant) -->
+        <div class="search-sanctuary-notes" style="margin: 10px 0 16px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span class="search-hint-pill" style="font-size: 0.8rem; padding: 4px 12px; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 20px; color: var(--gold-light);">
+              💡 <strong>Roman Urdu Search:</strong> safar ki dua, ghabrahat, bimari, karz
+            </span>
+            <span class="search-helpline-pill" style="font-size: 0.8rem; padding: 4px 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; color: #fca5a5;">
+              🤝 <strong>Tele-MANAS:</strong> <a href="tel:14416" style="color: #fff; text-decoration: underline; font-weight: bold;">14416</a> (24x7)
+            </span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.76rem; color: var(--text-muted); opacity: 0.85; padding: 0 4px;">
+            <span>🔒 AI sawal Google AI ko bheja jata hai (apni zaati ma'lumat na likhein)</span>
+            <span>✦ 100% Authentic Quran &amp; Sahih Hadith References</span>
+          </div>
         </div>
-        <p class="search-privacy-shield" style="font-size: 0.8rem; color: var(--gold-light); margin: -4px 0 6px 2px; text-align: left; opacity: 0.9; line-height: 1.5;">🔒 <strong>Privacy Note:</strong> AI se poochne par aapka sawal Google ke AI ko bheja jata hai, aur free tier me Google use apne products behtar karne ke liye use kar sakta hai. Apni zaati ma'lumat na likhein.</p>
-        <p class="search-crisis-permanent-line" style="font-size: 0.85rem; color: #fca5a5; margin: 0 0 14px 2px; text-align: left; opacity: 0.95; line-height: 1.5;">🤝 <strong>Pareshan hain?</strong> Tele-MANAS <a href="tel:14416" style="color: #fff; text-decoration: underline; font-weight: bold;">14416</a> (24x7)</p>
 
-        <!-- Cloudflare Turnstile Human Verification Shield -->
-        <div id="turnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAF7VYPGNCj2rvvdN" data-theme="dark" data-size="flexible" style="margin: 0 auto 14px; max-width: 320px;"></div>
+        <!-- Cloudflare Turnstile Human Verification Shield (Dark & Compact) -->
+        <div id="turnstileWrapper" style="display: flex; justify-content: center; align-items: center; margin: 0 auto 16px; min-height: 48px; background: rgba(13, 21, 41, 0.6); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 10px; max-width: 310px; padding: 4px; overflow: hidden;">
+          <div id="turnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAF7VYPGNCj2rvvdN" data-theme="dark" data-size="compact"></div>
+        </div>
 
         <!-- 4 QUICK-ACCESS SANCTUARY SHORTCUTS (Elder-Friendly, Clean & Spacious) -->
         <div class="sanctuary-shortcuts-row">

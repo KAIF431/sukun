@@ -1683,7 +1683,7 @@ function sanitizeScriptureOutput(obj) {
 
 // SUKUN Backend AI Gateway Dispatcher (Cloudflare Worker Only)
 // Direct browser API calls to LLM providers are strictly forbidden.
-async function fetchScriptureFromAI(queryText) {
+async function fetchScriptureFromAI(queryText, contextData = {}) {
   if (!SUKUN_WORKER_ENDPOINT) {
     return null;
   }
@@ -1711,7 +1711,8 @@ async function fetchScriptureFromAI(queryText) {
 
     const payload = {
       message: queryText,
-      turnstileToken: turnstileToken
+      turnstileToken: turnstileToken,
+      context: contextData
     };
 
     if (turnstileToken) {
@@ -1746,6 +1747,14 @@ async function fetchScriptureFromAI(queryText) {
         blockReason: rawData.blockReason || "SAFETY",
         reply: rawData.reply || ""
       };
+    }
+
+    // Live AI Counsel Reply from Gemini
+    if (rawData.reply) {
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify(rawData));
+      } catch (e) {}
+      return rawData;
     }
 
     const sanitized = sanitizeAIResponse(rawData);
@@ -1866,7 +1875,15 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
     }
 
     try {
-      const aiDua = await fetchScriptureFromAI(query);
+      const baseDua = (localResult && localResult.match) ? localResult.match : (MasterKnowledge.find(d => d.id === "dua-mushkil-aasan") || MasterKnowledge[0]);
+      const contextPayload = {
+        title: baseDua.title || "",
+        arabic: baseDua.arabic || "",
+        translation: baseDua.translationUrdu || "",
+        references: [baseDua.reference || ""]
+      };
+
+      const aiDua = await fetchScriptureFromAI(query, contextPayload);
       if (thisToken !== currentSearchToken) return;
 
       // 1. If Gemini safety blocked, crisis triggered, or empty reply: show compassionate helpline card
@@ -1876,6 +1893,18 @@ async function executeSearch(forcedQuery = null, shouldScroll = true, isExplicit
           content.style.display = "block";
           content.innerHTML = getCrisisHelpCardHtml(false);
         }
+        return;
+      }
+
+      // 2. If Gemini replied with personalized reflection, enrich the authentic Dua
+      if (aiDua && aiDua.reply) {
+        const enrichedDua = Object.assign({}, baseDua, {
+          counsel: aiDua.reply
+        });
+        currentSearchResult = enrichedDua;
+        if (loader) loader.style.display = "none";
+        if (content) content.style.display = "block";
+        displaySearchResult(enrichedDua, false);
         return;
       }
 
