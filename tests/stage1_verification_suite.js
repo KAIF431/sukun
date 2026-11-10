@@ -1,9 +1,10 @@
 /**
  * SUKUN — Stage 1 Comprehensive Verification Test Suite
  * Tests:
- * 1. Crisis Intent Evaluation (32 cases: Hard Crisis vs Soft Card vs Normal Queries)
- * 2. Scripture Quarantine Extraction (19 cases: Ayah coordinates, ranges, spaces, Arabic digits, Time, bounds, Hadiths)
- * 3. HTTP 429 / Quota Exhaustion Simulation (Graceful Offline Card & Local Dua Match)
+ * 1. Crisis Intent Evaluation (36 cases: Hard Crisis vs Soft Card vs Normal Queries)
+ * 2. Scripture Reference Extraction (19 cases: Coordinates, ranges, spaces, Arabic digits, Time, bounds, Hadiths)
+ * 3. Out-of-Range & Fabricated Citation Scrubber (Redacting 2:300, 115:1, unverified citations vs preserving time 10:30 am)
+ * 4. HTTP 429 / Quota Exhaustion Simulation (Graceful Offline Card & Local Dua Match)
  */
 
 const fs = require('fs');
@@ -34,17 +35,19 @@ function evaluateCrisisIntent(text) {
 // Extract Scripture quarantine functions from worker.js
 const normalizeDigitsMatch = workerJs.match(/function normalizeArabicNumerals[\s\S]*?^}/m);
 const extractRefsMatch = workerJs.match(/function extractScriptureReferences[\s\S]*?^}/m);
+const sanitizeScriptureMatch = workerJs.match(/function sanitizeScriptureInReply[\s\S]*?^}/m);
 
-if (!normalizeDigitsMatch || !extractRefsMatch) {
+if (!normalizeDigitsMatch || !extractRefsMatch || !sanitizeScriptureMatch) {
   console.error("Failed to load quarantine functions from worker.js");
   process.exit(1);
 }
 
 eval(normalizeDigitsMatch[0]);
 eval(extractRefsMatch[0]);
+eval(sanitizeScriptureMatch[0]);
 
 // =========================================================================
-// SUITE 1: CRISIS REGEX INTERCEPTOR TEST (32 Cases)
+// SUITE 1: CRISIS REGEX INTERCEPTOR TEST (36 Cases)
 // =========================================================================
 console.log("================================================================================");
 console.log("SUITE 1: CRISIS REGEX INTERCEPTOR (Hard Crisis vs Soft Card vs Normal)");
@@ -62,19 +65,22 @@ const crisisCases = [
   { text: "dil karta hai khud ko khatam kar lu", expectedType: "HARD_CRISIS" },
   { text: "میں خودکشی کرنا چاہتا ہوں", expectedType: "HARD_CRISIS" },
   { text: "مجھے مرنا ہے اب برداشت نہیں ہوتا", expectedType: "HARD_CRISIS" },
-  // Newly Requested Hard Crisis Cases
   { text: "jeene ka mann nahi", expectedType: "HARD_CRISIS" },
   { text: "so jaun aur kabhi na uthun", expectedType: "HARD_CRISIS" },
   { text: "main sabke liye bojh hu", expectedType: "HARD_CRISIS" },
   { text: "marna chahta hoon", expectedType: "HARD_CRISIS" },
   { text: "suicide karna hai", expectedType: "HARD_CRISIS" },
+  // Latest Review Cases
+  { text: "mujhe maut chahiye", expectedType: "HARD_CRISIS" },
+  { text: "mar jana chahta hu", expectedType: "HARD_CRISIS" },
+  { text: "life is meaningless", expectedType: "HARD_CRISIS" },
+  { text: "ab aur nahi ho sakta", expectedType: "HARD_CRISIS" },
 
   // --- SOFT CARD (Expected: isExplicit=true, isReligious=true -> Soft card with bypass) ---
   { text: "marne wale ki dua", expectedType: "SOFT_CARD" },
   { text: "marne wale ke liye dua batao", expectedType: "SOFT_CARD" },
   { text: "sakarat e maut ki dua", expectedType: "SOFT_CARD" },
   { text: "marne par kaffara ka hukm", expectedType: "SOFT_CARD" },
-  // Newly Requested Soft Card Cases
   { text: "marne ki dua batao", expectedType: "SOFT_CARD" },
   { text: "maut maangne ki dua", expectedType: "SOFT_CARD" },
 
@@ -114,10 +120,10 @@ console.log("-".repeat(80));
 console.log(`Crisis Interceptor Score: ${crisisPassCount}/${crisisCases.length} (${((crisisPassCount/crisisCases.length)*100).toFixed(1)}%)\n`);
 
 // =========================================================================
-// SUITE 2: SCRIPTURE QUARANTINE FILTER TEST (19 Edge Cases)
+// SUITE 2: SCRIPTURE REFERENCE EXTRACTION (19 Cases)
 // =========================================================================
 console.log("================================================================================");
-console.log("SUITE 2: SCRIPTURE QUARANTINE & DISAMBIGUATION FILTER");
+console.log("SUITE 2: SCRIPTURE REFERENCE EXTRACTION & BOUNDS");
 console.log("================================================================================");
 
 const quarantineCases = [
@@ -128,7 +134,7 @@ const quarantineCases = [
   { text: "Recite Ayah 114 : 6 before sleeping", expectedRefs: ["114:6"] },
   { text: "Read (3:18) after prayer", expectedRefs: ["3:18"] },
   
-  // Boundary Validation (Invalid Surah / Ayah count must be rejected)
+  // Boundary Validation (Invalid Surah / Ayah count must be rejected from valid refs)
   { text: "Look at 2:300 (invalid ayah)", expectedRefs: [] },
   { text: "Read 115:1 (invalid surah)", expectedRefs: [] },
 
@@ -169,13 +175,69 @@ console.log("-".repeat(80));
 console.log(`Scripture Quarantine Score: ${quarantinePassCount}/${quarantineCases.length} (${((quarantinePassCount/quarantineCases.length)*100).toFixed(1)}%)\n`);
 
 // =========================================================================
-// SUITE 3: HTTP 429 SIMULATION (Graceful Offline Card & Local Dua Match)
+// SUITE 3: OUT-OF-RANGE & FABRICATED SCRIPTURE SCRUBBER TEST
 // =========================================================================
 console.log("================================================================================");
-console.log("SUITE 3: HTTP 429 (QUOTA EXHAUSTED) RESILIENCE TEST");
+console.log("SUITE 3: OUT-OF-RANGE & FABRICATED CITATION SCRUBBER (Redact vs Preserve)");
 console.log("================================================================================");
 
-// Extract getAiOfflineFriendlyBanner from main.js
+const scrubberCases = [
+  {
+    name: "Out-of-range Ayah (2:300)",
+    input: "Allah commands in 2:300 to show mercy.",
+    allowed: [],
+    mustContain: "[Fabricated / Out-of-Range Citation Blocked]",
+    mustNotContain: "2:300"
+  },
+  {
+    name: "Out-of-range Surah (115:1)",
+    input: "Recite 115:1 for peace.",
+    allowed: [],
+    mustContain: "[Fabricated / Out-of-Range Citation Blocked]",
+    mustNotContain: "115:1"
+  },
+  {
+    name: "Valid Ayah but unverified / not in allowed context (2:255)",
+    input: "Read 2:255 for protection.",
+    allowed: [],
+    mustContain: "[Verified Scripture Citation Provided Above]",
+    mustNotContain: "2:255"
+  },
+  {
+    name: "Valid Ayah present in verified context (2:255)",
+    input: "Read 2:255 for protection.",
+    allowed: ["2:255"],
+    mustContain: "2:255",
+    mustNotContain: "[Verified"
+  },
+  {
+    name: "Clock Time (10:30 am) Preservation",
+    input: "The lecture is scheduled tomorrow at 10:30 am.",
+    allowed: [],
+    mustContain: "10:30 am",
+    mustNotContain: "[Fabricated"
+  }
+];
+
+let scrubberPassCount = 0;
+scrubberCases.forEach((sc, idx) => {
+  const result = sanitizeScriptureInReply(sc.input, sc.allowed);
+  const pass = result.includes(sc.mustContain) && !result.includes(sc.mustNotContain);
+  if (pass) scrubberPassCount++;
+
+  const idStr = String(idx + 1).padStart(2, '0');
+  console.log(`${idStr} | ${pass ? 'PASS  ' : 'FAIL  '} | ${sc.name} => "${result}"`);
+});
+console.log("-".repeat(80));
+console.log(`Scrubber Score: ${scrubberPassCount}/${scrubberCases.length} (${((scrubberPassCount/scrubberCases.length)*100).toFixed(1)}%)\n`);
+
+// =========================================================================
+// SUITE 4: HTTP 429 (QUOTA EXHAUSTED) RESILIENCE TEST
+// =========================================================================
+console.log("================================================================================");
+console.log("SUITE 4: HTTP 429 (QUOTA EXHAUSTED) RESILIENCE TEST");
+console.log("================================================================================");
+
 const bannerFnMatch = mainJs.match(/function getAiOfflineFriendlyBanner\(\)\s*\{[\s\S]*?^\}/m);
 if (!bannerFnMatch) {
   console.error("Failed to load getAiOfflineFriendlyBanner from main.js");
@@ -184,11 +246,10 @@ if (!bannerFnMatch) {
 eval(bannerFnMatch[0]);
 
 function simulateClientSearchUnder429(query) {
-  // Simulates fetchScriptureFromAI receiving HTTP 429 from Worker
   const workerStatus = 429;
   let aiResponse = null;
   if (workerStatus !== 200) {
-    aiResponse = null; // Triggers graceful local fallback
+    aiResponse = null;
   }
 
   const renderedBanner = getAiOfflineFriendlyBanner();

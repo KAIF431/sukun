@@ -95,6 +95,76 @@ function extractScriptureReferences(text) {
   return refs;
 }
 
+// Sanitizes AI response text against unverified or hallucinated scripture citations
+// 1. Clock time (10:30 am, meeting at 12:45) is safely preserved.
+// 2. Out-of-range / fabricated coordinates (2:300, 115:1) are BLOCKED and REDACTED immediately.
+// 3. In-range Quran / Hadith citations not present in allowedReferences are redacted to prevent hallucination.
+function sanitizeScriptureInReply(replyText, allowedReferences = []) {
+  if (!replyText) return "";
+
+  const normalized = normalizeArabicNumerals(replyText);
+  let sanitized = replyText;
+
+  // Coordinate pattern: \d+:\d+(-\d+)?
+  const coordPattern = /(?:\b(ayah|surah|quran|verse|aayat)\s+)?(?:\(|\b)(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?(?:\)|\b)/gi;
+  let m;
+  const matches = [];
+  while ((m = coordPattern.exec(normalized)) !== null) {
+    matches.push({
+      fullMatch: m[0],
+      hasPrefix: Boolean(m[1]),
+      surah: parseInt(m[2], 10),
+      startAyah: parseInt(m[3], 10),
+      endAyah: m[4] ? parseInt(m[4], 10) : null,
+      index: m.index,
+      length: m[0].length
+    });
+  }
+
+  // Iterate in reverse order so replacements do not misalign indices
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const item = matches[i];
+    const startIdx = Math.max(0, item.index - 15);
+    const endIdx = Math.min(normalized.length, item.index + item.length + 15);
+    const window = normalized.substring(startIdx, endIdx).toLowerCase();
+
+    const isClockTime = !item.hasPrefix && (
+      /\b(?:at|around|by|meeting|call|tomorrow|yesterday|today|alarm)\s+\d+\s*:\s*\d+/i.test(window) ||
+      /\d+\s*:\s*\d+\s*(?:am|pm|baje|hrs|hours|morning|evening|night)\b/i.test(window)
+    );
+
+    if (isClockTime) {
+      continue; // Legitimate clock time preserved
+    }
+
+    const isValidQuran = item.surah >= 1 && item.surah <= 114 && item.startAyah >= 1 && item.startAyah <= 286 &&
+                         (!item.endAyah || (item.endAyah >= item.startAyah && item.endAyah <= 286));
+
+    if (!isValidQuran) {
+      // OUT-OF-RANGE / FABRICATED CITATION: BLOCK & REDACT
+      sanitized = sanitized.replace(item.fullMatch, "[Fabricated / Out-of-Range Citation Blocked]");
+    } else {
+      // IN-RANGE CITATION: Verify against allowedReferences
+      const coordStr = `${item.surah}:${item.startAyah}${item.endAyah ? '-' + item.endAyah : ''}`;
+      const isAllowed = allowedReferences.some(ar => String(ar).toLowerCase().includes(coordStr.toLowerCase()));
+      if (!isAllowed) {
+        sanitized = sanitized.replace(item.fullMatch, "[Verified Scripture Citation Provided Above]");
+      }
+    }
+  }
+
+  // Hadith book citations
+  const hadithPattern = /\b(?:Sahih\s+)?(?:Bukhari|Muslim|Tirmidhi|Abu Dawood|Ibn Majah|Nasai|بخاري|مسلم|ترمذي|أبو داود)\s*#?\s*([0-9]+)/gi;
+  while ((m = hadithPattern.exec(sanitized)) !== null) {
+    const isAllowed = allowedReferences.some(ar => String(ar).toLowerCase().includes(m[0].toLowerCase()));
+    if (!isAllowed) {
+      sanitized = sanitized.replace(m[0], "[Verified Hadith Citation Provided Above]");
+    }
+  }
+
+  return sanitized;
+}
+
 // In-Memory Burst Rate Limiter (No KV cost for normal traffic)
 // Note: Per-isolate burst guard. Primary DDoS & brute-force protection is Cloudflare Turnstile + Google Daily Quota Cap.
 const inMemoryIpHits = new Map();
@@ -331,15 +401,8 @@ RULES:
       replyText = replyText.replace(/\[CRISIS_TRIGGERED\]/g, "").trim();
     }
 
-    // 7. Scripture Reference Quarantine
-    const extractedRefs = extractScriptureReferences(replyText);
-    for (const ref of extractedRefs) {
-      const isAllowed = allowedReferences.some(ar => String(ar).toLowerCase().includes(ref.toLowerCase()));
-      if (!isAllowed) {
-        // Redact unverified citation
-        replyText = replyText.replace(ref, "[Verified Scripture Citation Provided Above]");
-      }
-    }
+    // 7. Scripture Reference Quarantine & Out-of-Range Scrubbing
+    replyText = sanitizeScriptureInReply(replyText, allowedReferences);
 
     const responsePayload = {
       reply: replyText,
