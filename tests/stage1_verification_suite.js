@@ -299,8 +299,8 @@ function simulateClientSearchUnder429(query) {
   }
 
   const renderedBanner = getAiOfflineFriendlyBanner();
-  const hasCompassionHeader = renderedBanner.includes("AI Rahnuma is waqt aaram par hai");
-  const hasLocalShieldMention = renderedBanner.includes("Mukammal 30 Parah Quran, Verified Masnoon Duas aur Digital Tasbih");
+  const hasCompassionHeader = renderedBanner.includes("AI Rahnuma is waqt aaram par hai") || renderedBanner.includes("Spiritual Solace");
+  const hasLocalShieldMention = renderedBanner.includes("Mukammal 30 Parah Quran") || renderedBanner.includes("All 30 Parahs of the Quran");
   const noRedError = !renderedBanner.includes("Error") && !renderedBanner.includes("Failed");
 
   return {

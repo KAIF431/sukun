@@ -1177,31 +1177,18 @@ function closeMobileMenu() {
   if (btn) btn.classList.remove("active");
 }
 
-// 0. THEME MANAGEMENT (Royal Light Mode & Midnight Dark Mode)
+// 0. THEME MANAGEMENT (Unified Soft Ice-Blue & Ocean Teal Sanctuary)
 function initTheme() {
-  const savedTheme = localStorage.getItem("sukun_theme") || "dark";
-  if (savedTheme === "light") {
-    document.body.classList.add("light-theme");
-  } else {
-    document.body.classList.remove("light-theme");
-  }
-  updateThemeButtonUI();
+  document.body.classList.remove("light-theme");
+  try { localStorage.removeItem("sukun_theme"); } catch (e) {}
 }
 
 function toggleTheme() {
-  document.body.classList.toggle("light-theme");
-  const isLight = document.body.classList.contains("light-theme");
-  localStorage.setItem("sukun_theme", isLight ? "light" : "dark");
-  updateThemeButtonUI();
-  showToast(isLight ? "Switched to Royal Ivory Light Sanctuary." : "Switched to Midnight Sapphire Dark Sanctuary.");
+  // Theme toggle retired in favor of permanent Ice-Blue & Ocean Teal palette
 }
 
 function updateThemeButtonUI() {
-  const icon = document.getElementById("themeToggleIcon");
-  const text = document.getElementById("themeToggleText");
-  const isLight = document.body.classList.contains("light-theme");
-  if (icon) icon.innerText = isLight ? "🌙" : "☀️";
-  if (text) text.innerText = isLight ? "Dark" : "Light";
+  // Theme toggle button retired
 }
 
 // Voice Recognition & Search Handlers (Web Speech API for Elder Accessibility)
@@ -1546,16 +1533,16 @@ function getCrisisHelpCardHtml(isSoftCard) {
 
 function getAiOfflineFriendlyBanner() {
   return `
-    <div style="background: rgba(18, 31, 66, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 16px 20px; margin: 16px 0; text-align: left;">
+    <div style="background: rgba(8, 127, 140, 0.06); border: 1px solid rgba(8, 127, 140, 0.25); border-radius: 12px; padding: 16px 20px; margin: 16px 0; text-align: left;">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
         <span style="font-size: 1.2rem;">🌸</span>
-        <h4 style="color: var(--gold-bright); margin: 0; font-size: 0.96rem;">AI Rahnuma is waqt aaram par hai</h4>
+        <h4 style="color: #087f8c; margin: 0; font-size: 0.96rem; font-weight: 600;">Spiritual Solace &amp; Guidance</h4>
       </div>
-      <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0 0 10px 0;">
-        AI assistance filhal available nahi hai, lekin aapka roohani safar bilkul nahi rukega! <strong>Mukammal 30 Parah Quran, Verified Masnoon Duas aur Digital Tasbih</strong> poori tarah fa'al (active) hain.
+      <p style="color: #526b82; font-size: 0.88rem; line-height: 1.6; margin: 0 0 10px 0;">
+        AI guidance is temporarily resting, but your spiritual sanctuary remains open. <strong>All 30 Parahs of the Quran, Verified Masnoon Duas, and Digital Tasbih</strong> are fully accessible.
       </p>
-      <div style="font-size: 0.84rem; color: var(--gold-light);">
-        ✦ Neeche aapke sawal se milti-julti authentic Dua pesh hai:
+      <div style="font-size: 0.84rem; color: #0d5c75; font-weight: 500;">
+        ✦ Below is the authentic scripture most relevant to your query:
       </div>
     </div>`;
 }
@@ -1955,31 +1942,31 @@ function generateConversationalCounsel(item, userQuery = "") {
     return item.counsel;
   }
 
-  // Objective, scholarly and dignified Islamic guidance
+  // Objective, scholarly and dignified Islamic guidance (English)
   if (item.id === "dua-bura-khwab") {
-    return "Islam me bura ya pareshan-kun khwab dekhne par Sunnah ke mutabiq bayein (left) janib 3 martaba thookne aur karwat badalne ki hidayat hai. Is khwab ke bure asraat se bachne ke liye Rasoolullah ﷺ ki yeh authentic hifazati dua padhein:";
+    return "In Islamic tradition, when experiencing an unsettling dream, the Sunnah advises turning to the right side and seeking refuge in Allah. Recite this authentic Prophetic supplication for peace and spiritual protection:";
   }
   if (item.id === "dua-ishq-mohabbat") {
-    return "Islam me jazbaat aur chahat ko Haya, Iffat aur Halal Nikah ke taabe' rakhne ki talqeen hai. Dil ko sukoon dene aur ba-barkat humsafar ke husool ke liye yeh Sunnah dua manqool hai:";
+    return "Islamic teachings emphasize channeling emotions through modesty, chastity, and righteous marriage. For peace of heart and seeking a blessed spouse, this Prophetic supplication is prescribed:";
   }
   if (item.id === "dua-mushkil-aasan") {
-    return "Aapke masle ke hal ke liye Quran-o-Sunnah me sabr aur pukhta tawakkul ikhtiyar karne ki hidayat hai. Har dushwari ko aasan banane ke liye Rasoolullah ﷺ ki yeh azeem Dua talqeen ki gayi hai:";
+    return "In times of hardship, the Quran and Sunnah guide believers toward patience and unwavering trust in Allah. To ease every difficulty, recite this authentic Prophetic supplication:";
   }
   if (item.id === "dua-ghabrahat") {
-    return "Bechaini aur ghabrahat ke waqt Hazrat Yunus (A.S) ki yeh Ayat-e-Kareema dilon ko taskeen dene aur har mushkil se nijaat pane ka behtareen roohani zariya hai:";
+    return "In times of anxiety and distress, the supplication of Prophet Yunus (A.S) is a timeless remedy for bringing peace to the heart and easing hardships:";
   }
   if (item.id === "dua-family-peace") {
-    return "Khandani sukoon aur rishton me iftiraq ko door karne ke liye Surah Al-Furqan ki yeh mubarak ayat rozana padhna afzal aur mufeed hai:";
+    return "For domestic harmony, affection, and mutual understanding within family relationships, recitation of this blessed verse from Surah Al-Furqan brings immense peace:";
   }
   if (item.id === "dua-beemari") {
-    return "Har tarah ke dard ya jismani takleef ke waqt mualja (ilaj) ke sath sath Rasoolullah ﷺ ki is authentic shifa wali dua ka ahtimam karein:";
+    return "For pain, distress, or physical ailment, alongside proper medical care, turn with sincere devotion to this authentic Prophetic supplication for divine healing (Shifa):";
   }
   if (item.id === "dua-rizq") {
-    return "Tangdasti ya karz ke bojh se nijaat ke liye kasrat se Istighfar aur is authentic Prophetic dua ka parhna mustanad zariya hai:";
+    return "For relief from financial hardship, anxiety over sustenance, and the burden of debt, seeking abundant forgiveness (Istighfar) alongside this authentic Prophetic supplication provides divine solace:";
   }
 
-  const lesson = item.lesson || "Allah par tawakkul rakhein aur is Sunnah dua ka ahtimam karein.";
-  return `Aapki is soorat-e-haal ke liye Islamic taleemaat aur Sunnah-e-Nabawi ﷺ se yeh authentic roohani rehnumai aur Dua manqool hai. ${lesson}`;
+  const lesson = item.lesson || "Place your trust in Allah and take comfort in this authentic Prophetic supplication.";
+  return `For your situation, authentic guidance and solace are found in the Quran and the Sunnah of the Prophet ﷺ: ${lesson}`;
 }
 
 function displaySearchResult(item, shouldScroll = true) {
