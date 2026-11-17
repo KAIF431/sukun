@@ -1681,6 +1681,12 @@ function sanitizeScriptureOutput(obj) {
   return obj;
 }
 
+// Global Turnstile callback handler for invisible mode
+window._turnstileToken = "";
+window.onTurnstileSuccess = function(token) {
+  window._turnstileToken = token || "";
+};
+
 // SUKUN Backend AI Gateway Dispatcher (Cloudflare Worker Only)
 // Direct browser API calls to LLM providers are strictly forbidden.
 async function fetchScriptureFromAI(queryText, contextData = {}) {
@@ -1706,7 +1712,10 @@ async function fetchScriptureFromAI(queryText, contextData = {}) {
 
     let turnstileToken = "";
     if (typeof window.turnstile !== "undefined" && typeof window.turnstile.getResponse === "function") {
-      turnstileToken = window.turnstile.getResponse() || "";
+      try { turnstileToken = window.turnstile.getResponse() || ""; } catch (e) {}
+    }
+    if (!turnstileToken && window._turnstileToken) {
+      turnstileToken = window._turnstileToken;
     }
 
     const payload = {
@@ -1729,6 +1738,7 @@ async function fetchScriptureFromAI(queryText, contextData = {}) {
 
     if (!res.ok) {
       console.warn("Worker AI Gateway status:", res.status);
+      window._turnstileToken = "";
       if (typeof window.turnstile !== "undefined" && typeof window.turnstile.reset === "function") {
         try { window.turnstile.reset(); } catch (e) {}
       }

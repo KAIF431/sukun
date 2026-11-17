@@ -194,45 +194,14 @@
           <span id="voiceStatusMsg">🎙️ Listening... Speak your Dua or Surah name now...</span>
         </div>
 
-        <!-- Unified Sanctuary Search Bar Notes (Clean & Elegant) -->
-        <div class="search-sanctuary-notes" style="margin: 10px 0 16px; display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <span class="search-hint-pill" style="font-size: 0.8rem; padding: 4px 12px; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 20px; color: var(--gold-light);">
-              💡 <strong>Roman Urdu Search:</strong> safar ki dua, ghabrahat, bimari, karz
-            </span>
-            <span class="search-helpline-pill" style="font-size: 0.8rem; padding: 4px 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; color: #fca5a5;">
-              🤝 <strong>Tele-MANAS:</strong> <a href="tel:14416" style="color: #fff; text-decoration: underline; font-weight: bold;">14416</a> (24x7)
-            </span>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.76rem; color: var(--text-muted); opacity: 0.85; padding: 0 4px;">
-            <span>🔒 AI sawal Google AI ko bheja jata hai (apni zaati ma'lumat na likhein)</span>
-            <span>✦ 100% Authentic Quran &amp; Sahih Hadith References</span>
-          </div>
+        <!-- Clean & Peaceful Helpline Subtext -->
+        <div class="search-helpline-subtext" style="text-align: center; margin: 12px 0 20px; font-size: 0.82rem; color: var(--text-muted); opacity: 0.9;">
+          <span>Pareshan hain? Tele-MANAS <a href="tel:14416" style="color: #fca5a5; text-decoration: underline; font-weight: 600;">14416</a> (24x7)</span>
         </div>
 
-        <!-- Cloudflare Turnstile Human Verification Shield (Dark & Compact) -->
-        <div id="turnstileWrapper" style="display: flex; justify-content: center; align-items: center; margin: 0 auto 16px; min-height: 48px; background: rgba(13, 21, 41, 0.6); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 10px; max-width: 310px; padding: 4px; overflow: hidden;">
-          <div id="turnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAF7VYPGNCj2rvvdN" data-theme="dark" data-size="compact"></div>
-        </div>
-
-        <!-- 4 QUICK-ACCESS SANCTUARY SHORTCUTS (Elder-Friendly, Clean & Spacious) -->
-        <div class="sanctuary-shortcuts-row">
-          <button onclick="openQuranDrawer('surahs')" class="shortcut-pill" title="Explore All 114 Surahs">
-            <span class="shortcut-icon">📖</span>
-            <span class="shortcut-text">114 Surahs</span>
-          </button>
-          <button onclick="openQuranDrawer('parahs')" class="shortcut-pill" title="Explore All 30 Parahs">
-            <span class="shortcut-icon">📜</span>
-            <span class="shortcut-text">30 Parahs (Juz)</span>
-          </button>
-          <button onclick="openQuranDrawer('hadith')" class="shortcut-pill" title="4 Authentic Hadith Books">
-            <span class="shortcut-icon">📚</span>
-            <span class="shortcut-text">4 Hadith Books</span>
-          </button>
-          <button onclick="openTasbihModal()" class="shortcut-pill" title="Open Digital Tasbih Counter">
-            <span class="shortcut-icon">📿</span>
-            <span class="shortcut-text">Digital Tasbih</span>
-          </button>
+        <!-- Cloudflare Turnstile Invisible Bot Shield (Completely hidden from screen) -->
+        <div id="turnstileContainer" style="position: absolute; width: 0; height: 0; overflow: hidden; opacity: 0; pointer-events: none;">
+          <div id="turnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAF7VYPGNCj2rvvdN" data-size="invisible" data-callback="onTurnstileSuccess"></div>
         </div>
 
         <!-- Situational Topic Pills (Roman Urdu + English for Elder Clarity) -->
